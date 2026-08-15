@@ -1,0 +1,191 @@
+/* =================================================================
+   ADMIN NOTIFICATIONS PAGE STYLES
+   File: resources/css/admin/admin-notifications.css
+   ================================================================= */
+
+/* Variabel Global (Konsisten dengan tema admin) */
+:root {
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --white: #ffffff;
+    --blue-600: #2563eb;    /* Primary: New Order/Action */
+    --green-500: #10B981;   /* Success/Approved */
+    --red-500: #EF4444;     /* Cancelled/Error */
+    --orange-500: #f59e0b;  /* Warning/Custom Design */
+    --border-radius: 8px;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+}
+
+/* Kontainer Utama */
+.notification-container {
+    padding: 24px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Header Halaman */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+.page-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gray-800);
+}
+.date-range-picker {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    background-color: var(--white);
+    color: var(--gray-700);
+}
+.date-range-picker i {
+    margin-right: 8px;
+    color: var(--gray-500);
+}
+
+/* Styling Kartu */
+.card {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 24px;
+}
+
+.notification-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--gray-200);
+}
+.notification-card .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 0;
+}
+.notification-card .card-body {
+    padding: 0; /* Menghilangkan padding agar daftar notifikasi menyentuh tepi */
+}
+
+/* Tombol Aksi */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px; /* Sedikit lebih kecil untuk tombol aksi */
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.btn-subtle {
+    background-color: transparent;
+    color: var(--blue-600);
+    border: 1px solid transparent;
+}
+.btn-subtle:hover {
+    opacity: 0.8;
+}
+.btn-primary {
+    background-color: var(--blue-600);
+    color: var(--white);
+}
+.btn-secondary {
+    background-color: var(--gray-200);
+    color: var(--gray-700);
+}
+
+/* Daftar Notifikasi */
+.notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.notification-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--gray-200);
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+.notification-item:last-child {
+    border-bottom: none;
+}
+.notification-item:hover {
+    background-color: var(--gray-100);
+}
+
+/* Indikator Belum Dibaca */
+.notification-item.unread {
+    background-color: var(--gray-100);
+    border-left: 5px solid var(--blue-600);
+    padding-left: 19px; /* 24px - 5px */
+}
+.notification-item.unread:hover {
+    background-color: var(--gray-200);
+}
+
+/* Ikon Notifikasi */
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-right: 16px;
+}
+.new-order {
+    background-color: var(--blue-600);
+}
+.custom-design {
+    background-color: var(--orange-500);
+}
+.new-chat {
+    background-color: var(--green-500);
+}
+.cancelled {
+    background-color: var(--red-500);
+}
+.system-error {
+    background-color: var(--gray-700);
+}
+
+/* Konten Notifikasi */
+.notification-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.notification-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--gray-800);
+    margin-bottom: 4px;
+}
+.notification-item.unread .notification-title {
+    font-weight: 600; /* Menonjolkan yang belum dibaca */
+}
+.notification-time {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+}
+
+/* Aksi Notifikasi */
+.notification-actions {
+    flex-shrink: 0;
+    margin-left: 24px;
+}

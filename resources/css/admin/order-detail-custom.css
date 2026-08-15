@@ -1,0 +1,167 @@
+/* =================================================================
+   CUSTOM ORDER DETAIL PAGE STYLES
+   File: resources/css/admin/order-detail-custom.css
+   ================================================================= */
+
+/* Variabel Global (konsisten dengan halaman lain) */
+:root {
+    --primary-color: #2563eb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --white: #ffffff;
+    --border-radius: 8px;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+}
+
+/* Kontainer Utama */
+.order-detail-container {
+    padding: 24px;
+    font-family: 'Inter', sans-serif; /* Ganti jika font berbeda */
+}
+
+/* Header Halaman */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.page-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gray-800);
+}
+
+/* Breadcrumb Styling */
+.page-title a {
+    color: var(--gray-500);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.page-title a:hover {
+    color: var(--gray-800);
+}
+.breadcrumb-separator {
+    color: var(--gray-400);
+    margin: 0 8px;
+}
+
+.date-range-picker {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    background-color: var(--white);
+    color: var(--gray-700);
+}
+
+.date-range-picker i {
+    margin-right: 8px;
+    color: var(--gray-500);
+}
+
+/* Styling Kartu Umum */
+.card {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 24px;
+}
+
+/* Kartu Detail Custom */
+.detail-custom-card .card-body {
+    padding: 8px 24px; /* Disesuaikan agar border menyentuh tepi */
+}
+
+.custom-details-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.custom-details-table th, .custom-details-table td {
+    padding: 16px 8px; /* Padding vertikal lebih besar dari horizontal */
+    text-align: left;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: top;
+}
+
+.custom-details-table thead th {
+    font-weight: 600;
+    color: var(--gray-500);
+    font-size: 0.9rem;
+    background-color: var(--gray-100); /* Header dengan background */
+    padding: 12px 8px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.custom-details-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.custom-details-table .category-col {
+    width: 20%;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.custom-details-table a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+.custom-details-table a:hover {
+    text-decoration: underline;
+}
+.custom-details-table .file-link {
+    text-decoration: underline;
+}
+
+/* Kartu Summary */
+.summary-card {
+    padding: 24px;
+}
+
+.summary-table {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Jarak antar baris */
+}
+
+.summary-row, .summary-header {
+    display: grid;
+    grid-template-columns: 200px 1fr; /* Kolom pertama lebih kecil */
+    padding: 12px 0;
+    border-bottom: 1px solid var(--gray-100);
+}
+.summary-row:last-child {
+    border-bottom: none;
+}
+.summary-header {
+    font-weight: 600;
+    color: var(--gray-700);
+    border-bottom: 1px solid var(--gray-200);
+    padding-bottom: 16px;
+    margin-bottom: 8px;
+}
+
+.summary-col:first-child {
+    font-weight: 500;
+    color: var(--gray-500);
+}
+
+.summary-col:last-child {
+    color: var(--gray-800);
+    font-weight: 500;
+}
+
+.log-status {
+    white-space: pre-line; /* Membuat newline berfungsi */
+    line-height: 1.6;
+}

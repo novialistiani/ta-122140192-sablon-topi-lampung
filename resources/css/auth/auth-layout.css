@@ -1,0 +1,39 @@
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .min-h-screen {
+            min-height: 100vh;
+        }
+        .flex {
+            display: flex;
+        }
+        .items-center {
+            align-items: center;
+        }
+        .justify-center {
+            justify-content: center;
+        }
+        .pt-6 {
+            padding-top: 1.5rem;
+        }
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+        .auth-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 2rem;
+            width: 100%;
+            max-width: 28rem;
+        }
+        .logo {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .logo img {
+            height: 3rem;
+            width: auto;
+        }

@@ -1,0 +1,239 @@
+/* =================================================================
+   ORDER STATUS PAGE STYLES
+   File: resources/css/admin/order-status.css
+   ================================================================= */
+
+/* Variabel Global */
+:root {
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --white: #ffffff;
+    --green-500: #10B981; /* Untuk status aktif */
+    --border-radius: 8px;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+}
+
+/* Kontainer Utama */
+.order-detail-container {
+    padding: 24px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Header Halaman */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.page-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gray-800);
+}
+
+/* Breadcrumb Styling */
+.page-title a {
+    color: var(--gray-500);
+    text-decoration: none;
+}
+.breadcrumb-separator {
+    color: var(--gray-400);
+    margin: 0 8px;
+}
+.breadcrumb-active {
+    color: var(--gray-800);
+    font-weight: 700;
+}
+
+.date-range-picker {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    background-color: var(--white);
+    color: var(--gray-700);
+}
+.date-range-picker i {
+    margin-right: 8px;
+    color: var(--gray-500);
+}
+
+/* Styling Kartu Umum */
+.card {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 24px;
+}
+
+/* Pelacak Status (BARU) */
+.status-tracker-card {
+    padding: 32px 24px;
+}
+.status-tracker {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 80%;
+    margin: 0 auto;
+}
+.status-step {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    width: 120px;
+    color: var(--gray-400);
+}
+.status-icon-wrapper {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid var(--gray-200);
+    background-color: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+.status-label {
+    display: flex;
+    flex-direction: column;
+}
+.status-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--gray-500);
+}
+.status-date {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+}
+
+/* Konektor Garis */
+.status-connector {
+    flex-grow: 1;
+    height: 2px;
+    background-color: var(--gray-200);
+    margin-top: 25px; /* Sejajar dengan tengah ikon */
+    margin-left: -20px;
+    margin-right: -20px;
+}
+
+/* Style untuk status AKTIF */
+.status-step.active .status-icon-wrapper {
+    background-color: var(--white);
+    border-color: var(--green-500);
+    color: var(--green-500);
+}
+.status-step.active .status-title {
+    color: var(--gray-800);
+}
+.status-step.active .status-date {
+    color: var(--gray-500);
+}
+.status-connector.active {
+    background-color: var(--green-500);
+}
+
+/* Kartu Detail Produk */
+.product-detail-card .card-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 200px;
+    padding: 12px 24px;
+    background-color: var(--gray-100);
+    border-bottom: 1px solid var(--gray-200);
+    font-weight: 600;
+    color: var(--gray-500);
+    font-size: 0.9rem;
+}
+.product-detail-card .card-body {
+    display: flex;
+    justify-content: space-between;
+    padding: 24px;
+}
+.product-info {
+    flex-grow: 1;
+    padding-right: 24px;
+}
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+.info-label {
+    font-size: 0.9rem;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+}
+.info-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+}
+.product-image-section {
+    width: 200px;
+    margin-left: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.product-image-section img {
+    max-width: 100%;
+    border-radius: var(--border-radius);
+    background-color: var(--gray-100);
+    padding: 8px;
+    border: 1px solid var(--gray-200);
+}
+
+/* Kartu Summary */
+.summary-card {
+    padding: 24px;
+}
+.summary-table {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.summary-row, .summary-header {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--gray-100);
+}
+.summary-row:last-child {
+    border-bottom: none;
+}
+.summary-header {
+    font-weight: 600;
+    color: var(--gray-700);
+    border-bottom: 2px solid var(--gray-200);
+    padding-bottom: 16px;
+    margin-bottom: 8px;
+}
+.summary-col:first-child {
+    font-weight: 500;
+    color: var(--gray-500);
+}
+.summary-col:last-child {
+    color: var(--gray-800);
+    font-weight: 500;
+}
+.log-status {
+    white-space: pre-line;
+    line-height: 1.6;
+}

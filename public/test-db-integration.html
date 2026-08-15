@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Image Integration Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .results {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-item {
+            border-bottom: 1px solid #eee;
+            padding: 0;
+        }
+        
+        .test-item:last-child {
+            border-bottom: none;
+        }
+        
+        .test-header {
+            background: #f9f9f9;
+            padding: 15px 20px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        
+        .test-header:hover {
+            background: #f0f0f0;
+        }
+        
+        .test-header.success {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .test-header.error {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        
+        .test-header.warning {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .test-title {
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+        
+        .test-status {
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        .status-success {
+            color: #4caf50;
+            background: #c8e6c9;
+        }
+        
+        .status-error {
+            color: #f44336;
+            background: #ffcdd2;
+        }
+        
+        .status-warning {
+            color: #ff9800;
+            background: #ffe0b2;
+        }
+        
+        .test-content {
+            padding: 20px;
+            display: none;
+            background: white;
+        }
+        
+        .test-content.expanded {
+            display: block;
+        }
+        
+        .test-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        
+        .test-table th,
+        .test-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .test-table th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .test-table tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+        
+        .badge-error {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+        
+        .badge-info {
+            background: #bbdefb;
+            color: #1565c0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .stat-box {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .timestamp {
+            font-size: 12px;
+            color: #999;
+            margin-top: 15px;
+        }
+        
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Database Image Integration Tester</h1>
+            <p class="subtitle">Test status database, gambar produk, variant, dan custom design</p>
+        </header>
+        
+        <div class="controls">
+            <button class="btn-primary" onclick="testAllIntegration()">
+                🚀 Test All Integration
+            </button>
+            <button class="btn-secondary" onclick="testDbStatus()">
+                📊 Check DB Status
+            </button>
+            <button class="btn-secondary" onclick="clearResults()">
+                🗑️ Clear Results
+            </button>
+        </div>
+        
+        <div class="results" id="results">
+            <div style="padding: 40px; text-align: center; color: #666;">
+                Klik tombol di atas untuk memulai test
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testAllIntegration() {
+            showLoading();
+            try {
+                const response = await fetch('/api/admin/test/db-integration', {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                });
+                
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+        
+        async function testDbStatus() {
+            showLoading();
+            try {
+                const response = await fetch('/api/admin/test/db-status', {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                });
+                
+                const data = await response.json();
+                displayDbStatus(data);
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+        
+        function showLoading() {
+            const results = document.getElementById('results');
+            results.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Testing database integration...</p>
+                </div>
+            `;
+        }
+        
+        function showError(message) {
+            const results = document.getElementById('results');
+            results.innerHTML = `
+                <div class="error-message">
+                    <strong>Error:</strong> ${message}
+                </div>
+            `;
+        }
+        
+        function displayDbStatus(data) {
+            if (!data.success) {
+                showError(data.error);
+                return;
+            }
+            
+            const results = document.getElementById('results');
+            const db = data.database;
+            
+            let html = `
+                <div class="test-item">
+                    <div class="test-header success">
+                        <span class="test-title">📊 Database Status</span>
+                        <span class="test-status status-success">Connected</span>
+                    </div>
+                    <div class="test-content expanded">
+                        <div class="stat-box">
+                            <div class="stat-label">Host</div>
+                            <div class="stat-value">${db.host}</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Database</div>
+                            <div class="stat-value">${db.database}</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Username</div>
+                            <div class="stat-value">${db.username}</div>
+                        </div>
+                        
+                        <h3 style="margin-top: 20px; margin-bottom: 15px; color: #333;">Records Count</h3>
+                        <table class="test-table">
+                            <tr>
+                                <td>Total Products</td>
+                                <td><strong>${data.products_count}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Products with Local Images</td>
+                                <td><strong>${data.products_with_local_images}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Product Variants</td>
+                                <td><strong>${data.variants_count}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Custom Design Uploads</td>
+                                <td><strong>${data.custom_designs_count}</strong></td>
+                            </tr>
+                        </table>
+                        
+                        <div class="timestamp">Last checked: ${new Date(data.timestamp).toLocaleString('id-ID')}</div>
+                    </div>
+                </div>
+            `;
+            
+            results.innerHTML = html;
+        }
+        
+        function displayResults(data) {
+            if (!data.success) {
+                showError(data.error);
+                return;
+            }
+            
+            const results = document.getElementById('results');
+            const tests = data.tests;
+            const summary = data.summary;
+            
+            let html = '';
+            
+            // Summary
+            html += `
+                <div class="test-item">
+                    <div class="test-header success">
+                        <span class="test-title">📋 Test Summary</span>
+                        <span class="test-status status-success">${summary.passed}/${summary.total_tests} Passed</span>
+                    </div>
+                    <div class="test-content expanded">
+                        <table class="test-table">
+                            <tr>
+                                <td>Total Tests</td>
+                                <td><strong>${summary.total_tests}</strong></td>
+                            </tr>
+                            <tr style="background: #e8f5e9;">
+                                <td>✅ Passed</td>
+                                <td><strong>${summary.passed}</strong></td>
+                            </tr>
+                            ${summary.failed > 0 ? `
+                            <tr style="background: #ffebee;">
+                                <td>❌ Failed</td>
+                                <td><strong>${summary.failed}</strong></td>
+                            </tr>
+                            ` : ''}
+                        </table>
+                        ${summary.issues.length > 0 ? `
+                        <div style="margin-top: 15px;">
+                            <h4 style="color: #f44336; margin-bottom: 10px;">Issues Found:</h4>
+                            <ul style="margin-left: 20px;">
+                                ${summary.issues.map(issue => `<li style="color: #666; margin-bottom: 5px;">${issue}</li>`).join('')}
+                            </ul>
+                        </div>
+                        ` : '<p style="margin-top: 15px; color: #4caf50;">✅ No issues found!</p>'}
+                    </div>
+                </div>
+            `;
+            
+            // Each test
+            for (const [testName, testResult] of Object.entries(tests)) {
+                const status = testResult.status === 'success' ? 'success' : 'error';
+                const statusLabel = status === 'success' ? '✅ Success' : '❌ Error';
+                const title = humanizeTestName(testName);
+                
+                html += `
+                    <div class="test-item">
+                        <div class="test-header ${status}" onclick="toggleContent(this)">
+                            <span class="test-title">${title}</span>
+                            <span class="test-status status-${status}">${statusLabel}</span>
+                        </div>
+                        <div class="test-content">
+                            ${renderTestContent(testResult)}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            html += `<div class="timestamp" style="padding: 20px; text-align: right; background: #f9f9f9;">Last checked: ${new Date(data.timestamp).toLocaleString('id-ID')}</div>`;
+            
+            results.innerHTML = html;
+        }
+        
+        function renderTestContent(testResult) {
+            if (testResult.status === 'error') {
+                return `<div class="error-message">${testResult.message}</div>`;
+            }
+            
+            let html = '';
+            
+            // Handle different test types
+            if (testResult.total_products !== undefined) {
+                html += `
+                    <h4 style="margin-bottom: 10px; color: #333;">📊 Statistics</h4>
+                    <table class="test-table">
+                        <tr>
+                            <td>Total Products</td>
+                            <td><strong>${testResult.total_products}</strong></td>
+                        </tr>
+                        <tr style="background: #e8f5e9;">
+                            <td>With Image Field</td>
+                            <td><strong>${testResult.with_image}</strong></td>
+                        </tr>
+                        <tr style="background: #e8f5e9;">
+                            <td>Local Images</td>
+                            <td><strong>${testResult.local_images}</strong></td>
+                        </tr>
+                        <tr style="background: #fff3e0;">
+                            <td>External URLs</td>
+                            <td><strong>${testResult.external_urls}</strong></td>
+                        </tr>
+                    </table>
+                `;
+                
+                if (testResult.samples && testResult.samples.length > 0) {
+                    html += `<h4 style="margin-top: 20px; margin-bottom: 10px; color: #333;">📦 Sample Products</h4>`;
+                    html += '<table class="test-table"><tr><th>Name</th><th>Type</th><th>Status</th></tr>';
+                    testResult.samples.forEach(sample => {
+                        const typeLabel = sample.type === 'external_url' ? '🌐 External' : '💾 Local';
+                        const fileStatus = sample.file_exists ? '✅ Exists' : '❌ Missing';
+                        html += `
+                            <tr>
+                                <td>${sample.name}</td>
+                                <td><span class="badge badge-info">${typeLabel}</span></td>
+                                <td><span class="badge ${sample.file_exists ? 'badge-success' : 'badge-error'}">${fileStatus}</span></td>
+                            </tr>
+                        `;
+                    });
+                    html += '</table>';
+                }
+            }
+            
+            if (testResult.working !== undefined) {
+                html += `
+                    <h4 style="margin-bottom: 10px; color: #333;">📊 File Status</h4>
+                    <table class="test-table">
+                        <tr style="background: #e8f5e9;">
+                            <td>✅ Working</td>
+                            <td><strong>${testResult.working}</strong></td>
+                        </tr>
+                        ${testResult.broken > 0 ? `
+                        <tr style="background: #ffebee;">
+                            <td>❌ Broken</td>
+                            <td><strong>${testResult.broken}</strong></td>
+                        </tr>
+                        ` : ''}
+                    </table>
+                `;
+            }
+            
+            if (testResult.directories !== undefined) {
+                html += '<h4 style="margin-bottom: 10px; color: #333;">📁 Directories</h4>';
+                html += '<table class="test-table"><tr><th>Name</th><th>Exists</th><th>Writable</th><th>Files</th></tr>';
+                for (const [dirName, dirInfo] of Object.entries(testResult.directories)) {
+                    const existsStatus = dirInfo.exists ? '✅' : '❌';
+                    const writableStatus = dirInfo.writable ? '✅' : '❌';
+                    html += `
+                        <tr>
+                            <td>${dirName}</td>
+                            <td>${existsStatus}</td>
+                            <td>${writableStatus}</td>
+                            <td>${dirInfo.files_count}</td>
+                        </tr>
+                    `;
+                }
+                html += '</table>';
+            }
+            
+            if (testResult.symlink !== undefined) {
+                html += `
+                    <h4 style="margin-bottom: 10px; color: #333;">🔗 Symlink Status</h4>
+                    <table class="test-table">
+                        <tr>
+                            <td>Symlink Exists</td>
+                            <td>${testResult.symlink.exists ? '✅ Yes' : '❌ No'}</td>
+                        </tr>
+                        ${testResult.symlink.target ? `
+                        <tr>
+                            <td>Target</td>
+                            <td><code>${testResult.symlink.target}</code></td>
+                        </tr>
+                        ` : ''}
+                        <tr>
+                            <td>Public Storage Dir</td>
+                            <td>${testResult.public_storage_dir ? '✅ Exists' : '❌ Missing'}</td>
+                        </tr>
+                    </table>
+                `;
+            }
+            
+            return html || '<p>Test passed successfully</p>';
+        }
+        
+        function toggleContent(header) {
+            const content = header.nextElementSibling;
+            content.classList.toggle('expanded');
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = `
+                <div style="padding: 40px; text-align: center; color: #666;">
+                    Klik tombol di atas untuk memulai test
+                </div>
+            `;
+        }
+        
+        function humanizeTestName(name) {
+            const names = {
+                'database_connection': '🔗 Database Connection',
+                'product_images': '📷 Product Images',
+                'variant_images': '🎨 Variant Images',
+                'custom_designs': '🎨 Custom Design Uploads',
+                'storage_directories': '📁 Storage Directories',
+                'file_accessibility': '🔓 File Accessibility',
+            };
+            return names[name] || name;
+        }
+    </script>
+</body>
+</html>

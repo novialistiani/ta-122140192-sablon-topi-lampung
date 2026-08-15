@@ -1,0 +1,598 @@
+/**
+ * Chatbot Customer Styles - Minimalist & Modern Design
+ * Clean, proportional UI with simple bubbles
+ */
+
+/* ===============================
+   WRAPPER & LAYOUT
+   =============================== */
+.chatbot-customer-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 65px);
+    max-height: calc(100vh - 65px);
+    overflow: hidden;
+    background: #ffffff;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ===============================
+   HEADER BAR
+   =============================== */
+.chatbot-header-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #ffffff;
+    color: #1a1a1a;
+    flex-shrink: 0;
+    border-bottom: 1px solid #f0f0f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.chatbot-header-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.chatbot-header-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.chatbot-header-avatar .avatar-fallback {
+    color: #888;
+    font-size: 18px;
+}
+
+.chatbot-header-info {
+    flex: 1;
+}
+
+.chatbot-header-name {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    color: #1a1a1a;
+}
+
+.chatbot-header-status {
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.chatbot-header-status .status-dot {
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+}
+
+.chatbot-header-status .status-dot.admin-active {
+    background: #f59e0b;
+    animation: adminPulse 1.5s infinite;
+}
+
+@keyframes adminPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+.admin-handling-text {
+    color: #f59e0b;
+    font-weight: 500;
+}
+
+/* ===============================
+   MESSAGES CONTAINER
+   =============================== */
+.chatpage-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 14px;
+    min-height: 0;
+    background: #ffffff;
+}
+
+/* Scrollbar hanya muncul jika ada konten yang overflow */
+.chatpage-messages::-webkit-scrollbar {
+    width: 5px;
+}
+
+.chatpage-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chatpage-messages::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 3px;
+}
+
+.chatpage-messages::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+}
+
+/* ===============================
+   QUICK REPLIES
+   =============================== */
+.quick-replies {
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #ffffff;
+    border-top: 1px solid #f0f0f0;
+    justify-content: center;
+}
+
+.quick-reply-btn {
+    padding: 8px 14px;
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #666;
+}
+
+.quick-reply-btn:hover {
+    background: #333;
+    color: white;
+    border-color: #333;
+}
+
+/* ===============================
+   INPUT WRAPPER
+   =============================== */
+.chatpage-input-wrapper {
+    flex-shrink: 0;
+    background: #ffffff;
+    border-top: 1px solid #f0f0f0;
+    padding: 10px 14px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom, 10px));
+    margin-bottom: 0;
+}
+
+.chatpage-input-container {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.chatpage-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 22px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.chatpage-input:focus {
+    border-color: #333;
+}
+
+.chatpage-send {
+    padding: 10px 18px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    font-size: 16px;
+}
+
+.chatpage-send:hover:not(:disabled) {
+    background: #1a1a1a;
+    transform: scale(1.05);
+}
+
+.chatpage-send:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* ===============================
+   MESSAGE STYLES
+   =============================== */
+.message {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    animation: messageSlideIn 0.3s ease;
+}
+
+@keyframes messageSlideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+}
+
+.bot-message .message-avatar {
+    background: #333;
+    color: white;
+}
+
+.user-message .message-avatar {
+    background: #f0f0f0;
+    color: #666;
+}
+
+/* ===============================
+   ADMIN MESSAGE STYLES
+   =============================== */
+.admin-message {
+    flex-direction: row;
+}
+
+.admin-message .message-avatar,
+.admin-avatar {
+    background: #22c55e;
+    color: white;
+}
+
+.message-sender-label {
+    font-size: 11px;
+    color: #22c55e;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.admin-bubble {
+    background: #e8f5e9 !important;
+    color: #22c55e !important;
+    border-bottom-left-radius: 4px !important;
+}
+
+.admin-bubble .message-text {
+    color: #1b5e20 !important;
+}
+
+/* ===============================
+   SYSTEM MESSAGE
+   =============================== */
+.system-message {
+    justify-content: center;
+    margin: 8px 0;
+}
+
+.system-bubble {
+    background: #f5f5f5;
+    color: #666;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 400;
+    text-align: center;
+}
+
+/* ===============================
+   MESSAGE CONTENT & BUBBLE
+   =============================== */
+.message-content {
+    max-width: 75%;
+}
+
+.message-bubble {
+    padding: 10px 14px;
+    border-radius: 16px;
+    background: #f0f0f0;
+    box-shadow: none;
+    border: 1px solid #e8e8e8;
+}
+
+.bot-message .message-bubble {
+    background: #333;
+    color: white;
+    border-bottom-left-radius: 4px;
+    border: none;
+}
+
+.user-message .message-bubble {
+    background: #333;
+    color: white;
+    border-bottom-right-radius: 4px;
+    border: none;
+}
+
+.message-text {
+    font-size: 13px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.message-time {
+    font-size: 11px;
+    color: #999;
+    margin-top: 4px;
+}
+
+.admin-message .message-time {
+    color: #22c55e;
+}
+
+/* ===============================
+   PRODUCT RECOMMENDATIONS
+   =============================== */
+.product-recommendations {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+.product-card-mini {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    text-decoration: none;
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.product-card-mini:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateX(3px);
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.product-name {
+    font-weight: 600;
+    font-size: 12px;
+    color: white;
+}
+
+.product-price {
+    font-size: 11px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 500;
+}
+
+.product-card-mini > i {
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+}
+
+/* ===============================
+   PRODUCT CONTEXT PREVIEW (CUSTOMER)
+   =============================== */
+.product-context-preview-customer {
+    display: block;
+    background: rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    text-decoration: none;
+    color: white;
+    transition: all 0.2s ease;
+    max-width: 100%;
+}
+
+.product-context-preview-customer:hover {
+    transform: translateY(-1px);
+    background: rgba(0,0,0,0.15);
+}
+
+.product-context-header-customer {
+    font-size: 10px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.product-context-header-customer i {
+    color: rgba(255,255,255,0.9);
+}
+
+.product-context-body-customer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.product-context-name-customer {
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    line-height: 1.3;
+}
+
+.product-context-price-customer {
+    font-size: 11px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 600;
+}
+
+.product-context-badge-customer {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+    margin-top: 4px;
+    width: fit-content;
+}
+
+.product-context-link-customer {
+    font-size: 10px;
+    color: rgba(255,255,255,0.8);
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+}
+
+/* ===============================
+   TYPING INDICATOR
+   =============================== */
+.typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: 8px 0;
+}
+
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background: #666;
+    border-radius: 50%;
+    animation: typingBounce 1.4s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typingBounce {
+    0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.4;
+    }
+    30% {
+        transform: translateY(-8px);
+        opacity: 1;
+    }
+}
+
+/* ===============================
+   FOOTER & UTILITIES
+   =============================== */
+.chatpage-footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chatpage-char-count {
+    color: #888;
+    font-size: 12px;
+}
+
+.chatpage-clear-btn {
+    background: transparent;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 16px;
+    transition: all 0.2s;
+}
+
+.chatpage-clear-btn:hover {
+    background: #dc3545;
+    color: white;
+}
+
+/* ===============================
+   USER MESSAGE ORDER (AVATAR RIGHT)
+   =============================== */
+.user-message {
+    flex-direction: row;
+}
+
+.user-message .message-content {
+    order: 1;
+}
+
+.user-message .message-avatar {
+    order: 2;
+}
+
+/* ===============================
+   FIX INPUT CUTOFF ISSUE
+   =============================== */
+@media screen and (max-height: 800px) {
+    .chatbot-customer-wrapper {
+        height: calc(100vh - 70px);
+        max-height: calc(100vh - 70px);
+    }
+}
+
+@media screen and (max-height: 700px) {
+    .chatbot-customer-wrapper {
+        height: calc(100vh - 75px);
+        max-height: calc(100vh - 75px);
+    }
+    
+    .chatpage-messages {
+        padding: 12px;
+    }
+    
+    .chatpage-input-wrapper {
+        padding: 10px 12px;
+        padding-bottom: 14px;
+    }
+}
+
+/* Desktop specific fix for taskbar */
+@media screen and (min-width: 1024px) {
+    .chatbot-customer-wrapper {
+        height: calc(100vh - 80px);
+        max-height: calc(100vh - 80px);
+    }
+    
+    .chatpage-input-wrapper {
+        padding-bottom: 16px;
+    }
+}

@@ -1,0 +1,424 @@
+/* =================================================================
+   ORDER MANAGEMENT PAGE STYLES
+   File: resources/css/admin/management-order.css
+   ================================================================= */
+
+/* Variabel Global (konsisten dengan halaman lain) */
+:root {
+    --primary-color: #2563eb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --white: #ffffff;
+    --red-500: #ef4444;
+    --orange-500: #f97316;
+    --green-500: #10B981;
+    --border-radius: 8px;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+}
+
+/* Kontainer Utama */
+.order-list-container {
+    padding: 0;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Bagian Filter & Kontrol - Card Design */
+.controls-section {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    background: var(--white);
+    padding: 16px 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    flex-wrap: nowrap;
+}
+
+.filter-select {
+    padding: 10px 14px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    background-color: var(--white);
+    color: var(--gray-700);
+    font-size: 0.875rem;
+    min-width: 130px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    flex-shrink: 0;
+}
+
+.filter-select:hover {
+    border-color: var(--gray-400);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Date Range Filter - Inline */
+.date-label {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.date-input {
+    padding: 10px 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    background-color: var(--white);
+    font-size: 0.875rem;
+    color: var(--gray-700);
+    width: 140px;
+    flex-shrink: 0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.date-input:hover {
+    border-color: var(--gray-400);
+}
+
+.date-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.date-separator {
+    color: var(--gray-400);
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.btn-icon {
+    padding: 10px;
+    width: 42px;
+    height: 42px;
+    gap: 0;
+    flex-shrink: 0;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-secondary {
+    background-color: var(--gray-500);
+    color: var(--white);
+}
+.btn-secondary:hover {
+    background-color: #4b5563;
+}
+
+.btn-success {
+    background-color: var(--green-500);
+    color: var(--white);
+}
+.btn-success:hover {
+    background-color: #059669;
+}
+
+/* Styling Kartu - Clean without background */
+.card {
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+}
+
+.card-header {
+    padding: 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    border-bottom: 1px solid var(--gray-200);
+    background: transparent;
+}
+
+.card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    flex: none;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-actions .search-box {
+    position: relative;
+    flex-grow: 0;
+    width: 250px;
+}
+
+.header-actions .search-box .search-icon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: var(--gray-400);
+    font-size: 14px;
+}
+
+.header-actions .search-box input {
+    width: 100%;
+    padding: 10px 12px 10px 36px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    background-color: var(--white);
+    font-size: 0.875rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.header-actions .search-box input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.card-body { padding: 0; }
+.table-responsive { width: 100%; overflow-x: auto; }
+
+/* Tabel Pesanan - Clean Design */
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.orders-table th, .orders-table td {
+    padding: 14px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--gray-200);
+    vertical-align: middle;
+}
+
+.orders-table thead th {
+    background-color: transparent;
+    color: var(--gray-500);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.orders-table tbody td {
+    color: var(--gray-700);
+}
+
+.orders-table tbody tr:last-child td { border-bottom: none; }
+.orders-table tbody tr:hover { background-color: var(--gray-100); }
+
+/* Column Width Adjustments */
+.checkbox-col { width: 1%; }
+
+.product-col { 
+    max-width: 250px;
+    white-space: normal !important;
+    word-wrap: break-word;
+    line-height: 1.4;
+}
+
+/* Styling Status */
+.status {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-pengiriman {
+    color: var(--orange-500);
+    background-color: #fff7ed;
+}
+.status-pengiriman::before { background-color: var(--orange-500); }
+
+.status-dibatalkan {
+    color: var(--red-500);
+    background-color: #fee2e2;
+}
+.status-dibatalkan::before { background-color: var(--red-500); }
+
+.detail-icon { color: var(--gray-400); font-size: 1.2rem; }
+
+/* Dropdown Tindakan */
+.actions-col { text-align: right; }
+.action-dropdown { position: relative; display: inline-block; }
+.action-btn { background: none; border: none; cursor: pointer; padding: 8px; color: var(--gray-500); border-radius: 50%; }
+.action-btn:hover { background-color: var(--gray-200); }
+
+.dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--white); min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 10; border-radius: var(--border-radius); overflow: hidden; }
+.action-dropdown.active .dropdown-content { display: block; }
+.dropdown-content a { color: var(--gray-700); padding: 12px 16px; text-decoration: none; display: block; font-size: 0.9rem; }
+.dropdown-content a:hover { background-color: var(--gray-100); }
+
+/* Submenu Tindakan (Ditolak) */
+.dropdown-submenu { position: relative; }
+.submenu-trigger { display: flex; justify-content: space-between; align-items: center; }
+.submenu-content { display: none; position: absolute; right: 100%; top: -8px; background-color: black; min-width: 240px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 11; border-radius: var(--border-radius); overflow: hidden; }
+.dropdown-submenu:hover > .submenu-content { display: block; }
+
+.submenu-header { color: white; padding: 12px 16px; background-color: #333; font-weight: bold; pointer-events: none; }
+.submenu-content a { color: white; padding: 10px 16px; }
+.submenu-content a:hover { background-color: #444; }
+
+/* Pagination */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-top: 1px solid var(--gray-200);
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+.pagination-info {
+    font-weight: 500;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-btn {
+    padding: 6px 12px;
+    border: 1px solid var(--gray-200);
+    background: var(--white);
+    color: var(--gray-700);
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.pagination-btn:hover {
+    background: var(--gray-100);
+}
+
+.pagination-btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Payment Status Badges */
+.payment-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 6px;
+    white-space: nowrap;
+}
+
+.payment-badge-paid {
+    background-color: #28a745;
+    color: white;
+}
+
+.payment-badge-va-active {
+    background-color: #ffc107;
+    color: #000;
+    box-shadow: 0 1px 3px rgba(255, 193, 7, 0.3);
+}
+
+/* Status Badge Variations */
+.status-pending {
+    color: #f59e0b;
+    background-color: #fef3c7;
+}
+.status-pending::before { 
+    background-color: #f59e0b; 
+}
+
+.status-approved {
+    color: #10b981;
+    background-color: #d1fae5;
+}
+.status-approved::before { 
+    background-color: #10b981; 
+}
+
+.status-rejected {
+    color: #ef4444;
+    background-color: #fee2e2;
+}
+.status-rejected::before { 
+    background-color: #ef4444; 
+}
+
+.status-cancelled {
+    color: #6b7280;
+    background-color: #f3f4f6;
+}
+.status-cancelled::before { 
+    background-color: #6b7280; 
+}
+
+.status-processing {
+    color: #3b82f6;
+    background-color: #dbeafe;
+}
+.status-processing::before { 
+    background-color: #3b82f6; 
+}
+
+.status-completed {
+    color: #8b5cf6;
+    background-color: #ede9fe;
+}
+.status-completed::before { 
+    background-color: #8b5cf6; 
+}

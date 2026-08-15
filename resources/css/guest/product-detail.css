@@ -1,0 +1,1214 @@
+
+
+:root {
+    --primary-navy: #1a2847;
+    --primary-yellow: #fbbf24;
+    --secondary-blue: #2d3e50;
+    --accent-color: #ffa500;
+    --text-dark: #1f2937;
+    --text-gray: #6b7280;
+    --bg-light: #f8f9fa;
+    --bg-white: #ffffff;
+    --border-color: #e5e7eb;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    background-color: #e8e8e8;
+    color: #333;
+    line-height: 1.6;
+}
+
+.breadcrumb {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.breadcrumb-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.breadcrumb-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #6b7280;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+    color: #1a2847;
+}
+
+.breadcrumb-separator {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.breadcrumb-current {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.product-page {
+    max-width: 1280px;
+    margin: 16px auto 60px;
+    padding: 32px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: none;
+}
+
+.product-hero {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 32px;
+    align-items: flex-start;
+}
+
+.product-gallery {
+    flex: 0 0 auto;
+    width: 520px;
+    display: flex;
+    gap: 24px;
+}
+
+.thumbnail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 0;
+}
+
+.thumbnail-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.thumbnail-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.thumbnail-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.thumbnail-list::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.thumbnail {
+    flex-shrink: 0;
+    width: 120px;
+    height: 120px;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.thumbnail:hover {
+    border-color: #d1d5db;
+    transform: none;
+    box-shadow: none;
+}
+
+.thumbnail.active {
+    border-color: #000000;
+    box-shadow: 0 0 0 2px #000000;
+}
+
+.main-image {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: none;
+    min-height: 400px;
+    max-height: 480px;
+    overflow: hidden;
+}
+
+.main-image img {
+    max-width: 100%;
+    max-height: 420px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+
+.product-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 520px;
+}
+
+.product-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #003366;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    line-height: 1.2;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin-bottom: 8px;
+}
+
+.product-subcategory {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    margin: 0 0 12px 0;
+    padding: 4px 12px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    display: inline-block;
+    text-transform: capitalize;
+}
+
+.product-price {
+    font-size: 36px;
+    font-weight: 700;
+    color: #ff8c00;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.product-price .current-price {
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+}
+
+.product-price .original-price {
+    font-size: 24px;
+    font-weight: 500;
+    color: #9ca3af;
+    text-decoration: line-through;
+}
+
+.product-stock {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
+    margin-top: 0;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    display: block;
+    width: fit-content;
+}
+
+.product-description {
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 0;
+}
+
+.option-group {
+    display: grid;
+    gap: 10px;
+}
+
+/* Options Row - Container untuk Warna dan Ukuran bersebelahan */
+.options-row {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.options-row .option-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Responsive: Jika layar kecil, stack vertikal */
+@media (max-width: 640px) {
+    .options-row {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .options-row .option-group {
+        min-width: auto;
+    }
+}
+
+.option-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: capitalize;
+}
+
+.color-options {
+    display: flex;
+    gap: 12px;
+}
+
+.color-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--swatch-color, #000);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.color-swatch:hover {
+    transform: scale(1.08);
+    border-color: #9ca3af;
+}
+
+.color-swatch.active {
+    border: 2px solid #000000;
+}
+
+.size-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.size-option {
+    padding: 12px 24px;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    background: #f9fafb;
+    font-weight: 400;
+    font-size: 14px;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 85px;
+    text-align: center;
+}
+
+.size-option:hover {
+    border-color: #9ca3af;
+    background: #ffffff;
+}
+
+.size-option.active {
+    background: #000000;
+    border-color: #000000;
+    color: #ffffff;
+}
+
+.purchase-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-top: 0;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 40px;
+}
+
+.quantity-btn {
+    width: 36px;
+    height: 100%;
+    border: none;
+    background: #f9fafb;
+    color: #374151;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity-btn:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.quantity-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: #9ca3af;
+}
+
+.quantity-input {
+    width: 50px;
+    height: 100%;
+    border: none;
+    border-left: 1px solid #e5e7eb;
+    border-right: 1px solid #e5e7eb;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1f2937;
+    background: #ffffff;
+    -moz-appearance: textfield;
+}
+
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.quantity-input:focus {
+    outline: none;
+    background: #f9fafb;
+}
+
+.quantity-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.quantity-warning {
+    color: #dc2626;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+    align-items: center;
+    gap: 4px;
+}
+
+.quantity-warning i {
+    font-size: 11px;
+}
+
+.quantity-warning.show {
+    display: flex;
+}
+
+/* Hide floating chat button on product detail page (we have inline button) */
+/* Only hide chat buttons that are NOT in button-row-top */
+.product-detail-page .chat-btn:not(.button-row-top .chat-btn) {
+    display: none !important;
+}
+
+.product-detail-page .button-row-top .chat-btn {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Ensure floating button from footer doesn't interfere */
+body.product-detail-page > .chat-btn,
+body.product-detail-page footer .chat-btn,
+body.product-detail-page .chat-btn[style*="position: fixed"] {
+    display: none !important;
+}
+
+/* Force remove any inline styles on chat button in button row */
+.button-row-top > .chat-btn {
+    position: static !important;
+    bottom: auto !important;
+    right: auto !important;
+    top: auto !important;
+    left: auto !important;
+}
+
+/* Button row untuk Custom dan Add to Cart */
+.button-row-top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Ensure all circle buttons have consistent styling */
+.button-row-top .custom-design-btn,
+.button-row-top .chat-btn,
+.button-row-top .add-to-cart-btn {
+    width: 50px !important;
+    height: 50px !important;
+    min-width: 50px;
+    min-height: 50px;
+    max-width: 50px;
+    max-height: 50px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    padding: 0;
+    margin: 0;
+}
+
+/* Tombol Custom Design */
+.custom-design-btn {
+    flex: 0 0 auto;
+    border: none;
+    border-radius: 50%;
+    background: #000000;
+    color: #ffffff;
+    padding: 0;
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+.custom-design-btn:hover:not(:disabled) {
+    background: #1f2937;
+    transform: scale(1.05);
+}
+
+.custom-design-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #6b7280;
+}
+
+.add-to-cart-btn {
+    flex: 0 0 auto;
+    border: none;
+    border-radius: 50%;
+    background: #000000;
+    color: #ffffff;
+    padding: 0;
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-to-cart-btn:hover:not(:disabled) {
+    background: #1f2937;
+    transform: scale(1.05);
+}
+
+.add-to-cart-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #6b7280;
+}
+
+/* Chat button - same style as custom design button */
+.button-row-top .chat-btn,
+.product-detail-page .button-row-top .chat-btn,
+.chat-btn {
+    flex: 0 0 auto !important;
+    border: none !important;
+    border-radius: 50% !important;
+    background: #000000 !important;
+    color: #ffffff !important;
+    padding: 0 !important;
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 18px !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: static !important;
+    z-index: 1;
+    margin: 0 !important;
+    bottom: auto !important;
+    right: auto !important;
+    box-shadow: none !important;
+}
+
+.button-row-top .chat-btn:hover:not(:disabled),
+.product-detail-page .button-row-top .chat-btn:hover:not(:disabled) {
+    background: #1f2937 !important;
+    transform: scale(1.05);
+}
+
+.button-row-top .chat-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #6b7280 !important;
+}
+
+/* Tombol Buy Now (Beli Sekarang) */
+.buy-now-btn {
+    flex: 1 1 auto;
+    border: none;
+    border-radius: 999px;
+    background: #000000;
+    color: #ffffff;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    min-height: 50px;
+    max-width: 200px;
+}
+
+.buy-now-btn:hover:not(:disabled) {
+    background: #1f2937;
+    transform: scale(1.02);
+}
+
+.buy-now-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #6b7280;
+}
+
+.product-meta {
+    display: grid;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.meta-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #6b7280;
+    padding: 4px 0;
+}
+
+.meta-label {
+    font-weight: 500;
+}
+
+.meta-value {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.product-details {
+    display: grid;
+    gap: 24px;
+}
+
+.tab-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 80px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+}
+
+.tab-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: #6b7280;
+    padding: 16px 0;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    text-decoration: none;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.tab-button:hover {
+    color: #1a2847;
+}
+
+.tab-button.active {
+    color: #1f2937;
+    border-bottom-color: #1f2937;
+}
+
+.tab-panels {
+    background: #fafafa;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 36px;
+}
+
+.tab-panel {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-panel.active {
+    display: grid;
+    gap: 28px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.detail-block {
+    display: grid;
+    gap: 12px;
+}
+
+.detail-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.detail-text {
+    font-size: 15px;
+    color: #6b7280;
+    line-height: 1.8;
+}
+
+.detail-list {
+    list-style: disc inside;
+    font-size: 15px;
+    color: #6b7280;
+    line-height: 1.8;
+    display: grid;
+    gap: 8px;
+}
+
+.recommendations {
+    margin-top: 48px;
+    padding: 40px 32px 48px;
+    background: #1a2847;
+    border-radius: 20px;
+}
+
+.recommendations-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: -0.3px;
+    margin-bottom: 32px;
+}
+
+.recommendation-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.recommendation-card {
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
+    height: 100%;
+}
+
+/* No hover effect on card */
+
+.recommendation-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.recommendation-image {
+    position: relative;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 180px;
+    padding: 16px;
+    overflow: hidden;
+}
+
+.recommendation-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+/* Only image hover effect */
+.recommendation-card:hover .recommendation-image img {
+    transform: scale(1.05);
+}
+
+/* Badge CUSTOM di recommendation cards */
+.product-ribbon {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: linear-gradient(135deg, #f97316, #fb923c);
+    color: #ffffff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 6px rgba(249, 115, 22, 0.3);
+    z-index: 2;
+}
+
+.product-ribbon.small {
+    padding: 4px 8px;
+    font-size: 9px;
+    top: 8px;
+    left: 8px;
+}
+
+.recommendation-info {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.recommendation-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333333;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    min-height: 40px;
+}
+
+.recommendation-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fbbf24;
+    margin-top: auto;
+}
+
+/* Product Actions di recommendation cards */
+.product-actions {
+    display: flex;
+    gap: 6px;
+    padding: 0 12px 12px 12px;
+}
+
+.action-btn {
+    flex: 1;
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+}
+
+.action-chat {
+    background: #fafafa;
+    color: #1f2937;
+    border: 1px solid #e5e7eb;
+}
+
+.action-chat:hover {
+    background: #1a2847;
+    color: #ffffff;
+    border-color: #1a2847;
+}
+
+.action-cart {
+    background: #1a2847;
+    color: #ffffff;
+}
+
+.action-cart:hover {
+    background: #1f2937;
+    transform: scale(1.05);
+}
+
+/* Responsive Styles */
+@media (min-width: 1400px) {
+    .recommendation-grid {
+        max-width: 1400px;
+        gap: 16px;
+    }
+
+    .recommendation-image {
+        height: 180px;
+        padding: 12px;
+    }
+
+    .recommendation-info {
+        padding: 12px 14px 14px;
+    }
+}
+
+@media (max-width: 1280px) {
+    .product-page {
+        padding: 24px;
+    }
+
+    .product-hero {
+        gap: 32px;
+    }
+
+    .recommendation-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+    }
+}
+
+@media (max-width: 960px) {
+    .product-hero {
+        flex-direction: column;
+    }
+
+    .product-gallery {
+        flex-direction: column;
+    }
+
+    .thumbnail-list {
+        flex-direction: row;
+        order: 2;
+        overflow-x: auto;
+        padding-bottom: 8px;
+    }
+
+    .thumbnail {
+        flex: 0 0 auto;
+    }
+
+    .main-image {
+        order: 1;
+        min-height: 420px;
+    }
+
+    .purchase-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .button-row-top {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .buy-now-btn {
+        max-width: none;
+        width: 100%;
+    }
+
+    .custom-design-btn,
+    .button-row-top .chat-btn,
+    .add-to-cart-btn {
+        width: 100%;
+        border-radius: 12px;
+        height: 50px;
+        font-size: 16px;
+    }
+
+    .button-row-top .chat-btn,
+    .custom-design-btn,
+    .add-to-cart-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .button-row-top .chat-btn::before {
+        content: 'Chat';
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .custom-design-btn::before {
+        content: 'Custom Design';
+        font-size: 14px;
+        font-weight: 500;
+        margin-left: 8px;
+    }
+
+    .add-to-cart-btn::before {
+        content: 'Keranjang';
+        font-size: 14px;
+        font-weight: 500;
+        margin-left: 8px;
+    }
+
+    .quantity-selector {
+        width: 100%;
+        justify-content: space-between;
+        padding: 8px 16px;
+        background: #f9fafb;
+        border-radius: 12px;
+    }
+
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+
+    .quantity-value {
+        font-size: 18px;
+        min-width: 60px;
+    }
+
+    .recommendation-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .breadcrumb-inner {
+        padding: 8px 16px;
+    }
+
+    .product-page {
+        margin: 12px 16px 60px;
+        padding: 16px;
+    }
+
+    .product-content {
+        gap: 24px;
+    }
+
+    .product-title {
+        font-size: 24px;
+        line-height: 1.3;
+    }
+
+    .product-price {
+        font-size: 22px;
+    }
+
+    .product-stock {
+        font-size: 14px;
+    }
+
+    .tab-controls {
+        gap: 24px;
+        font-size: 14px;
+    }
+
+    .recommendation-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    /* Mobile specific options styling */
+    .options-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .option-group {
+        width: 100%;
+    }
+
+    .option-label {
+        font-size: 14px;
+    }
+
+    .color-options {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .color-swatch {
+        width: 36px;
+        height: 36px;
+    }
+
+    .size-options {
+        gap: 8px;
+    }
+
+    .size-option {
+        min-width: 60px;
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+
+    /* Mobile specific button adjustments */
+    .button-row-top {
+        gap: 10px;
+    }
+
+    .buy-now-btn {
+        padding: 14px 20px;
+        font-size: 15px;
+        order: -1; /* Put buy now button at top */
+    }
+
+    .custom-design-btn,
+    .button-row-top .chat-btn,
+    .add-to-cart-btn {
+        height: 48px;
+    }
+
+    /* Ensure quantity selector is properly sized */
+    .quantity-selector {
+        margin-bottom: 12px;
+        order: -2; /* Put quantity at very top */
+    }
+
+    .tab-panels {
+        padding: 28px;
+    }
+
+    .recommendations {
+        padding: 48px 24px 56px;
+    }
+
+    .recommendation-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .product-actions {
+        gap: 6px;
+    }
+
+    .action-btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+}
+
+/* Extra small devices (phones in portrait, less than 480px) */
+@media (max-width: 480px) {
+    .product-page {
+        margin: 8px 12px 60px;
+        padding: 12px;
+    }
+
+    .product-title {
+        font-size: 20px;
+    }
+
+    .product-price {
+        font-size: 20px;
+    }
+
+    .main-image {
+        min-height: 320px;
+    }
+
+    .thumbnail {
+        width: 60px;
+        height: 60px;
+    }
+
+    /* Button text labels for extra small screens */
+    .button-row-top .chat-btn::before {
+        content: 'Chat Kami';
+    }
+
+    .custom-design-btn::before {
+        content: 'Custom';
+        margin-left: 6px;
+    }
+
+    .add-to-cart-btn::before {
+        content: 'Keranjang';
+        margin-left: 6px;
+    }
+
+    /* Even more compact buttons */
+    .custom-design-btn,
+    .button-row-top .chat-btn,
+    .add-to-cart-btn {
+        height: 46px;
+        font-size: 15px;
+    }
+
+    .buy-now-btn {
+        padding: 12px 16px;
+        font-size: 14px;
+        height: 46px;
+    }
+
+    .quantity-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+
+    .color-swatch {
+        width: 32px;
+        height: 32px;
+    }
+
+    .size-option {
+        min-width: 54px;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+}

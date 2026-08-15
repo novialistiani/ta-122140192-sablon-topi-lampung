@@ -1,0 +1,428 @@
+/* =================================================================
+   ORDER LIST PAGE STYLES
+   File: resources/css/admin/order-list.css
+   ================================================================= */
+
+/* Variabel Global (sesuaikan dengan tema Anda) */
+:root {
+    --primary-color: #2563eb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --white: #ffffff;
+    --red-500: #ef4444;
+    --orange-500: #f97316;
+    --green-500: #10B981; /* Sesuai tombol export */
+    --border-radius: 8px;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+}
+
+/* Kontainer Utama */
+.order-list-container {
+    padding: 24px;
+    font-family: 'Inter', sans-serif; /* Ganti jika font berbeda */
+}
+
+/* Header Halaman */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.page-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gray-800);
+}
+
+.date-range-display {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    background-color: var(--white);
+    color: var(--gray-700);
+    font-size: 0.9rem;
+}
+
+.date-range-display i {
+    margin-right: 8px;
+    color: var(--gray-500);
+}
+
+/* Date Range Filter */
+.date-range-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--white);
+    padding: 8px 12px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--gray-200);
+}
+
+.date-input-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.date-label {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.date-input {
+    padding: 6px 10px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    background-color: var(--white);
+    font-size: 0.9rem;
+    color: var(--gray-700);
+    min-width: 140px;
+}
+
+.date-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.date-separator {
+    color: var(--gray-400);
+    font-weight: 500;
+}
+
+/* Bagian Filter & Kontrol */
+.controls-section {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 24px;
+    background-color: var(--gray-100); /* Sesuai gambar */
+    padding: 16px;
+    border-radius: var(--border-radius);
+}
+
+.search-box {
+    position: relative;
+    flex-grow: 1;
+}
+
+.search-icon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: var(--gray-400);
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 10px 10px 36px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    background-color: var(--white);
+}
+
+.filter-select {
+    padding: 10px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    background-color: var(--white);
+    color: var(--gray-700);
+    min-width: 150px;
+}
+
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-secondary {
+    background-color: var(--gray-500);
+    color: var(--white);
+}
+.btn-secondary:hover {
+    background-color: var(--gray-600);
+}
+
+.btn-success {
+    background-color: var(--green-500);
+    color: var(--white);
+}
+.btn-success:hover {
+    background-color: #059669;
+}
+
+/* Styling Kartu */
+.card {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 16px 24px;
+    background-color: #f7f7f7; /* Sesuai gambar */
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 0;
+}
+
+.card-body { padding: 0; }
+.table-responsive { width: 100%; overflow-x: auto; }
+
+/* Tabel Pesanan */
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table th, .orders-table td {
+    padding: 16px 24px;
+    text-align: left;
+    border-bottom: 1px solid var(--gray-200);
+    white-space: nowrap;
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+.orders-table thead th {
+    background-color: var(--white);
+    color: var(--gray-500);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.orders-table tbody tr:last-child td { border-bottom: none; }
+.orders-table tbody tr:hover { background-color: var(--gray-100); }
+.checkbox-col { width: 1%; }
+
+/* Styling Status */
+.status {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-pengiriman {
+    color: var(--orange-500);
+    background-color: #fff7ed;
+}
+.status-pengiriman::before { background-color: var(--orange-500); }
+
+.status-dibatalkan {
+    color: var(--red-500);
+    background-color: #fee2e2;
+}
+.status-dibatalkan::before { background-color: var(--red-500); }
+
+.detail-icon { color: var(--gray-400); font-size: 1.2rem; }
+
+/* Dropdown Tindakan */
+.actions-col { text-align: right; }
+.action-dropdown { position: relative; display: inline-block; }
+.action-btn { background: none; border: none; cursor: pointer; padding: 8px; color: var(--gray-500); border-radius: 50%; }
+.action-btn:hover { background-color: var(--gray-200); }
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: var(--white);
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 10;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+/* Tampilkan dropdown saat parent di-hover */
+.action-dropdown:hover .dropdown-content { display: block; }
+.dropdown-content a { color: var(--gray-700); padding: 12px 16px; text-decoration: none; display: block; font-size: 0.9rem; }
+.dropdown-content a:hover { background-color: var(--gray-100); }
+
+/* Submenu Tindakan (Ditolak) */
+.dropdown-submenu { position: relative; }
+.submenu-trigger { display: flex; justify-content: space-between; align-items: center; }
+.submenu-content {
+    display: none;
+    position: absolute;
+    right: 100%; /* Muncul di sebelah kiri */
+    top: -8px; /* Sesuaikan posisi vertikal */
+    background-color: #333; /* Background hitam sesuai gambar */
+    min-width: 240px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 11;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+.dropdown-submenu:hover > .submenu-content { display: block; }
+
+.submenu-header { color: white; padding: 12px 16px; background-color: #222; font-weight: bold; pointer-events: none; }
+.submenu-content a { color: white; padding: 10px 16px; }
+.submenu-content a:hover { background-color: #444; }
+
+
+/* Pagination */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-top: 1px solid var(--gray-200);
+    font-size: 0.9rem;
+    color: var(--gray-500);
+}
+.pagination-controls { display: flex; align-items: center; gap: 8px; }
+.pagination-controls select {
+    padding: 4px 8px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    background-color: var(--white);
+}
+
+/* =================================================================
+   MODAL STYLES (Tolak Pesanan)
+   ================================================================= */
+
+.modal-overlay {
+    display: none; /* Sembunyikan by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Overlay gelap */
+    z-index: 100;
+}
+
+.modal {
+    display: none; /* Sembunyikan by default */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    width: 500px;
+    max-width: 90%;
+    z-index: 101;
+    overflow: hidden;
+}
+
+.modal-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 0;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-label {
+    display: block;
+    font-weight: 600;
+    color: var(--red-500); /* Merah sesuai gambar */
+    margin-bottom: 8px;
+}
+
+.modal-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: vertical;
+}
+
+.modal-textarea::placeholder {
+    color: var(--gray-400);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    background-color: var(--gray-100);
+    border-top: 1px solid var(--gray-200);
+}
+
+/* Button Styles (Reuse from existing styles if possible) */
+.btn-subtle {
+    background-color: var(--white);
+    color: var(--gray-700);
+    border: 1px solid var(--gray-200);
+}
+.btn-subtle:hover {
+    background-color: var(--gray-100);
+}
+
+.btn-warning {
+    background-color: #f59e0b; /* Kuning/Oranye */
+    color: var(--white);
+}
+.btn-warning:hover {
+    background-color: #d97706;
+}
+
+/* Class untuk menampilkan modal (via JavaScript) */
+.modal-overlay.active,
+.modal.active {
+    display: block;
+}

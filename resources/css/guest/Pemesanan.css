@@ -1,0 +1,425 @@
+/* ============================================
+   CHECKOUT PAGE STYLES
+   ============================================ */
+
+/* Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #e5e7eb;
+    color: #1f2937;
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* ============================================
+   TOP NAVIGATION
+   ============================================ */
+.top-nav {
+    background-color: #fbbf24;
+    padding: 12px 0;
+}
+
+.nav-links {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 32px;
+}
+
+.nav-link {
+    color: #1f2937;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-link:hover {
+    color: #000000;
+}
+
+.user-link .material-icons {
+    font-size: 20px;
+}
+
+/* ============================================
+   CHECKOUT HEADER
+   ============================================ */
+.checkout-header {
+    background-color: #0f172a;
+    padding: 24px 0;
+    color: #ffffff;
+}
+
+.checkout-header .container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.back-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.back-button .material-icons {
+    font-size: 28px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+.checkout-main {
+    padding: 48px 0 80px;
+}
+
+/* ============================================
+   PROGRESS STEPS
+   ============================================ */
+.steps-container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 800px;
+    margin: 40px auto 60px;
+    padding: 0 20px;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.step-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.step-icon.completed {
+    background-color: #ccc;
+}
+
+.step-icon.active {
+    background-color: #0f1e3d;
+}
+
+.step-text {
+    text-align: left;
+}
+
+.step-number {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 2px;
+}
+
+.step.completed .step-number,
+.step.active .step-number {
+    color: #666;
+}
+
+.step-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ccc;
+}
+
+.step.completed .step-label,
+.step.active .step-label {
+    color: #0f1e3d;
+}
+
+/* ============================================
+   PAYMENT SECTION
+   ============================================ */
+.payment-section {
+    max-width: 1100px;
+    margin: 0 auto 48px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 24px;
+}
+
+.payment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ============================================
+   PAYMENT OPTION
+   ============================================ */
+.payment-option {
+    background-color: #0f172a;
+    border-radius: 12px;
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    border: 3px solid transparent;
+}
+
+.payment-option:hover {
+    background-color: #1e293b;
+}
+
+.payment-option-selected {
+    border-color: #fbbf24;
+}
+
+.payment-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.option-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.option-icon {
+    color: #ffffff;
+    font-size: 24px;
+}
+
+.option-text {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.checkmark {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #6b7280;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.payment-option-selected .checkmark {
+    background-color: #ffffff;
+    border-color: #ffffff;
+}
+
+.payment-option-selected .checkmark::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #0f172a;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* ============================================
+   ACTION BUTTONS
+   ============================================ */
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.btn {
+    padding: 14px 48px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary {
+    background-color: #ffffff;
+    color: #1f2937;
+    border: 2px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.btn-primary {
+    background-color: #0f172a;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #1e293b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 1024px) {
+    .progress-steps {
+        gap: 32px;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        gap: 16px;
+        font-size: 13px;
+    }
+
+    .checkout-header .container {
+        gap: 12px;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+
+    .progress-steps {
+        gap: 16px;
+        margin-bottom: 48px;
+    }
+
+    .step {
+        max-width: 120px;
+    }
+
+    .step-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .step-icon .material-icons {
+        font-size: 24px;
+    }
+
+    .step-label {
+        font-size: 11px;
+    }
+
+    .step-title {
+        font-size: 14px;
+    }
+
+    .section-title {
+        font-size: 18px;
+    }
+
+    .payment-option {
+        padding: 20px 24px;
+    }
+
+    .action-buttons {
+        flex-direction: column-reverse;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 14px 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 16px;
+    }
+
+    .nav-links {
+        gap: 12px;
+    }
+
+    .nav-link {
+        font-size: 12px;
+    }
+
+    .progress-steps {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .step {
+        flex-direction: row;
+        max-width: 100%;
+        text-align: left;
+    }
+
+    .step-info {
+        align-items: flex-start;
+    }
+
+    .payment-option {
+        padding: 18px 20px;
+    }
+
+    .option-icon {
+        font-size: 20px;
+    }
+
+    .option-text {
+        font-size: 15px;
+    }
+}
+
+/* ============================================
+   MATERIAL ICONS
+   ============================================ */
+.material-icons {
+    vertical-align: middle;
+    user-select: none;
+}

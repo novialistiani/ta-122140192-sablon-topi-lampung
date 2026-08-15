@@ -1,0 +1,247 @@
+/* Product Card Component Styles - Minimalist Design */
+
+.product-card {
+    position: relative;
+    background: #ffffff;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+    transition: all 0.25s ease;
+}
+
+.product-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+/* Product Image Container */
+.product-image-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #f8f8f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    overflow: hidden;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    max-width: 100%;
+    max-height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.03);
+}
+
+.no-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #d0d0d0;
+}
+
+.no-image-placeholder i {
+    font-size: 48px;
+    color: #e0e0e0;
+}
+
+/* CUSTOM Ribbon */
+.product-ribbon {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #ff6b35;
+    color: #ffffff;
+    padding: 5px 12px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 4px;
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* Carousel Dots */
+.carousel-dots {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 5px;
+    z-index: 10;
+    padding: 4px 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+    pointer-events: auto;
+}
+
+.carousel-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.carousel-dot.active {
+    width: 16px;
+    border-radius: 3px;
+    background: #ffffff;
+}
+
+.carousel-dot:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* Product Info */
+.product-info {
+    padding: 12px 14px;
+    padding-bottom: 48px;
+    position: relative;
+    background: #ffffff;
+    flex: 1;
+}
+
+.product-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: #333333;
+    margin-bottom: 6px;
+    line-height: 1.4;
+    min-height: auto;
+    letter-spacing: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e85d04;
+    margin: 0;
+    letter-spacing: -0.3px;
+}
+
+/* Action Buttons */
+.product-actions {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+    z-index: 15;
+    pointer-events: auto;
+}
+
+.action-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    padding: 0;
+    border: 1px solid #e8e8e8;
+    background: #ffffff;
+    color: #666666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 11px;
+    pointer-events: auto;
+}
+
+.action-btn:hover {
+    background: #f5f5f5;
+    border-color: #d0d0d0;
+    color: #333333;
+}
+
+.action-btn:active {
+    transform: scale(0.95);
+}
+
+.action-btn i {
+    pointer-events: none;
+}
+
+/* Disabled state for admin users */
+.action-btn.disabled,
+.action-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+    background: #f0f0f0;
+    border-color: #e0e0e0;
+    color: #999999;
+}
+
+.action-btn.disabled:hover,
+.action-btn:disabled:hover {
+    background: #f0f0f0;
+    border-color: #e0e0e0;
+    transform: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .product-card {
+        border-radius: 10px;
+    }
+    
+    .product-image-container {
+        padding: 12px;
+    }
+    
+    .product-info {
+        padding: 12px 14px;
+        padding-bottom: 52px;
+    }
+    
+    .product-title {
+        font-size: 12px;
+    }
+    
+    .product-price {
+        font-size: 14px;
+    }
+    
+    .action-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 11px;
+    }
+    
+    .product-actions {
+        bottom: 10px;
+        right: 10px;
+        gap: 5px;
+    }
+    
+    .product-ribbon {
+        top: 8px;
+        left: 8px;
+        padding: 4px 10px;
+        font-size: 9px;
+    }
+}

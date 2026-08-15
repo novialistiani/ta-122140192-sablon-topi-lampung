@@ -1,0 +1,24 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Only rewrite non-existent files and directories that are NOT real files/folders
+    # This allows /images/, /build/, and /storage/ to work normally
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    
+    # Only rewrite if requesting a route-like path (not static assets)
+    # Skip: .html, .css, .js, .json, .xml, .txt, .ico, .png, .jpg, .gif, .svg, .woff, .woff2, .ttf, .eot
+    RewriteCond %{REQUEST_URI} !\.(?:html|css|js|json|xml|txt|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$
+    
+    # Rewrite to parent index.php for actual route requests
+    RewriteRule ^ ../index.php [L]
+</IfModule>
+
