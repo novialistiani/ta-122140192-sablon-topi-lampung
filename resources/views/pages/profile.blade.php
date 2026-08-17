@@ -25,143 +25,140 @@
 
             <div class="content-wrapper">
                 <!-- 2 Column Layout -->
-                <div class="profile-layout">
-                    <!-- Left Column -->
-                    <div class="profile-left-column">
-                        <!-- Profile Photo -->
-                        <div class="profile-card">
-                            <h3 class="card-title">Foto Profil</h3>
-                            <div class="photo-upload-section">
-                                <div class="photo-preview-large">
-                                    <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : '' }}" 
-                                         alt="Avatar" 
+                <div class="max-w-3xl mx-auto space-y-6">
+                    <!-- Card 1: Profil Header (Avatar + Info Dasar digabung) -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                        <div class="flex items-center gap-6 mb-6">
+                            <div class="relative flex-shrink-0">
+                                <div class="w-24 h-24 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center">
+                                    <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : '' }}"
+                                         alt="Avatar"
                                          id="avatar-preview"
+                                         class="w-full h-full object-cover"
                                          style="{{ $user->avatar ? '' : 'display: none;' }}">
-                                    <div class="no-photo-large" id="no-avatar-placeholder" style="{{ $user->avatar ? 'display: none;' : '' }}">
-                                        <i class="fas fa-user"></i>
-                                    </div>
+                                    <i class="fas fa-user text-3xl text-slate-400" id="no-avatar-placeholder"
+                                       style="{{ $user->avatar ? 'display: none;' : '' }}"></i>
                                 </div>
-                                <div class="photo-actions-centered">
-                                    <label for="avatar-input" class="btn-upload">
-                                        <i class="fas fa-camera"></i> Upload Foto
+                            </div>
+                            <div class="flex-1">
+                                <h2 class="text-lg font-bold text-slate-900">{{ $user->name }}</h2>
+                                <p class="text-sm text-slate-500">{{ $user->email }}</p>
+                                <div class="flex gap-2 mt-3">
+                                    <label for="avatar-input" class="cursor-pointer px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium rounded-lg">
+                                        <i class="fas fa-camera mr-1"></i> Ganti Foto
                                     </label>
                                     <input type="file" id="avatar-input" accept="image/*" style="display: none;">
-                                    <button type="button" id="delete-avatar-btn" class="btn-delete" style="{{ $user->avatar ? '' : 'display: none;' }}">
-                                        <i class="fas fa-trash"></i> Hapus Foto
+                                    <button type="button" id="delete-avatar-btn" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg" style="{{ $user->avatar ? '' : 'display: none;' }}">
+                                        <i class="fas fa-trash mr-1"></i> Hapus
                                     </button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Personal Info -->
-                        <div class="profile-card">
-                            <h3 class="card-title">Informasi Dasar</h3>
-                            <form id="profile-form">
-                                @csrf
-                                
-                                <div class="form-group">
-                                    <label for="name">Nama Lengkap *</label>
-                                    <input type="text" id="name" name="name" value="{{ $user->name }}" required>
-                                </div>
+                        <hr class="border-slate-100 mb-6">
 
-                                <div class="form-group">
-                                    <label for="email">Email *</label>
-                                    <input type="email" id="email" name="email" value="{{ $user->email }}" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="phone">No. Telepon</label>
-                                    <input type="tel" id="phone" name="phone" value="{{ $user->phone }}" placeholder="081234567890">
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Change Password -->
-                        <div class="profile-card">
-                            <h3 class="card-title">Keamanan Akun</h3>
-                            <form id="password-form">
-                                @csrf
-                                
-                                <div class="form-group">
-                                    <label for="current_password">Password Saat Ini *</label>
-                                    <input type="password" id="current_password" name="current_password" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="password">Password Baru *</label>
-                                    <input type="password" id="password" name="password" required minlength="8">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="password_confirmation">Konfirmasi Password Baru *</label>
-                                    <input type="password" id="password_confirmation" name="password_confirmation" required minlength="8">
-                                </div>
-
-                                <div class="form-actions">
-                                    <button type="submit" class="btn-save btn-full">
-                                        <i class="fas fa-key"></i> Ubah Password
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                        <form id="profile-form" class="space-y-4">
+                            @csrf
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap *</label>
+                                <input type="text" id="name" name="name" value="{{ $user->name }}" required
+                                       class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email *</label>
+                                <input type="email" id="email" name="email" value="{{ $user->email }}" required
+                                       class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-slate-700 mb-1">No. Telepon</label>
+                                <input type="tel" id="phone" name="phone" value="{{ $user->phone }}" placeholder="081234567890"
+                                       class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
+                            </div>
+                            <button type="submit" class="px-5 py-2.5 bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-medium rounded-lg text-sm">
+                                Simpan Perubahan
+                            </button>
+                        </form>
                     </div>
 
-                    <!-- Right Column -->
-                    <div class="profile-right-column">
-                        <!-- Address Management -->
-                        <div class="profile-card">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="card-title mb-0">Alamat Pengiriman</h3>
-                                <button type="button" onclick="showAddAddressModal()" class="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-medium rounded-lg transition text-sm">
-                                    <i class="fas fa-plus mr-2"></i>Tambah Alamat
-                                </button>
-                            </div>
+                    <!-- Card 2: Keamanan Akun (collapsible) -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                        <button type="button" id="toggle-password-section" class="w-full flex items-center justify-between text-left">
+                            <h3 class="text-base font-bold text-slate-900">
+                                <i class="fas fa-lock mr-2 text-slate-400"></i>Ubah Password
+                            </h3>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform" id="password-chevron"></i>
+                        </button>
 
-                            @if($user->addresses && $user->addresses->count() > 0)
-                                <div class="space-y-3" id="addresses-list">
-                                    @foreach($user->addresses as $address)
-                                    <div class="border border-slate-200 rounded-lg p-4" data-address-id="{{ $address->id }}">
-                                        <div class="flex justify-between items-start">
-                                            <div class="flex-1">
-                                                <div class="flex items-center gap-2 mb-2">
-                                                    <p class="font-semibold text-slate-900">{{ $address->label ?? $address->recipient_name }}</p>
-                                                    @if($address->is_primary)
-                                                    <span class="px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">Utama</span>
-                                                    @endif
-                                                </div>
-                                                <p class="text-sm text-slate-600">{{ $address->recipient_name }}</p>
-                                                <p class="text-sm text-slate-600">{{ $address->phone }}</p>
-                                                <p class="text-sm text-slate-600 mt-1">{{ $address->address }}, {{ $address->city }}, {{ $address->province }} {{ $address->postal_code }}</p>
-                                            </div>
-                                            <div class="flex gap-2">
-                                                @if(!$address->is_primary)
-                                                <button onclick="setPrimaryAddress({{ $address->id }})" class="text-xs text-blue-600 hover:text-blue-700 font-medium">
-                                                    Jadikan Utama
-                                                </button>
-                                                @endif
-                                                <button onclick="editAddress({{ $address->id }})" class="text-sm text-blue-600 hover:text-blue-700">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button onclick="deleteAddress({{ $address->id }})" class="text-sm text-red-600 hover:text-red-700">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
-                            @else
-                                <div class="text-center py-8">
-                                    <i class="fas fa-map-marker-alt text-4xl text-gray-300 mb-3"></i>
-                                    <p class="text-gray-600">Belum ada alamat pengiriman</p>
-                                    <button type="button" onclick="showAddAddressModal()" class="mt-4 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-medium rounded-lg transition text-sm">
-                                        <i class="fas fa-plus mr-2"></i>Tambah Alamat
-                                    </button>
-                                </div>
-                            @endif
-                        </div>
+                        <form id="password-form" class="space-y-4 mt-4 hidden">
+                            @csrf
+                            <div>
+                                <label for="current_password" class="block text-sm font-medium text-slate-700 mb-1">Password Saat Ini *</label>
+                                <input type="password" id="current_password" name="current_password" required
+                                       class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Password Baru *</label>
+                                <input type="password" id="password" name="password" required minlength="8"
+                                       class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="password_confirmation" class="block text-sm font-medium text-slate-700 mb-1">Konfirmasi Password Baru *</label>
+                                <input type="password" id="password_confirmation" name="password_confirmation" required minlength="8"
+                                       class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
+                            </div>
+                            <button type="submit" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-lg text-sm">
+                                <i class="fas fa-key mr-1"></i> Ubah Password
+                            </button>
+                        </form>
                     </div>
                 </div>
+
+                <script>
+                document.getElementById('toggle-password-section').addEventListener('click', function() {
+                    document.getElementById('password-form').classList.toggle('hidden');
+                    document.getElementById('password-chevron').classList.toggle('rotate-180');
+                });
+                document.getElementById('password-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const currentPassword = document.getElementById('current_password').value;
+    const password = document.getElementById('password').value;
+    const passwordConfirmation = document.getElementById('password_confirmation').value;
+
+    if (password !== passwordConfirmation) {
+        alert('Konfirmasi password baru tidak cocok');
+        return;
+    }
+
+    try {
+        const response = await fetch('{{ route("profile.update-password") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                current_password: currentPassword,
+                password: password,
+                password_confirmation: passwordConfirmation
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('Password berhasil diubah!');
+            this.reset();
+        } else {
+            alert(data.message || 'Gagal mengubah password. Periksa password saat ini Anda.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat mengubah password');
+    }
+});
+                </script>
             </div>
         </div>
     </div>
