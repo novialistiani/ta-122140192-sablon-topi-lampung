@@ -7,7 +7,7 @@
     <title>{{ $categoryName }} - LGI Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    @vite(['resources/css/guest/catalog.css', 'resources/css/guest/catalog-inline.css', 'resources/css/components/footer.css', 'resources/css/components/product-card.css', 'resources/js/guest/catalog.js', 'resources/js/guest/product-card-carousel.js'])
+    @vite(['resources/css/guest/catalog.css', 'resources/css/guest/catalog-inline.css', 'resources/css/components/footer.css', 'resources/css/components/product-card.css', 'resources/js/guest/product-card-carousel.js'])
 </head>
 <body>
     @php
@@ -41,10 +41,6 @@
                         <!-- Quick Filters -->
                         <div class="filter-section">
                             <div class="filter-checkbox-list">
-                                <label class="filter-checkbox">
-                                    <input type="checkbox" name="promo" id="promo-filter" {{ $isPromo ? 'checked' : '' }}>
-                                    <span>Dengan diskon</span>
-                                </label>
                                 <label class="filter-checkbox">
                                     <input type="checkbox" name="ready" id="ready-filter" {{ $isReady ? 'checked' : '' }}>
                                     <span>Ready stok</span>
@@ -347,9 +343,9 @@
                 if (selectedFilters.ready) params.append('ready', '1');
                 if (selectedFilters.custom) params.append('custom', '1');
 
-                if (selectedFilters.categories.length > 0) {
-                    params.append('categories', selectedFilters.categories.join(','));
-                }
+                if (selectedFilters.subcategories.length > 0) {
+    params.append('subcategories', selectedFilters.subcategories.join(','));
+}
 
                 if (selectedFilters.min_price) {
                     params.append('min_price', selectedFilters.min_price);

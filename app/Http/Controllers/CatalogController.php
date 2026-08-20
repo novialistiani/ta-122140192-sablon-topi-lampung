@@ -192,32 +192,36 @@ class CatalogController extends Controller
     }
 
     private function getAvailableColors($category)
-    {
-        $products = Product::active()->category($category)->get();
-        $colors = [];
-        
-        foreach ($products as $product) {
-            if ($product->colors) {
-                $colors = array_merge($colors, $product->colors);
-            }
+{
+    $products = Product::active()->category($category)->with('variants')->get();
+    $colors = [];
+
+    foreach ($products as $product) {
+        if ($product->variants && $product->variants->count() > 0) {
+            $colors = array_merge($colors, $product->variants->pluck('color')->filter()->toArray());
+        } elseif ($product->colors) {
+            $colors = array_merge($colors, $product->colors);
         }
-        
-        return array_unique($colors);
     }
 
-    private function getAvailableSizes($category)
-    {
-        $products = Product::active()->category($category)->get();
-        $sizes = [];
-        
-        foreach ($products as $product) {
-            if ($product->sizes) {
-                $sizes = array_merge($sizes, $product->sizes);
-            }
+    return array_values(array_unique($colors));
+}
+
+private function getAvailableSizes($category)
+{
+    $products = Product::active()->category($category)->with('variants')->get();
+    $sizes = [];
+
+    foreach ($products as $product) {
+        if ($product->variants && $product->variants->count() > 0) {
+            $sizes = array_merge($sizes, $product->variants->pluck('size')->filter()->toArray());
+        } elseif ($product->sizes) {
+            $sizes = array_merge($sizes, $product->sizes);
         }
-        
-        return array_unique($sizes);
     }
+
+    return array_values(array_unique($sizes));
+}
 
     private function getAvailableSubcategories($category)
     {

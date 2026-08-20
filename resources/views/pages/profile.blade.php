@@ -118,6 +118,41 @@
                     document.getElementById('password-form').classList.toggle('hidden');
                     document.getElementById('password-chevron').classList.toggle('rotate-180');
                 });
+                document.getElementById('profile-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+    };
+
+    try {
+        const response = await fetch('{{ route("profile.update") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert(data.message || 'Profil berhasil diperbarui!');
+            if (!data.email_change_pending) {
+                location.reload();
+            }
+        } else {
+            alert(data.message || 'Gagal memperbarui profil');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat memperbarui profil');
+    }
+});
                 document.getElementById('password-form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
