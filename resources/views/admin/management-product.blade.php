@@ -142,7 +142,7 @@
                             <input 
                                 type="text" 
                                 id="modern-product-subcategory-lainnya" 
-                                name="subcategory"
+                                name="subcategory_lainnya"
                                 placeholder="Tambah sub kategori..." 
                                 class="form-input" 
                                 autocomplete="off"

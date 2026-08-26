@@ -120,7 +120,7 @@ class CustomerController extends Controller
         $cart = $request->session()->get('cart', []);
         $items = collect($cart)->map(function ($item) {
             $product = Product::find($item['product_id']);
-            $price = $product ? (float) $product->price : (float) $item['price'];
+            $price = (float) $item['price'];
             
             // Use trait method for image resolution
             $image = $this->resolveItemImage($item, $product);
@@ -828,7 +828,7 @@ class CustomerController extends Controller
                 'product_id' => $item['product_id'],
                 'variant_id' => $item['variant_id'] ?? null,
                 'name' => $product ? $product->name : $item['name'],
-                'price' => (float) ($product ? $product->price : $item['price']),
+                'price' => (float) $item['price'],
                 'quantity' => $item['quantity'],
                 'color' => $item['color'] ?? null,
                 'size' => $item['size'] ?? null,
@@ -920,7 +920,7 @@ class CustomerController extends Controller
                 'product_id' => $item['product_id'],
                 'variant_id' => $item['variant_id'] ?? null,
                 'name' => $product ? $product->name : $item['name'],
-                'price' => (float) ($product ? $product->price : $item['price']),
+                'price' => (float) $item['price'],
                 'quantity' => $item['quantity'],
                 'color' => $item['color'] ?? null,
                 'size' => $item['size'] ?? null,
@@ -1156,14 +1156,18 @@ class CustomerController extends Controller
         ]);
 
         $product = Product::findOrFail($validated['product_id']);
-        
+
         // Check if variant_id is provided
+        $variant = null;
         if (!empty($validated['variant_id'])) {
-            $variant = \App\Models\ProductVariant::find($validated['variant_id']);
-            $availableStock = $variant ? (int) $variant->stock : 0;
-        } else {
-            $availableStock = (int) $product->stock;
-        }
+        $variant = \App\Models\ProductVariant::find($validated['variant_id']);
+        $availableStock = $variant ? (int) $variant->stock : 0;
+     } else {
+        $availableStock = (int) $product->stock;
+}
+
+        // Gunakan harga varian jika tersedia, jika tidak fallback ke harga produk induk
+        $itemPrice = $variant ? (float) $variant->price : (float) $product->price;
         
         // Strict validation: Reject if stock is 0
         if ($availableStock <= 0) {
@@ -1176,25 +1180,26 @@ class CustomerController extends Controller
         $cart = $request->session()->get('cart', []);
 
         if (isset($cart[$key])) {
-            // Check if adding more would exceed stock
-            $newQuantity = $cart[$key]['quantity'] + $quantity;
-            if ($newQuantity > $availableStock) {
-                return back()->with('error', "Maaf, stok tersedia hanya {$availableStock} item. Anda sudah memiliki {$cart[$key]['quantity']} item di keranjang.");
-            }
-            $cart[$key]['quantity'] = min($newQuantity, $availableStock);
-        } else {
-            $cart[$key] = [
-                'key' => $key,
-                'product_id' => $product->id,
-                'variant_id' => $validated['variant_id'] ?? null,
-                'name' => $product->name,
-                'price' => (float) $product->price,
-                'quantity' => $quantity,
-                'color' => $validated['color'] ?? null,
-                'size' => $validated['size'] ?? null,
-                'image' => $product->image,
-            ];
-        }
+    // Check if adding more would exceed stock
+    $newQuantity = $cart[$key]['quantity'] + $quantity;
+    if ($newQuantity > $availableStock) {
+        return back()->with('error', "Maaf, stok tersedia hanya {$availableStock} item. Anda sudah memiliki {$cart[$key]['quantity']} item di keranjang.");
+    }
+    $cart[$key]['quantity'] = min($newQuantity, $availableStock);
+    $cart[$key]['price'] = $itemPrice; // selalu sinkronkan harga terbaru
+} else {
+    $cart[$key] = [
+        'key' => $key,
+        'product_id' => $product->id,
+        'variant_id' => $validated['variant_id'] ?? null,
+        'name' => $product->name,
+        'price' => $itemPrice,
+        'quantity' => $quantity,
+        'color' => $validated['color'] ?? null,
+        'size' => $validated['size'] ?? null,
+        'image' => $variant && $variant->image ? $variant->image : $product->image,
+    ];
+}
 
         $request->session()->put('cart', $cart);
 
@@ -1271,7 +1276,7 @@ class CustomerController extends Controller
                 'product_id' => $item['product_id'],
                 'variant_id' => $item['variant_id'] ?? null,
                 'name' => $product ? $product->name : $item['name'],
-                'price' => (float) ($product ? $product->price : $item['price']),
+                'price' => (float) $item['price'],
                 'quantity' => $item['quantity'],
                 'color' => $item['color'] ?? null,
                 'size' => $item['size'] ?? null,

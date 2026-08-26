@@ -1566,10 +1566,9 @@ header {
 }
 
 .catalog-section .color-options {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     gap: 12px;
-    justify-items: center;
     width: 100%;
 }
 
@@ -1577,15 +1576,16 @@ header {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 2px solid transparent;
+    border: none;
+    outline: none;
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
     padding: 0;
-    background-clip: padding-box;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 
 .catalog-section .color-btn:hover {
@@ -1594,9 +1594,8 @@ header {
 }
 
 .catalog-section .color-btn.active {
-    border-color: transparent;
     transform: scale(1);
-    box-shadow: none;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #000000;
 }
 
 .catalog-section .color-btn.active::after {

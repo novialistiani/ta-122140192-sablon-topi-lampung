@@ -1188,6 +1188,7 @@ class ModernAddProductManager {
             console.log('currentEditId:', window.currentEditId);
             console.log('URL:', url);
             console.log('Method:', window.currentEditId ? 'PUT (via POST)' : 'POST');
+            console.log('SUBCATEGORY VALUE:', formData.get('subcategory'));
 
             if (window.currentEditId) {
                 formData.append('_method', 'PUT');
@@ -1206,6 +1207,7 @@ class ModernAddProductManager {
 
             const data = await response.json();
             console.log('Response:', data);
+            console.log('Response detail:', JSON.stringify(data));
 
             if (data.success) {
                 this.showNotification(
