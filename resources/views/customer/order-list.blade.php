@@ -235,9 +235,9 @@
                                                class="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition whitespace-nowrap">
                                                 <i class="fas fa-eye mr-1"></i> Detail
                                             </a>
-                                            <a href="{{ route('alamat') }}?order_type=custom&order_id={{ $order->id }}" 
-                                               class="px-3 py-1 bg-green-600 text-white text-xs rounded-lg hover:bg-green-700 transition whitespace-nowrap">
-                                                <i class="fas fa-credit-card mr-1"></i> Bayar
+                                            <a href="{{ route('pemesanan') }}?order_type=custom&order_id={{ $order->id }}" 
+                                            class="px-3 py-1 bg-green-600 text-white text-xs rounded-lg hover:bg-green-700 transition whitespace-nowrap">
+                                            <i class="fas fa-credit-card mr-1"></i> Bayar
                                             </a>
                                         @endif
                                     @elseif(in_array($order->status, ['processing', 'completed']))
@@ -339,9 +339,9 @@
                                            class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
                                             <i class="fas fa-eye mr-1"></i> Detail
                                         </a>
-                                        <a href="{{ route('alamat') }}?order_type=regular&order_id={{ $order->id }}" 
-                                           class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition">
-                                            <i class="fas fa-credit-card mr-1"></i> Bayar
+                                        <a href="{{ route('pemesanan') }}?order_type=regular&order_id={{ $order->id }}" 
+                                        class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition">
+                                        <i class="fas fa-credit-card mr-1"></i> Bayar
                                         </a>
                                     @endif
                                 @elseif(in_array($order->status, ['processing', 'completed']))

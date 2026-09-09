@@ -393,29 +393,41 @@ class CustomerController extends Controller
      * Display pemesanan page
      */
     public function pemesanan(Request $request)
-    {
-        // Get selected address from session
-        $selectedAddressId = $request->session()->get('selected_address_id');
-        
-        if (!$selectedAddressId) {
-            return redirect()->route('alamat')->with('error', 'Silakan pilih alamat terlebih dahulu');
-        }
-        
-        $user = auth()->user();
-        $address = \App\Models\CustomerAddress::where('user_id', $user->id)
-            ->where('id', $selectedAddressId)
-            ->first();
-            
-        if (!$address) {
-            return redirect()->route('alamat')->with('error', 'Alamat tidak ditemukan');
-        }
-        
-        // Check if this is for order payment
-        $orderType = $request->session()->get('payment_order_type');
-        $orderId = $request->session()->get('payment_order_id');
-        
-        return view('customer.pemesanan', compact('address', 'orderType', 'orderId'));
+{
+    $request->session()->put('shipping_method', 'pickup');
+
+    $orderType = $request->query('order_type') ?? $request->session()->get('payment_order_type');
+    $orderId = $request->query('order_id') ?? $request->session()->get('payment_order_id');
+
+    if (!$orderType || !$orderId) {
+        return redirect()->route('order-list')->with('error', 'Pesanan tidak ditemukan.');
     }
+
+    $request->session()->put('payment_order_type', $orderType);
+    $request->session()->put('payment_order_id', $orderId);
+
+    if ($orderType === 'custom') {
+        $order = \App\Models\CustomDesignOrder::where('user_id', auth()->id())
+            ->where('id', $orderId)
+            ->where('status', 'approved')
+            ->first();
+        $amount = $order?->total_price;
+    } else {
+        $order = \App\Models\Order::where('user_id', auth()->id())
+            ->where('id', $orderId)
+            ->where('status', 'approved')
+            ->first();
+        $amount = $order?->total;
+    }
+
+    if (!$order) {
+        return redirect()->route('order-list')->with('error', 'Pesanan tidak ditemukan atau belum disetujui');
+    }
+
+    $qris = \App\Models\PaymentSettings::first();
+
+    return view('customer.pemesanan', compact('orderType', 'orderId', 'order', 'amount', 'qris'));
+}
 
     /**
      * Save selected shipping method to session
@@ -847,7 +859,51 @@ class CustomerController extends Controller
         
         return view('customer.pembayaran', compact('address', 'shippingMethod', 'items', 'subtotal', 'activeVA', 'orderType', 'orderId'));
     }
+/**
+ * Submit bukti pembayaran QRIS beserta tanggal pengambilan pesanan di toko
+ */
+public function submitPickupPayment(Request $request)
+{
+    $validated = $request->validate([
+        'order_type' => 'required|in:regular,custom',
+        'order_id' => 'required|integer',
+        'pickup_date' => 'required|date|after_or_equal:today',
+        'payment_proof' => 'required|image|mimes:jpg,jpeg,png|max:5120',
+    ]);
 
+    $user = auth()->user();
+
+    try {
+        if ($validated['order_type'] === 'custom') {
+            $order = \App\Models\CustomDesignOrder::where('user_id', $user->id)
+                ->where('id', $validated['order_id'])
+                ->where('status', 'approved')
+                ->firstOrFail();
+        } else {
+            $order = \App\Models\Order::where('user_id', $user->id)
+                ->where('id', $validated['order_id'])
+                ->where('status', 'approved')
+                ->firstOrFail();
+        }
+
+        // Simpan file bukti pembayaran
+        $path = $request->file('payment_proof')->store('payment-proofs', 'public');
+
+        $order->update([
+            'pickup_date' => $validated['pickup_date'],
+            'payment_proof' => $path,
+            'payment_status' => 'pending_verification',
+        ]);
+
+        // Bersihkan session terkait alur pemesanan
+        $request->session()->forget(['payment_order_type', 'payment_order_id', 'shipping_method']);
+
+        return redirect()->route('order-list')->with('success', 'Bukti pembayaran berhasil dikirim. Menunggu verifikasi admin.');
+    } catch (\Exception $e) {
+        \Log::error('Submit Pickup Payment Error: ' . $e->getMessage());
+        return back()->with('error', 'Gagal mengirim bukti pembayaran. Silakan coba lagi.');
+    }
+}
     /**
      * Process final order from pembayaran page
      */
@@ -997,7 +1053,7 @@ class CustomerController extends Controller
             ], 422);
         }
 
-        \DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $user = auth()->user();
             if (!$user) {
@@ -1005,12 +1061,20 @@ class CustomerController extends Controller
             }
             
             $product = \App\Models\Product::with('customDesignPrices')->findOrFail($request->product_id);
-            
-            $quantity = (int) $request->quantity;
-            
-            // Calculate price per item
-            $pricePerItem = $product->price;
-            \Log::info('Base Price per Item: ' . $pricePerItem);
+
+// Ambil data varian jika pelanggan memilih varian tertentu
+$variant = null;
+if ($request->filled('variant_id')) {
+    $variant = \App\Models\ProductVariant::where('id', $request->variant_id)
+        ->where('product_id', $product->id)
+        ->first();
+}
+
+$quantity = (int) $request->quantity;
+
+// Harga dasar mengikuti varian yang dipilih, fallback ke harga produk induk
+$pricePerItem = $variant ? (float) $variant->price : (float) $product->price;
+\Log::info('Base Price per Item: ' . $pricePerItem);
             
             // Get product-specific custom design prices
             $productCustomPrices = $product->customDesignPrices->keyBy('code');
@@ -1064,7 +1128,7 @@ class CustomerController extends Controller
                 'product_id' => $product->id,
                 'variant_id' => $request->variant_id,
                 'product_name' => $product->name,
-                'product_price' => $product->price,
+                'product_price' => $pricePerItem,
                 'quantity' => $quantity,
                 'cutting_type' => $cuttingType,
                 'special_materials' => $specialMaterials,

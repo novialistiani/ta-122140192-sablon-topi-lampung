@@ -381,6 +381,8 @@ Route::middleware(['auth'])->group(function () {
             ->name('pemesanan');
         Route::post('/pemesanan/select', [CustomerController::class, 'selectShipping'])
             ->name('pemesanan.select');
+        Route::post('/pemesanan/submit-payment', [CustomerController::class, 'submitPickupPayment'])
+            ->name('pemesanan.submit-payment');
 
         Route::get('/pembayaran', [CustomerController::class, 'pembayaran'])
             ->name('pembayaran');
@@ -506,12 +508,20 @@ Route::prefix('admin')->group(function () {
         });
         
         // Product Management
+        // POS (Kasir)
+        Route::get('/pos', [App\Http\Controllers\Admin\PosController::class, 'index'])->name('admin.pos');
+        Route::get('/pos/products', [App\Http\Controllers\Admin\PosController::class, 'searchProducts'])->name('admin.pos.products');
+        Route::post('/pos/checkout', [App\Http\Controllers\Admin\PosController::class, 'store'])->name('admin.pos.checkout');
         Route::get('/management-product', [ProductManagementController::class, 'index'])->name('admin.management-product');
         Route::get('/all-products', [ProductManagementController::class, 'allProducts'])->name('admin.all-products');
         Route::get('/all-products/detail/{id}', [ProductManagementController::class, 'productDetail'])->name('admin.all-products.detail');
-
+        
+        // Payment Settings (QRIS)
+        Route::get('/payment-settings', [App\Http\Controllers\Admin\PaymentSettingsController::class, 'index'])->name('admin.payment-settings');
+        Route::post('/payment-settings/qris', [App\Http\Controllers\Admin\PaymentSettingsController::class, 'updateQris'])->name('admin.payment-settings.update-qris');
+       
         // Chatbot Admin Management
-        Route::prefix('chatbot')->name('chatbot.')->group(function () {
+            Route::prefix('chatbot')->name('chatbot.')->group(function () {
             Route::get('/', [App\Http\Controllers\Admin\AdminChatController::class, 'index'])->name('index');
             Route::get('/conversation/{id}', [App\Http\Controllers\Admin\AdminChatController::class, 'getConversation'])->name('conversation.show');
             Route::post('/conversation/{id}/take-over', [App\Http\Controllers\Admin\AdminChatController::class, 'takeOverConversation'])->name('conversation.takeover');

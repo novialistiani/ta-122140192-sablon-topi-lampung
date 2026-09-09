@@ -171,7 +171,7 @@
         <div class="top-navbar__right">
             <!-- Notification Bell for Admin -->
             <div class="notification-wrapper" data-user-type="admin" style="margin-right: 20px; display: inline-flex; align-items: center; position: relative; z-index: 1002; pointer-events: auto;">
-                <a href="#" aria-label="Notifikasi" class="action-button notification-link" id="notification-bell" onclick="event.preventDefault(); event.stopPropagation(); toggleNotificationDropdown();" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); padding: 10px 12px; border-radius: 8px; position: relative; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; transition: all 0.3s ease; pointer-events: auto; z-index: 1002;">
+                <a href="#" aria-label="Notifikasi" class="action-button notification-link" id="notification-bell"  style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); padding: 10px 12px; border-radius: 8px; position: relative; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; transition: all 0.3s ease; pointer-events: auto; z-index: 1002;">
                     <i class="fas fa-bell" style="font-size: 18px; color: #fff;"></i>
                     <span class="notification-badge" id="notification-badge" style="display: none; position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 11px; padding: 2px 6px; border-radius: 10px; font-weight: bold; min-width: 18px; text-align: center;">0</span>
                 </a>
@@ -245,11 +245,23 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('admin.pos') }}" class="sidebar__link {{ request()->routeIs('admin.pos*') ? 'active' : '' }}">
+                         <i class="fas fa-cash-register"></i>
+                         <span>Kasir (POS)</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('admin.order-list') }}" class="sidebar__link {{ request()->routeIs('admin.order-list*') ? 'active' : '' }}">
                         <i class="fas fa-list"></i>
                         <span>Order List</span>
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('admin.order-history') }}" class="sidebar__link {{ request()->routeIs('admin.order-history*') ? 'active' : '' }}">
+                        <i class="fas fa-check-double"></i>
+                        <span>Riwayat Pesanan</span>
+                </a>
+              </li>
                 <li>
                     <a href="{{ route('chatbot.index') }}" class="sidebar__link {{ request()->routeIs('chatbot.*') ? 'active' : '' }}">
                         <i class="fas fa-comments"></i>
@@ -279,6 +291,12 @@
                         <i class="fas fa-wallet"></i>
                         <span>Finance & Wallet</span>
                     </a>
+                </li>
+                <li>
+                <a href="{{ route('admin.payment-settings') }}" class="sidebar__link {{ request()->routeIs('admin.payment-settings*') ? 'active' : '' }}">
+                  <i class="fas fa-qrcode"></i>
+                    <span>Pengaturan QRIS</span>
+                 </a>
                 </li>
                 <li>
                     <a href="{{ route('admin.all-products') }}" class="sidebar__link {{ request()->routeIs('admin.all-products*') ? 'active' : '' }}">

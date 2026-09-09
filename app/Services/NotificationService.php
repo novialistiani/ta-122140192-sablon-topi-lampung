@@ -196,47 +196,53 @@ class NotificationService
      */
     public function notifyOrderApproved($order, $userId)
     {
-        $orderType = get_class($order) === 'App\Models\CustomDesignOrder' ? 'Custom Design' : 'Regular';
-        
+         $orderTypeSlug = get_class($order) === 'App\Models\CustomDesignOrder' ? 'custom' : 'regular';
+         $orderType = $orderTypeSlug === 'custom' ? 'Custom Design' : 'Regular';
+    
         return $this->create([
-            'type' => 'order_approved',
-            'notifiable_type' => 'App\\Models\\User',
-            'notifiable_id' => $userId,
-            'title' => 'Pesanan Disetujui',
-            'message' => "Pesanan {$orderType} #{$order->id} Anda telah disetujui! Pesanan sedang diproses.",
-            'data' => [
-                'order_id' => $order->id,
-                'order_type' => $orderType,
-                'status' => 'approved',
-            ],
-        ]);
-    }
+        'type' => 'order_approved',
+        'notifiable_type' => 'App\\Models\\User',
+        'notifiable_id' => $userId,
+        'title' => 'Pesanan Disetujui',
+        'message' => "Pesanan {$orderType} #{$order->id} Anda telah disetujui! Pesanan sedang diproses.",
+        'action_url' => route('order-detail', ['type' => $orderTypeSlug, 'id' => $order->id]),
+        'action_text' => 'Lihat Pesanan',
+        'data' => [
+        'order_id' => $order->id,
+        'order_type' => $orderType,
+        'status' => 'approved',
+        ],
+    ]);
+}
 
     /**
      * Notify when order is rejected (to User)
      */
     public function notifyOrderRejected($order, $userId, $reason = null)
     {
-        $orderType = get_class($order) === 'App\Models\CustomDesignOrder' ? 'Custom Design' : 'Regular';
+         $orderTypeSlug = get_class($order) === 'App\Models\CustomDesignOrder' ? 'custom' : 'regular';
+         $orderType = $orderTypeSlug === 'custom' ? 'Custom Design' : 'Regular';
         $message = "Pesanan {$orderType} #{$order->id} Anda ditolak.";
-        if ($reason) {
-            $message .= " Alasan: {$reason}";
-        }
-        
-        return $this->create([
-            'type' => 'order_rejected',
-            'notifiable_type' => 'App\\Models\\User',
-            'notifiable_id' => $userId,
-            'title' => 'Pesanan Ditolak',
-            'message' => $message,
-            'data' => [
-                'order_id' => $order->id,
-                'order_type' => $orderType,
-                'status' => 'rejected',
-                'reason' => $reason,
-            ],
-        ]);
+         if ($reason) {
+              $message .= " Alasan: {$reason}";
     }
+    
+    return $this->create([
+        'type' => 'order_rejected',
+        'notifiable_type' => 'App\\Models\\User',
+        'notifiable_id' => $userId,
+        'title' => 'Pesanan Ditolak',
+        'message' => $message,
+        'action_url' => route('order-detail', ['type' => $orderTypeSlug, 'id' => $order->id]),
+        'action_text' => 'Lihat Pesanan',
+        'data' => [
+            'order_id' => $order->id,
+            'order_type' => $orderType,
+            'status' => 'rejected',
+            'reason' => $reason,
+        ],
+    ]);
+}
 
     /**
      * Notify when order status is updated (to User)
@@ -299,68 +305,76 @@ class NotificationService
      * Notify admin when new order is created (to Admins)
      */
     public function notifyAdminNewOrder($order, $customer)
-    {
-        $orderType = get_class($order) === 'App\Models\CustomDesignOrder' ? 'Custom Design' : 'Regular';
-        $admins = Admin::where('status', 'active')->get();
-        
-        foreach ($admins as $admin) {
-            $this->create([
-                'type' => 'new_order',
-                'notifiable_type' => 'App\\Models\\Admin',
-                'notifiable_id' => $admin->id,
-                'title' => 'Pesanan Baru',
-                'message' => "Pesanan {$orderType} baru #{$order->id} dari {$customer->name}.",
-                'data' => [
-                    'order_id' => $order->id,
-                    'order_type' => $orderType,
-                    'customer_id' => $customer->id,
-                    'customer_name' => $customer->name,
-                ],
-            ]);
-        }
+{
+    $orderTypeSlug = get_class($order) === 'App\Models\CustomDesignOrder' ? 'custom' : 'regular';
+    $orderType = $orderTypeSlug === 'custom' ? 'Custom Design' : 'Regular';
+    $admins = Admin::where('status', 'active')->get();
+    
+    foreach ($admins as $admin) {
+        $this->create([
+            'type' => 'new_order',
+            'notifiable_type' => 'App\\Models\\Admin',
+            'notifiable_id' => $admin->id,
+            'title' => 'Pesanan Baru',
+            'message' => "Pesanan {$orderType} baru #{$order->id} dari {$customer->name}.",
+            'action_url' => route('admin.order.detail', ['id' => $order->id, 'type' => $orderTypeSlug]),
+            'action_text' => 'Lihat Pesanan',
+            'data' => [
+                'order_id' => $order->id,
+                'order_type' => $orderType,
+                'customer_id' => $customer->id,
+                'customer_name' => $customer->name,
+            ],
+        ]);
     }
+}
 
     /**
      * Notify admin when VA is activated (to Admins)
      */
     public function notifyAdminVAActivated($order, $vaNumber)
-    {
-        $orderType = get_class($order) === 'App\Models\CustomDesignOrder' ? 'Custom Design' : 'Regular';
-        $admins = Admin::where('status', 'active')->get();
-        
-        foreach ($admins as $admin) {
-            $this->create([
-                'type' => 'va_activated',
-                'notifiable_type' => 'App\\Models\\Admin',
-                'notifiable_id' => $admin->id,
-                'title' => 'Virtual Account Aktif',
-                'message' => "VA #{$vaNumber} untuk pesanan {$orderType} #{$order->id} telah diaktifkan.",
-                'data' => [
-                    'order_id' => $order->id,
-                    'order_type' => $orderType,
-                    'va_number' => $vaNumber,
-                ],
-            ]);
-        }
+{
+    $orderTypeSlug = get_class($order) === 'App\Models\CustomDesignOrder' ? 'custom' : 'regular';
+    $orderType = $orderTypeSlug === 'custom' ? 'Custom Design' : 'Regular';
+    $admins = Admin::where('status', 'active')->get();
+    
+    foreach ($admins as $admin) {
+        $this->create([
+            'type' => 'va_activated',
+            'notifiable_type' => 'App\\Models\\Admin',
+            'notifiable_id' => $admin->id,
+            'title' => 'Virtual Account Aktif',
+            'message' => "VA #{$vaNumber} untuk pesanan {$orderType} #{$order->id} telah diaktifkan.",
+            'action_url' => route('admin.order.detail', ['id' => $order->id, 'type' => $orderTypeSlug]),
+            'action_text' => 'Lihat Pesanan',
+            'data' => [
+                'order_id' => $order->id,
+                'order_type' => $orderType,
+                'va_number' => $vaNumber,
+            ],
+        ]);
     }
+}
 
     /**
      * Notify customer when admin replies to chat (to User)
      */
     public function notifyCustomerChatReply($conversationId, $customerId, $adminName)
-    {
-        return $this->create([
-            'type' => 'chat_reply',
-            'notifiable_type' => 'App\\Models\\User',
-            'notifiable_id' => $customerId,
-            'title' => 'Balasan Baru',
-            'message' => "{$adminName} membalas chat Anda.",
-            'data' => [
-                'conversation_id' => $conversationId,
-                'admin_name' => $adminName,
-            ],
-        ]);
-    }
+{
+    return $this->create([
+        'type' => 'chat_reply',
+        'notifiable_type' => 'App\\Models\\User',
+        'notifiable_id' => $customerId,
+        'title' => 'Balasan Baru',
+        'message' => "{$adminName} membalas chat Anda.",
+        'action_url' => route('chatpage'),
+        'action_text' => 'Buka Chat',
+        'data' => [
+            'conversation_id' => $conversationId,
+            'admin_name' => $adminName,
+        ],
+    ]);
+}
 
     /**
      * Get unread count for user

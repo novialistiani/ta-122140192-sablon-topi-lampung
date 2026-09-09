@@ -25,10 +25,11 @@
             <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
         </select>
         <select name="payment_status" class="filter-select" onchange="this.form.submit()">
-            <option value="">Status Pembayaran</option>
-            <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>✓ Dibayar</option>
-            <option value="va_active" {{ request('payment_status') == 'va_active' ? 'selected' : '' }}>⏳ VA Aktif</option>
-        </select>
+    <option value="">Status Pembayaran</option>
+    <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>✓ Dibayar</option>
+    <option value="va_active" {{ request('payment_status') == 'va_active' ? 'selected' : '' }}>⏳ VA Aktif</option>
+    <option value="pending_verification" {{ request('payment_status') == 'pending_verification' ? 'selected' : '' }}>🔍 Perlu Verifikasi</option>
+</select>
         
         <input type="date" name="start_date" class="date-input" value="{{ request('start_date') }}" title="Dari tanggal" />
         <span class="date-separator">-</span>
@@ -110,13 +111,21 @@
                                     <span class="status {{ $statusClass }}">{{ ucfirst($order->status) }}</span>
                                     
                                     {{-- Payment Status Badge --}}
-                                    @if(isset($order->payment_status))
-                                        @if($order->payment_status === 'paid')
-                                            <span class="payment-badge payment-badge-paid">✓ Dibayar</span>
-                                        @elseif($order->payment_status === 'va_active')
-                                            <span class="payment-badge payment-badge-va-active">⏳ VA Aktif</span>
-                                        @endif
-                                    @endif
+                                        @if(isset($order->payment_status))
+                                                @if($order->payment_status === 'paid')
+                                        <span class="payment-badge payment-badge-paid">✓ Dibayar</span>
+                                         @elseif($order->payment_status === 'va_active')
+                                     <span class="payment-badge payment-badge-va-active">⏳ VA Aktif</span>
+                                        @elseif($order->payment_status === 'pending_verification')
+                                <span class="payment-badge" style="background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;">🔍 Perlu Verifikasi</span>
+                             @endif
+                                @endif
+                                {{-- Badge Terlambat: pickup_date sudah lewat tapi pesanan belum selesai --}}
+                                    @if($order->pickup_date && $order->pickup_date->isPast() && !in_array($order->status, ['completed', 'cancelled', 'rejected']))
+                                    <span class="payment-badge" style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;">
+                                ⚠️ Terlambat ({{ $order->pickup_date->format('d M Y') }})
+                                </span>
+                                @endif
                                 </div>
                             </td>
                             <td>

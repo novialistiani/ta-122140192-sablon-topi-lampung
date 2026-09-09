@@ -924,6 +924,41 @@
             </form>
             @endif
         </div>
+        @elseif(isset($order->payment_status) && $order->payment_status === 'pending_verification')
+{{-- Bukti Pembayaran QRIS menunggu verifikasi admin --}}
+<div class="detail-card" style="margin-top: 16px;">
+    <h4 style="font-weight: 600; color: #111827; margin-bottom: 16px;">
+        <i class="fas fa-qrcode" style="color: #f59e0b;"></i> Verifikasi Pembayaran QRIS
+    </h4>
+
+    @if($order->pickup_date)
+    <p style="color: #374151; font-size: 14px; margin-bottom: 12px;">
+        <strong>Tanggal Pengambilan:</strong> {{ \Carbon\Carbon::parse($order->pickup_date)->translatedFormat('l, d F Y') }}
+    </p>
+    @endif
+
+    @if($order->payment_proof)
+    <div style="text-align: center; margin-bottom: 16px;">
+        <p style="font-size: 13px; color: #6b7280; margin-bottom: 8px;">Bukti Transfer dari Pelanggan:</p>
+        <a href="{{ asset('storage/' . $order->payment_proof) }}" target="_blank">
+            <img src="{{ asset('storage/' . $order->payment_proof) }}" alt="Bukti Pembayaran"
+                 style="max-width: 280px; width: 100%; border-radius: 12px; border: 1px solid #e5e7eb; cursor: zoom-in;">
+        </a>
+        <p style="font-size: 12px; color: #9ca3af; margin-top: 6px;">Klik gambar untuk memperbesar</p>
+    </div>
+    @else
+    <p style="color: #ef4444; font-size: 14px;">Bukti pembayaran tidak ditemukan.</p>
+    @endif
+
+    <div style="display: flex; justify-content: flex-end; gap: 12px;">
+        <form method="POST" action="{{ route('admin.order.mark-payment-received', ['id' => $order->id, 'type' => $orderType]) }}" style="display: inline; margin: 0;">
+            @csrf
+            <button type="submit" onclick="return confirm('Konfirmasi bukti pembayaran ini valid? Pesanan akan ditandai lunas.')" class="btn-action btn-approve">
+                <i class="fas fa-check"></i> Konfirmasi Pembayaran
+            </button>
+        </form>
+    </div>
+</div>
         @elseif($order->status === 'approved' && (!isset($order->payment_status) || in_array($order->payment_status, ['unpaid', 'va_active'])))
         {{-- Option for admin to mark payment as received (for WA payment) --}}
         <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 12px;">

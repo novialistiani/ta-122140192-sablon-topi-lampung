@@ -1,0 +1,588 @@
+/* ============================================
+   POS (Point of Sale) STYLES
+   ============================================ */
+
+.pos-page-header {
+    margin-bottom: 20px;
+}
+
+.pos-page-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.pos-page-header p {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.pos-layout {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.pos-panel {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+}
+
+/* ============================================
+   TOOLBAR (Search & Category Select)
+   ============================================ */
+.pos-toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.pos-search-box {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+}
+
+.pos-search-box i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.pos-search-box input {
+    width: 100%;
+    padding: 11px 14px 11px 40px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.pos-search-box input:focus {
+    outline: none;
+    border-color: #fbbf24;
+}
+
+.pos-select {
+    padding: 11px 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    background: #ffffff;
+    color: #1e293b;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.pos-select:focus {
+    outline: none;
+    border-color: #fbbf24;
+}
+
+/* ============================================
+   CATEGORY TABS
+   ============================================ */
+.pos-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.pos-tab {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.pos-tab:hover {
+    border-color: #cbd5e1;
+}
+
+.pos-tab.active {
+    background: #0f172a;
+    border-color: #0f172a;
+    color: #ffffff;
+}
+
+/* ============================================
+   PRODUCT GRID
+   ============================================ */
+.pos-product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    min-height: 200px;
+}
+
+.pos-empty-text {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 14px;
+    padding: 40px 0;
+}
+
+.pos-product-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 14px;
+    transition: all 0.2s;
+}
+
+.pos-product-card:hover {
+    border-color: #fbbf24;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.pos-product-image {
+    width: 100%;
+    height: 130px;
+    background: #f8fafc;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.pos-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pos-product-image i {
+    font-size: 28px;
+    color: #cbd5e1;
+}
+
+.pos-product-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pos-product-price {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 10px;
+}
+
+.pos-add-btn {
+    width: 100%;
+    padding: 9px;
+    border-radius: 8px;
+    border: 1.5px solid #0f172a;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pos-add-btn:hover {
+    background: #0f172a;
+    color: #ffffff;
+}
+
+/* ============================================
+   PAGINATION
+   ============================================ */
+.pos-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 20px;
+}
+
+.pos-page-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.pos-page-btn.active {
+    background: #0f172a;
+    border-color: #0f172a;
+    color: #ffffff;
+}
+
+/* ============================================
+   CART PANEL
+   ============================================ */
+.pos-cart-panel {
+    position: sticky;
+    top: 20px;
+}
+
+.pos-cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pos-cart-header h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.pos-btn-outline-danger {
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #fecaca;
+    background: #fff5f5;
+    color: #dc2626;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.pos-btn-outline-danger:hover {
+    background: #fee2e2;
+}
+
+/* ============================================
+   CART TABLE
+   ============================================ */
+.pos-cart-table-wrapper {
+    max-height: 320px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+
+.pos-cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.pos-cart-table thead th {
+    text-align: left;
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.pos-cart-table tbody td {
+    padding: 12px 4px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.pos-cart-product-name {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.pos-cart-product-variant {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.pos-qty-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pos-qty-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.pos-qty-value {
+    min-width: 18px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.pos-remove-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: #fef2f2;
+    color: #dc2626;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.pos-remove-btn:hover {
+    background: #fecaca;
+}
+
+/* ============================================
+   SUMMARY
+   ============================================ */
+.pos-summary {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 14px;
+    margin-bottom: 16px;
+}
+
+.pos-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #475569;
+    margin-bottom: 10px;
+}
+
+.pos-discount-input {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.pos-discount-input input {
+    width: 60px;
+    border: none;
+    padding: 6px 8px;
+    text-align: right;
+    font-size: 13px;
+}
+
+.pos-discount-input input:focus {
+    outline: none;
+}
+
+.pos-discount-input span {
+    padding: 6px 10px;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.pos-summary-total {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0;
+}
+
+.pos-summary-total span:last-child {
+    color: #1d4ed8;
+}
+
+/* ============================================
+   PAYMENT METHOD
+   ============================================ */
+.pos-payment-method {
+    margin-bottom: 14px;
+}
+
+.pos-payment-method label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.pos-cash-wrapper {
+    margin-bottom: 16px;
+}
+
+.pos-cash-wrapper label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.pos-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.pos-input:focus {
+    outline: none;
+    border-color: #fbbf24;
+}
+
+.pos-change-text {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #16a34a;
+    font-weight: 600;
+}
+
+/* ============================================
+   ACTION BUTTONS
+   ============================================ */
+.pos-action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.pos-btn-secondary,
+.pos-btn-primary {
+    flex: 1;
+    padding: 13px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.pos-btn-secondary {
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.pos-btn-secondary:hover {
+    background: #e2e8f0;
+}
+
+.pos-btn-primary {
+    background: #0f172a;
+    color: #ffffff;
+}
+
+.pos-btn-primary:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+}
+
+/* ============================================
+   MODAL STRUK
+   ============================================ */
+.pos-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+}
+
+.pos-modal-overlay.active {
+    display: flex;
+}
+
+.pos-modal {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 360px;
+    width: 90%;
+}
+
+.pos-modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+    .pos-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .pos-cart-panel {
+        position: static;
+    }
+
+    .pos-product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .pos-panel {
+        padding: 14px;
+        border-radius: 12px;
+    }
+
+    .pos-toolbar {
+        flex-direction: column;
+    }
+
+    .pos-select {
+        width: 100%;
+    }
+
+    .pos-product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .pos-product-image {
+        height: 90px;
+    }
+
+    .pos-cart-table thead {
+        display: none;
+    }
+
+    .pos-cart-table tbody tr {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 4px;
+        padding: 10px 0;
+    }
+
+    .pos-cart-table tbody td {
+        border: none;
+        padding: 2px 4px;
+    }
+
+    .pos-action-buttons {
+        flex-direction: column;
+    }
+}

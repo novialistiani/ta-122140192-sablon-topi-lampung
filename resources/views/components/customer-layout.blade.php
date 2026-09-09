@@ -15,8 +15,22 @@
 </head>
 <body class="bg-gray-50">
     <div class="flex h-screen">
+
+        <!-- Overlay (mobile only, muncul saat sidebar terbuka) -->
+        <div id="customer-sidebar-overlay"
+             onclick="toggleCustomerSidebar()"
+             class="hidden fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
+
         <!-- Sidebar -->
-        <div class="w-64 bg-navy-900 text-white p-6 flex flex-col sticky top-0 h-screen overflow-y-auto">
+        <div id="customer-sidebar"
+             class="w-64 bg-navy-900 text-white p-6 flex flex-col overflow-y-auto
+                    fixed inset-y-0 left-0 z-50 h-screen transform -translate-x-full transition-transform duration-300 ease-in-out
+                    lg:translate-x-0 lg:static lg:sticky lg:top-0">
+
+            <button onclick="toggleCustomerSidebar()" class="lg:hidden self-end mb-4 p-1 text-gray-300 hover:text-white">
+                <span class="material-icons">close</span>
+            </button>
+
             <div class="mb-8">
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
                     <img src="{{ asset('images/logo-lgi-Photoroom.png') }}" alt="LGI Store Logo" class="h-10">
@@ -88,16 +102,22 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col">
+        <div class="flex-1 flex flex-col min-w-0">
             <!-- Header -->
             <header class="bg-white border-b border-gray-200 shadow-sm">
-                <div class="p-4 flex justify-between items-center">
-                    <div class="flex items-center text-sm">
-                        <a href="{{ route('home') }}" class="text-gray-500 hover:text-gray-700 transition">Beranda</a>
-                        <span class="mx-2 text-gray-400"><i class="fas fa-chevron-right text-xs"></i></span>
-                        <span class="text-gray-700 font-medium">{{ $title }}</span>
+                <div class="p-4 flex justify-between items-center gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <!-- Tombol hamburger (mobile only) -->
+                        <button onclick="toggleCustomerSidebar()" class="lg:hidden p-2 -ml-2 hover:bg-gray-100 rounded-lg flex-shrink-0">
+                            <span class="material-icons text-gray-700">menu</span>
+                        </button>
+                        <div class="flex items-center text-sm min-w-0 truncate">
+                            <a href="{{ route('home') }}" class="text-gray-500 hover:text-gray-700 transition flex-shrink-0">Beranda</a>
+                            <span class="mx-2 text-gray-400 flex-shrink-0"><i class="fas fa-chevron-right text-xs"></i></span>
+                            <span class="text-gray-700 font-medium truncate">{{ $title }}</span>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
                         <!-- Notification Bell -->
                         <div class="notification-wrapper relative" data-user-type="customer">
                             <a href="#" class="relative p-2 hover:bg-gray-100 rounded-full transition-colors inline-flex" id="notification-bell" aria-label="Notifikasi">
@@ -106,7 +126,7 @@
                             </a>
 
                             <!-- Notification Dropdown -->
-                            <div class="notification-dropdown absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl z-50" id="notification-dropdown" style="display: none;">
+                            <div class="notification-dropdown absolute right-0 mt-2 w-80 max-w-[90vw] bg-white rounded-lg shadow-xl z-50" id="notification-dropdown" style="display: none;">
                                 <div class="notification-dropdown__header">
                                     <h3>Notifikasi</h3>
                                     <button class="mark-all-read-btn" id="mark-all-read" style="display: none;">
@@ -137,8 +157,8 @@
                                         <i class="fas fa-user text-gray-600"></i>
                                     </div>
                                 @endif
-                                <span class="text-sm font-medium text-gray-700">{{ auth()->user()->name }}</span>
-                                <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                                <span class="text-sm font-medium text-gray-700 hidden sm:inline">{{ auth()->user()->name }}</span>
+                                <i class="fas fa-chevron-down text-gray-500 text-xs hidden sm:inline"></i>
                             </button>
                             
                             <!-- Dropdown Menu -->
@@ -164,6 +184,14 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function toggleCustomerSidebar() {
+            document.getElementById('customer-sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('customer-sidebar-overlay').classList.toggle('hidden');
+            document.body.classList.toggle('overflow-hidden');
+        }
+    </script>
 
     @vite([
         'resources/css/components/notification-dropdown.css',

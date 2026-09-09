@@ -47,6 +47,7 @@ class OrderManagementController extends Controller
             }
 
             // Payment status filter
+                        // Payment status filter
             if ($request->filled('payment_status')) {
                 if ($request->payment_status === 'paid') {
                     $customOrdersQuery->where('payment_status', 'paid');
@@ -54,6 +55,9 @@ class OrderManagementController extends Controller
                 } elseif ($request->payment_status === 'va_active') {
                     $customOrdersQuery->where('payment_status', 'va_active');
                     $regularOrdersQuery->where('payment_status', 'va_active');
+                } elseif ($request->payment_status === 'pending_verification') {
+                    $customOrdersQuery->where('payment_status', 'pending_verification');
+                    $regularOrdersQuery->where('payment_status', 'pending_verification');
                 }
             }
 
@@ -132,6 +136,7 @@ class OrderManagementController extends Controller
             }
 
             // Payment status filter
+                        // Payment status filter
             if ($request->filled('payment_status')) {
                 if ($request->payment_status === 'paid') {
                     $query->where('payment_status', 'paid');
@@ -140,6 +145,8 @@ class OrderManagementController extends Controller
                         $q->where('status', 'pending')
                           ->where('expired_at', '>', now());
                     });
+                } elseif ($request->payment_status === 'pending_verification') {
+                    $query->where('payment_status', 'pending_verification');
                 }
             }
 
@@ -174,6 +181,7 @@ class OrderManagementController extends Controller
             }
 
             // Payment status filter
+                        // Payment status filter
             if ($request->filled('payment_status')) {
                 if ($request->payment_status === 'paid') {
                     $query->where('payment_status', 'paid');
@@ -182,6 +190,8 @@ class OrderManagementController extends Controller
                         $q->where('status', 'pending')
                           ->where('expired_at', '>', now());
                     });
+                } elseif ($request->payment_status === 'pending_verification') {
+                    $query->where('payment_status', 'pending_verification');
                 }
             }
 
