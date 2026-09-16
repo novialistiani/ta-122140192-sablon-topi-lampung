@@ -267,7 +267,7 @@
                             <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
                                 <div class="flex items-center space-x-3">
                                     @if(isset($item['image']) && $item['image'])
-                                        <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] ?? 'Product' }}" class="w-12 h-12 object-cover rounded">
+                                        <img src="{{ $item['image'] }}" alt="{{ $item['name'] ?? 'Product' }}" class="w-12 h-12 object-cover rounded">
                                     @else
                                         <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
                                             <span class="text-gray-500 text-xs">No Image</span>

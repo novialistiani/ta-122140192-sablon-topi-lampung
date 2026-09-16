@@ -528,15 +528,32 @@
                                         $itemsToDisplay = is_array($order->items) ? $order->items : (is_string($order->items) ? json_decode($order->items, true) ?? [] : []);
                                     @endphp
                                     @forelse($itemsToDisplay as $item)
-                                    <tr style="border-bottom: 1px solid #f3f4f6;">
-                                        <td style="padding: 16px 0;">
-                                            <p style="font-weight: 600; color: #111827; margin: 0 0 8px 0;">{{ $item['product_name'] ?? $item['name'] ?? 'N/A' }}</p>
-                                            @if(isset($item['image']))
-                                                <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['product_name'] ?? 'Product' }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
-                                            @else
-                                                <img src="https://via.placeholder.com/60" alt="No Image" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
-                                            @endif
-                                        </td>
+                                    @php
+                                    $thumbUrl = null;
+                                         if (!empty($item['variant_id'])) {
+                                            $thumbVariant = \App\Models\ProductVariant::find($item['variant_id']);
+                                        if ($thumbVariant && $thumbVariant->image) {
+                                             $thumbUrl = filter_var($thumbVariant->image, FILTER_VALIDATE_URL) ? $thumbVariant->image : route('images.serve', ['path' => $thumbVariant->image]);
+                                }
+                             }
+                                if (!$thumbUrl && !empty($item['product_id'])) {
+                                    $thumbProduct = \App\Models\Product::find($item['product_id']);
+                                    if ($thumbProduct && $thumbProduct->image) {
+                                        $thumbUrl = filter_var($thumbProduct->image, FILTER_VALIDATE_URL) ? $thumbProduct->image : route('images.serve', ['path' => $thumbProduct->image]);
+                                    }
+                                }
+                                if (!$thumbUrl && !empty($item['image'])) {
+                                    $thumbUrl = filter_var($item['image'], FILTER_VALIDATE_URL) ? $item['image'] : route('images.serve', ['path' => $item['image']]);
+                                }
+                                if (!$thumbUrl) {
+                                    $thumbUrl = 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2760%27 height=%2760%27%3E%3Crect fill=%27%23f0f0f0%27 width=%2760%27 height=%2760%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 font-size=%278%27 fill=%27%23999%27 text-anchor=%27middle%27 dy=%27.3em%27%3ENo Image%3C/text%3E%3C/svg%3E';
+                                }
+                            @endphp
+                            <tr style="border-bottom: 1px solid #f3f4f6;">
+                                <td style="padding: 16px 0;">
+                                    <p style="font-weight: 600; color: #111827; margin: 0 0 8px 0;">{{ $item['product_name'] ?? $item['name'] ?? 'N/A' }}</p>
+                                    <img src="{{ $thumbUrl }}" alt="{{ $item['product_name'] ?? 'Product' }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                </td>
                                         <td style="padding: 16px 0;">
                                             <div style="color: #6b7280; font-size: 14px; line-height: 1.8;">
                                                 @if(isset($item['color']))
@@ -576,7 +593,7 @@
                                     if(!empty($item['variant_id'])) {
                                         $variant = \App\Models\ProductVariant::find($item['variant_id']);
                                         if($variant && $variant->image) {
-                                            $orderImages[] = asset('storage/' . $variant->image);
+                                            $orderImages[] = filter_var($variant->image, FILTER_VALIDATE_URL) ? $variant->image : route('images.serve', ['path' => $variant->image]);
                                             continue;
                                         }
                                     }
@@ -585,20 +602,20 @@
                                     if(!empty($item['product_id'])) {
                                         $product = \App\Models\Product::find($item['product_id']);
                                         if($product && $product->image) {
-                                            $orderImages[] = asset('storage/' . $product->image);
+                                            $orderImages[] = filter_var($product->image, FILTER_VALIDATE_URL) ? $product->image : route('images.serve', ['path' => $product->image]);
                                             continue;
                                         }
                                     }
                                     
                                     // Last fallback to stored image
                                     if(!empty($item['image'])) {
-                                        $orderImages[] = asset('storage/' . $item['image']);
+                                        $orderImages[] = filter_var($item['image'], FILTER_VALIDATE_URL) ? $item['image'] : route('images.serve', ['path' => $item['image']]);
                                     }
                                 }
                                 
                                 // If no images, use placeholder
                                 if(empty($orderImages)) {
-                                    $orderImages[] = 'https://via.placeholder.com/400x400?text=No+Image';
+                                    $orderImages[] = 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27400%27%3E%3Crect fill=%27%23f0f0f0%27 width=%27400%27 height=%27400%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 font-size=%2724%27 fill=%27%23999%27 text-anchor=%27middle%27 dy=%27.3em%27%3ENo Image%3C/text%3E%3C/svg%3E';
                                 }
                             @endphp
                             
@@ -607,7 +624,7 @@
                                     <div class="swiper-wrapper">
                                         @foreach($orderImages as $imageUrl)
                                         <div class="swiper-slide">
-                                            <img src="{{ $imageUrl }}" alt="Product" onerror="this.onerror=null; this.src='https://via.placeholder.com/400x400?text=No+Image';">
+                                            <img src="{{ $imageUrl }}" alt="Product" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27400%27%3E%3Crect fill=%27%23f0f0f0%27 width=%27400%27 height=%27400%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 font-size=%2724%27 fill=%27%23999%27 text-anchor=%27middle%27 dy=%27.3em%27%3ENo Image%3C/text%3E%3C/svg%3E';">
                                         </div>
                                         @endforeach
                                     </div>
@@ -765,7 +782,7 @@
                                 
                                 // Get variant image if available
                                 if($order->variant && $order->variant->image) {
-                                    $productImages[] = asset('storage/' . $order->variant->image);
+                                    $productImages[] = filter_var($order->variant->image, FILTER_VALIDATE_URL) ? $order->variant->image : route('images.serve', ['path' => $order->variant->image]);
                                 }
                                 
                                 // Get product image if available  
@@ -786,7 +803,7 @@
                                         $fileExtension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
                                         
                                         if(in_array($fileExtension, $imageExtensions)) {
-                                            $productImages[] = asset('storage/' . $filePath);
+                                            $productImages[] = route('images.serve', ['path' => $filePath]);
                                         }
                                     }
                                 }
@@ -796,7 +813,7 @@
                                 
                                 // If no images, use placeholder
                                 if(empty($productImages)) {
-                                    $productImages[] = 'https://via.placeholder.com/300x300?text=No+Image';
+                                    $productImages[] = 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27400%27%3E%3Crect fill=%27%23f0f0f0%27 width=%27400%27 height=%27400%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 font-size=%2724%27 fill=%27%23999%27 text-anchor=%27middle%27 dy=%27.3em%27%3ENo Image%3C/text%3E%3C/svg%3E';
                                 }
                             @endphp
                             
@@ -807,7 +824,7 @@
                                         <div class="swiper-wrapper">
                                             @foreach($productImages as $imageUrl)
                                             <div class="swiper-slide">
-                                                <img src="{{ $imageUrl }}" alt="{{ $order->product_name }}" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x300?text=No+Image';">
+                                                <img src="{{ $imageUrl }}" alt="{{ $order->product_name }}" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27400%27%3E%3Crect fill=%27%23f0f0f0%27 width=%27400%27 height=%27400%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 font-size=%2724%27 fill=%27%23999%27 text-anchor=%27middle%27 dy=%27.3em%27%3ENo Image%3C/text%3E%3C/svg%3E';">
                                             </div>
                                             @endforeach
                                         </div>
@@ -823,7 +840,7 @@
                                 {{-- Show Single Image --}}
                                 <div style="background: #f9fafb; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                                     <p style="font-size: 12px; color: #6b7280; margin-bottom: 12px; font-weight: 500;">Preview Produk & Desain</p>
-                                    <img src="{{ $productImages[0] }}" alt="{{ $order->product_name }}" style="max-width: 250px; max-height: 250px; object-fit: contain; border-radius: 8px;" onerror="this.onerror=null; this.src='https://via.placeholder.com/250x250?text=No+Image';">
+                                    <img src="{{ $productImages[0] }}" alt="{{ $order->product_name }}" style="max-width: 250px; max-height: 250px; object-fit: contain; border-radius: 8px;" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27400%27%3E%3Crect fill=%27%23f0f0f0%27 width=%27400%27 height=%27400%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 font-size=%2724%27 fill=%27%23999%27 text-anchor=%27middle%27 dy=%27.3em%27%3ENo Image%3C/text%3E%3C/svg%3E';">
                                 </div>
                             @endif
                         </div>

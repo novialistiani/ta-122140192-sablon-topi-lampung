@@ -28,7 +28,8 @@
 
             <div class="conversation-list" id="conversationList">
                 @forelse($conversations as $conversation)
-                    <div class="conversation-item" onclick="selectConversation({{ $conversation->id }})" style="position: relative;">
+                    <div class="conversation-item" onclick="selectConversation({{ $conversation->id }})" 
+                        style="position: relative; {{ ($conversation->needs_admin_response && !$conversation->taken_over_by_admin) ? 'border-left: 4px solid #dc3545; background-color: #fff5f5;' : '' }}">
                         <div class="conversation-avatar">
                             {{ strtoupper(substr($conversation->user->name, 0, 1)) }}
                         </div>
@@ -37,6 +38,11 @@
                                 <span class="conversation-name">{{ $conversation->user->name }}</span>
                                 <span class="conversation-time">{{ $conversation->updated_at->format('H:i') }}</span>
                             </div>
+                            @if($conversation->needs_admin_response && !$conversation->taken_over_by_admin)
+                                <div style="color: #dc3545; font-size: 12px; font-weight: 600; margin: 2px 0;">
+                                    <i class="fas fa-exclamation-circle"></i> Butuh Respons Admin
+                                </div>
+                            @endif
                             <div class="conversation-preview">
                                 {{ Str::limit($conversation->latestMessage->message ?? 'Tidak ada pesan', 35) }}
                             </div>
@@ -48,6 +54,7 @@
                         @endif
                     </div>
                 @empty
+            
                     <div style="padding: 20px; text-align: center; color: #6c757d;">
                         <p>Tidak ada percakapan</p>
                     </div>

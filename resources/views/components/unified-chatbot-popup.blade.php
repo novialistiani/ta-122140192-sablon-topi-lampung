@@ -23,9 +23,9 @@
     <!-- Chatbot Header -->
     <div class="unified-chatbot-header">
         <div class="unified-chatbot-avatar bot-avatar">
-            <img src="{{ asset('images/logo.png') }}" alt="LGI Store" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <span class="avatar-fallback" style="display:none;">🏪</span>
-        </div>
+    <img src="{{ asset('images/logo-lgi-Photoroom.png') }}" alt="LGI Store" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+    <span class="avatar-fallback" style="display:none;">🏪</span>
+</div>
         <div class="unified-chatbot-info">
             <div class="unified-chatbot-name">LGI STORE</div>
             <div class="unified-chatbot-status">
@@ -65,9 +65,8 @@
         <div class="unified-quick-replies">
             <button type="button" class="unified-quick-reply" data-question="stok">Cek stok</button>
             <button type="button" class="unified-quick-reply" data-question="harga">Estimasi harga</button>
-            <button type="button" class="unified-quick-reply" data-question="kirim">Estimasi kirim</button>
+            <button type="button" class="unified-quick-reply" data-question="pickup">Cara pengambilan</button>
             <button type="button" class="unified-quick-reply" data-question="custom">Custom desain</button>
-            <button type="button" class="unified-quick-reply" data-question="promo">Promo</button>
         </div>
 
         <!-- Chatbot Input -->
@@ -236,6 +235,9 @@
 .unified-chatbot-avatar .avatar-fallback {
     font-size: 18px;
     line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .unified-chatbot-info {
@@ -417,6 +419,10 @@
     margin: 0 !important;
 }
 
+/* FIX: selector sebelumnya hilang di sini, jadi style bubble pesan (padding,
+   border-radius, font-size, dst) tidak pernah kepasang. Sekarang dikembalikan
+   ke .unified-message-bubble */
+.unified-chatbot-popup .unified-message-bubble {
     display: inline-block;
     padding: 6px 10px !important;
     border-radius: 10px;
@@ -449,9 +455,6 @@
     display: inline;
     white-space: pre-line;
     text-indent: 0 !important;
-}
-
-/* User message text - inline for compact display */
 }
 
 /* Time inside bubble */
@@ -679,6 +682,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
+}
+
+.unified-chatbot-send svg {
+    display: block;
 }
 
 .unified-chatbot-send:hover {
@@ -972,9 +980,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const questions = {
             'stok': 'Apakah stok produk ini tersedia?',
             'harga': 'Rekomendasi produk harga murah',
-            'kirim': 'Berapa lama estimasi pengiriman?',
-            'custom': 'Apakah bisa custom desain?',
-            'promo': 'Ada diskon atau promo saat ini?'
+            'pickup': 'Bagaimana cara pengambilan pesanan?',
+            'custom': 'Apakah bisa custom desain?'
         };
         
         const text = questions[type] || 'Halo';
@@ -984,10 +991,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Get bot avatar HTML
     function getBotAvatarHTML() {
-        return `
-            <img src="/images/logo.png" alt="Bot" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <span class="avatar-fallback" style="display:none;">🏪</span>
-        `;
+        return `<span class="avatar-fallback">🏪</span>`;
     }
     
     // Get user avatar HTML
@@ -1145,7 +1149,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typing) typing.remove();
     }
     
-    // Generate local response (fallback)
+    // Generate local response (fallback - dipakai hanya kalau /api/chatbot/send gagal dihubungi)
     function generateLocalResponse(userMessage) {
         const msg = userMessage.toLowerCase();
         
@@ -1153,12 +1157,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return 'Untuk informasi harga lengkap, silakan kunjungi halaman katalog atau detail produk. Harga bervariasi tergantung produk dan ukuran yang dipilih.';
         } else if (msg.includes('stok') || msg.includes('tersedia')) {
             return 'Untuk cek ketersediaan stok, silakan lihat detail produk atau hubungi admin kami. Kebanyakan produk kami ready stock!';
-        } else if (msg.includes('kirim') || msg.includes('pengiriman')) {
-            return 'Kami melayani pengiriman ke seluruh Indonesia. Estimasi 2-4 hari untuk Jawa dan 3-7 hari untuk luar Jawa.';
+        } else if (msg.includes('kirim') || msg.includes('pengiriman') || msg.includes('ambil') || msg.includes('pickup')) {
+            return 'Saat ini pesanan hanya dapat diambil langsung di toko (pickup), kami belum menyediakan layanan pengiriman kurir. Setelah pesanan disetujui dan pembayaran diverifikasi, Anda bisa memilih tanggal pengambilan.';
         } else if (msg.includes('custom') || msg.includes('desain')) {
-            return 'Ya, kami menerima custom design! Produk dengan label CUSTOM bisa didesain sesuai keinginan Anda. Silakan upload desain saat checkout.';
+            return 'Ya, kami menerima custom design! Produk dengan label CUSTOM bisa didesain sesuai keinginan Anda. Silakan upload desain melalui halaman Custom Design.';
         } else if (msg.includes('promo') || msg.includes('diskon')) {
-            return 'Untuk promo terbaru, silakan cek halaman utama atau katalog kami. Kami sering mengadakan diskon menarik!';
+            return 'Saat ini belum ada promo atau diskon yang sedang berjalan. Untuk info promo terbaru di kemudian hari, silakan cek kembali halaman utama toko kami.';
         } else if (msg.includes('terima kasih') || msg.includes('thanks')) {
             return 'Sama-sama! Senang bisa membantu. Jika ada pertanyaan lain, jangan ragu untuk bertanya ya! 😊';
         } else if (msg.includes('halo') || msg.includes('hai') || msg.includes('hello')) {

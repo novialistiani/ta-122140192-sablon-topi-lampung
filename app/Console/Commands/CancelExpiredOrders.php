@@ -2,48 +2,91 @@
 
 namespace App\Console\Commands;
 
-use App\Mail\OrderCancellationMail;
 use App\Models\Order;
+use App\Models\CustomDesignOrder;
+use App\Traits\StockManagementTrait;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Mail;
 
 class CancelExpiredOrders extends Command
 {
+    use StockManagementTrait;
+
     protected $signature = 'orders:cancel-expired';
-    protected $description = 'Cancel orders that have exceeded their payment deadlines';
+    protected $description = 'Cancel approved orders whose payment_deadline has passed without payment proof uploaded';
 
     public function handle()
     {
-        // Cancel orders where VA hasn't been generated within 24 hours of approval
-        $expiredApprovedOrders = Order::where('status', 'approved')
-            ->where('approved_at', '<=', now()->subHours(24))
-            ->where('va_number', null)
+        $totalCancelled = 0;
+
+        // ==== Pesanan Reguler ====
+        $expiredRegularOrders = Order::where('status', 'approved')
+            ->whereNotNull('payment_deadline')
+            ->where('payment_deadline', '<=', now())
+            ->where(function ($q) {
+                $q->whereNull('payment_status')
+                    ->orWhere('payment_status', 'unpaid');
+            })
             ->get();
 
-        foreach ($expiredApprovedOrders as $order) {
-            $order->update(['status' => 'cancelled']);
-            
-            Mail::to($order->user->email)->send(new OrderCancellationMail(
-                $order,
-                'Batas waktu generate Virtual Account (24 jam) telah terlewati'
-            ));
+        foreach ($expiredRegularOrders as $order) {
+            $this->cancelOrder($order, 'regular');
+            $totalCancelled++;
         }
 
-        // Cancel orders where payment hasn't been completed within 1 hour of VA generation
-        $expiredVaOrders = Order::where('status', 'pending_payment')
-            ->where('va_generated_at', '<=', now()->subHour())
-            ->where('payment_status', 'unpaid')
+        // ==== Pesanan Custom Design ====
+        $expiredCustomOrders = CustomDesignOrder::where('status', 'approved')
+            ->whereNotNull('payment_deadline')
+            ->where('payment_deadline', '<=', now())
+            ->where(function ($q) {
+                $q->whereNull('payment_status')
+                    ->orWhere('payment_status', 'unpaid');
+            })
             ->get();
 
-        foreach ($expiredVaOrders as $order) {
-            $order->update(['status' => 'cancelled']);
-            
-            Mail::to($order->user->email)->send(new OrderCancellationMail(
-                $order,
-                'Batas waktu pembayaran (1 jam) setelah generate VA telah terlewati'
-            ));
+        foreach ($expiredCustomOrders as $order) {
+            $this->cancelOrder($order, 'custom');
+            $totalCancelled++;
         }
 
-        $this->info('Expired orders have been cancelled');
+        $this->info("Auto-cancel selesai. Total pesanan dibatalkan: {$totalCancelled}");
+    }
+
+    /**
+     * Batalkan satu pesanan: kembalikan stok, ubah status, kirim notifikasi.
+     */
+    protected function cancelOrder($order, string $orderType): void
+    {
+        // Kembalikan stok yang sudah dikurangi saat approve
+        $this->restoreStockForOrder($order, $orderType);
+
+        $order->update([
+            'status' => 'cancelled',
+            'cancelled_at' => now(),
+            'admin_notes' => 'Dibatalkan otomatis oleh sistem karena tidak ada pembayaran hingga batas waktu (payment_deadline) terlampaui.',
+        ]);
+
+        // Kirim notifikasi in-app ke pelanggan (menggunakan service yang sudah ada)
+        try {
+            if ($order->user_id) {
+                app(\App\Services\NotificationService::class)->notifyOrderStatusUpdate(
+                    $order,
+                    $order->user_id,
+                    'approved',
+                    'cancelled'
+                );
+            }
+        } catch (\Exception $e) {
+            \Log::warning('Failed to send auto-cancel notification', [
+                'order_id' => $order->id,
+                'order_type' => $orderType,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        \Log::info("Order auto-cancelled due to unpaid deadline", [
+            'order_id' => $order->id,
+            'order_type' => $orderType,
+            'approved_at' => $order->approved_at,
+        ]);
     }
 }

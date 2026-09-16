@@ -262,8 +262,8 @@
                                 </div>
                             </div>
 
-                            <!-- Payment Status Indicator -->
-                            @if(!isset($order->payment_status) || $order->payment_status === 'unpaid' || $order->payment_status === 'va_active')
+                                                        <!-- Payment Status Indicator -->
+                            @if(!isset($order->payment_status) || $order->payment_status === 'unpaid')
                             <div class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg">
                                 <div>
                                     <h4 class="font-semibold text-gray-900 mb-1">Pembayaran Pesanan</h4>
@@ -273,17 +273,16 @@
                                         </strong>
                                     </p>
                                 </div>
-                                <button type="button" onclick="payViaWhatsApp()" 
-                                    class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg flex items-center gap-2 transition"
-                                    style="transition: all 0.2s;">
-                                    <i class="fab fa-whatsapp" style="font-size: 18px;"></i>
-                                    <span>Bayar via WhatsApp</span>
-                                </button>
+                                <a href="{{ url('/pemesanan') }}?order_type={{ $type }}&order_id={{ $order->id }}"
+                                    class="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg flex items-center gap-2 transition">
+                                    <i class="fas fa-qrcode" style="font-size: 18px;"></i>
+                                    <span>Bayar Sekarang</span>
+                                </a>
                             </div>
 
                             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
                                 <i class="fas fa-info-circle mr-2"></i>
-                                <strong>Catatan:</strong> Klik tombol di atas untuk menghubungi admin melalui WhatsApp dengan detail pesanan Anda.
+                                <strong>Catatan:</strong> Klik tombol di atas untuk melanjutkan ke halaman pembayaran QRIS.
                             </div>
                             @elseif($order->payment_status === 'paid')
                             <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">

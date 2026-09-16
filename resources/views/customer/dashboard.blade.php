@@ -170,10 +170,7 @@
                     <label class="text-sm text-gray-500">Telepon</label>
                     <input type="tel" value="{{ auth()->user()->phone ?? '-' }}" class="w-full border rounded-lg p-2" readonly>
                 </div>
-                <div>
-                    <label class="text-sm text-gray-500">Alamat pengiriman</label>
-                    <textarea class="w-full border rounded-lg p-2" readonly>{{ auth()->user()->address ?? 'Belum diatur' }}</textarea>
-                </div>
+                
             </div>
         </div>
 

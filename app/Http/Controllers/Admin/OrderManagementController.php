@@ -8,7 +8,6 @@ use App\Mail\OrderApprovedMail;
 use App\Mail\OrderRejectionMail;
 use App\Models\CustomDesignOrder;
 use App\Models\Order;
-use App\Models\VirtualAccount;
 use App\Exports\OrderExport;
 use App\Traits\StockManagementTrait;
 use App\Events\OrderApprovedEvent;
@@ -47,14 +46,10 @@ class OrderManagementController extends Controller
             }
 
             // Payment status filter
-                        // Payment status filter
             if ($request->filled('payment_status')) {
                 if ($request->payment_status === 'paid') {
                     $customOrdersQuery->where('payment_status', 'paid');
                     $regularOrdersQuery->where('payment_status', 'paid');
-                } elseif ($request->payment_status === 'va_active') {
-                    $customOrdersQuery->where('payment_status', 'va_active');
-                    $regularOrdersQuery->where('payment_status', 'va_active');
                 } elseif ($request->payment_status === 'pending_verification') {
                     $customOrdersQuery->where('payment_status', 'pending_verification');
                     $regularOrdersQuery->where('payment_status', 'pending_verification');
@@ -136,15 +131,9 @@ class OrderManagementController extends Controller
             }
 
             // Payment status filter
-                        // Payment status filter
             if ($request->filled('payment_status')) {
                 if ($request->payment_status === 'paid') {
                     $query->where('payment_status', 'paid');
-                } elseif ($request->payment_status === 'va_active') {
-                    $query->whereHas('user.virtualAccounts', function($q) {
-                        $q->where('status', 'pending')
-                          ->where('expired_at', '>', now());
-                    });
                 } elseif ($request->payment_status === 'pending_verification') {
                     $query->where('payment_status', 'pending_verification');
                 }
@@ -181,15 +170,9 @@ class OrderManagementController extends Controller
             }
 
             // Payment status filter
-                        // Payment status filter
             if ($request->filled('payment_status')) {
                 if ($request->payment_status === 'paid') {
                     $query->where('payment_status', 'paid');
-                } elseif ($request->payment_status === 'va_active') {
-                    $query->whereHas('user.virtualAccounts', function($q) {
-                        $q->where('status', 'pending')
-                          ->where('expired_at', '>', now());
-                    });
                 } elseif ($request->payment_status === 'pending_verification') {
                     $query->where('payment_status', 'pending_verification');
                 }
@@ -232,7 +215,7 @@ class OrderManagementController extends Controller
                 throw new \Exception($stockDeducted['message']);
             }
 
-            $paymentDeadline = now()->addHours(24);
+            $paymentDeadline = now()->addMinutes(60);
             
             $updateData = [
                 'status' => 'approved',
@@ -272,10 +255,10 @@ class OrderManagementController extends Controller
                         'payment_deadline' => $paymentDeadline
                     ]);
                     
-                    return redirect()->back()->with('success', 'Pesanan berhasil disetujui. Customer memiliki 24 jam untuk melakukan pembayaran. Email notifikasi telah dikirim.');
+                    return redirect()->back()->with('success', 'Pesanan berhasil disetujui. Customer memiliki 60 menit untuk melakukan pembayaran. Email notifikasi telah dikirim.');
                 } else {
                     Log::warning('User data not found for order #' . $order->id . ', email not sent');
-                    return redirect()->back()->with('success', 'Pesanan berhasil disetujui. Customer memiliki 24 jam untuk melakukan pembayaran.');
+                    return redirect()->back()->with('success', 'Pesanan berhasil disetujui. Customer memiliki 60 menit untuk melakukan pembayaran.');
                 }
             } catch (\Exception $emailException) {
                 // Email failed but order is already approved
@@ -284,7 +267,7 @@ class OrderManagementController extends Controller
                     'error' => $emailException->getMessage()
                 ]);
                 
-                return redirect()->back()->with('success', 'Pesanan berhasil disetujui. Customer memiliki 24 jam untuk melakukan pembayaran. (Catatan: Email notifikasi gagal dikirim)');
+                return redirect()->back()->with('success', 'Pesanan berhasil disetujui. Customer memiliki 60 menit untuk melakukan pembayaran. (Catatan: Email notifikasi gagal dikirim)');
             }
 
         } catch (\Exception $e) {
@@ -315,18 +298,6 @@ class OrderManagementController extends Controller
             $order = Order::findOrFail($id);
         }
 
-        // Check if THIS specific order has active VA
-        $activeVA = \App\Models\VirtualAccount::where('user_id', $order->user_id)
-            ->where('order_id', $id)
-            ->where('order_type', $orderType)
-            ->where('status', 'pending')
-            ->where('expired_at', '>', now())
-            ->first();
-        
-        if ($activeVA) {
-            return redirect()->back()->with('error', 'Tidak dapat menolak pesanan karena pesanan ini memiliki Virtual Account aktif. Harap tunggu hingga VA expired atau minta customer membatalkan VA terlebih dahulu.');
-        }
-
         // If order was previously approved, restore stock
         if ($order->status === 'approved') {
             $this->restoreStockForOrder($order, $orderType);
@@ -345,19 +316,9 @@ class OrderManagementController extends Controller
             OrderRejectedEvent::dispatch($order, $request->reason ?? '');
         }
 
-        // Send rejection email notification
-        $emailSent = false;
+                // Send rejection email notification
         try {
             Mail::to($order->user->email)->send(new OrderRejectionMail($order, $request->reason, $orderType));
-            
-            \Log::info('Order rejection email sent', [
-                'order_id' => $order->id,
-                'order_type' => $orderType,
-                'customer_email' => $order->user->email,
-                'reason' => $request->reason
-            ]);
-            
-            $emailSent = true;
         } catch (\Exception $e) {
             \Log::error('Failed to send order rejection email: ' . $e->getMessage(), [
                 'order_id' => $order->id,
@@ -365,11 +326,7 @@ class OrderManagementController extends Controller
             ]);
         }
 
-        if ($emailSent) {
-            return redirect()->back()->with('success', 'Pesanan berhasil ditolak dan email notifikasi telah dikirim.');
-        } else {
-            return redirect()->back()->with('success', 'Pesanan berhasil ditolak. (Catatan: Email notifikasi gagal dikirim)');
-        }
+        return redirect()->back()->with('success', 'Pesanan berhasil ditolak.');
     }
 
     /**
@@ -389,31 +346,8 @@ class OrderManagementController extends Controller
             $order = Order::findOrFail($id);
         }
 
-        // Check if user has active VA when trying to reject/cancel
+        // Restore stock when order status changes to rejected/cancelled
         if (in_array($request->status, ['rejected', 'cancelled'])) {
-            $activeVA = \App\Models\VirtualAccount::where('user_id', $order->user_id)
-                ->where('order_id', $id)
-                ->where('order_type', $orderType)
-                ->where('status', 'pending')
-                ->where('expired_at', '>', now())
-                ->first();
-            
-            if ($activeVA) {
-                $errorMessage = 'Tidak dapat mengubah status ke ' . $request->status . ' karena pesanan ini memiliki Virtual Account aktif. Harap tunggu hingga VA expired atau customer membatalkan VA terlebih dahulu.';
-                
-                // If AJAX request, return JSON
-                if ($request->expectsJson() || $request->ajax()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $errorMessage
-                    ], 400);
-                }
-                
-                return redirect()
-                    ->route('admin.order.detail', ['id' => $id, 'type' => $orderType])
-                    ->with('error', $errorMessage);
-            }
-            
             // Restore stock if order was previously approved
             if ($order->status === 'approved') {
                 $stockRestored = $this->restoreStockForOrder($order, $orderType);
@@ -458,7 +392,7 @@ class OrderManagementController extends Controller
 
                 // Set approved timestamps + payment deadline
                 $updateData['approved_at'] = now();
-                $updateData['payment_deadline'] = now()->addHours(24);
+                $updateData['payment_deadline'] = now()->addMinutes(60);
 
                 // Save and commit
                 $order->forceFill($updateData)->save();
@@ -581,17 +515,13 @@ class OrderManagementController extends Controller
         }
 
         // Get payment info
-        $virtualAccount = \App\Models\VirtualAccount::where('user_id', $order->user_id)
-            ->latest()
-            ->first();
-            
         $paymentTransaction = \App\Models\PaymentTransaction::where('user_id', $order->user_id)
             ->where('order_id', $id)
             ->where('order_type', $orderType)
             ->latest()
             ->first();
 
-        return view('admin.order-detail', compact('order', 'orderType', 'uploads', 'virtualAccount', 'paymentTransaction'));
+        return view('admin.order-detail', compact('order', 'orderType', 'uploads', 'paymentTransaction'));
     }
 
     /**

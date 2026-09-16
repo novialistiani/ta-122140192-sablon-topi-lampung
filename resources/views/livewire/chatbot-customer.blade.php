@@ -3,7 +3,7 @@
     <!-- Chat Header -->
     <div class="chatbot-header-bar">
         <div class="chatbot-header-avatar">
-            <img src="{{ asset('images/logo.png') }}" alt="LGI Store" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <img src="{{ asset('images/logo-lgi-photoroom.png') }}" alt="LGI Store" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             <span class="avatar-fallback" style="display:none;"><i class="fas fa-store"></i></span>
         </div>
         <div class="chatbot-header-info">
@@ -152,9 +152,10 @@
             <button 
                 class="chatpage-send" 
                 wire:click="sendMessage"
+                aria-label="Kirim"
                 @if(empty(trim($message)) || $isTyping) disabled @endif
             >
-                <i class="fas fa-paper-plane"></i> Kirim
+             <i class="fas fa-paper-plane"></i>
             </button>
         </div>
     </div>

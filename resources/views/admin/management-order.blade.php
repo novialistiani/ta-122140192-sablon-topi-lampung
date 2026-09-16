@@ -348,7 +348,7 @@
                     data.order.items.forEach(item => {
                         html += `
                             <div class="flex items-center gap-4 p-3 border border-gray-200 rounded-lg">
-                                <img src="${item.image ? '/storage/' + item.image : 'https://via.placeholder.com/60'}" alt="${item.name}" class="w-12 h-12 object-cover rounded">
+                                <img src="${item.image ? '/storage/' + item.image : 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27400%27%3E%3Crect fill=%27%23f0f0f0%27 width=%27400%27 height=%27400%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 font-size=%2724%27 fill=%27%23999%27 text-anchor=%27middle%27 dy=%27.3em%27%3ENo Image%3C/text%3E%3C/svg%3E'}" alt="${item.name}" class="w-12 h-12 object-cover rounded">
                                 <div class="flex-1">
                                     <h5 class="font-medium text-gray-900">${item.name}</h5>
                                     <div class="text-sm text-gray-600">

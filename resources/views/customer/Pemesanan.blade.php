@@ -14,7 +14,7 @@
                 </div>
             </section>
 
-            <!-- Ringkasan Pesanan -->
+                        <!-- Ringkasan Pesanan -->
             <section class="mb-6">
                 <h2 class="section-title">Ringkasan Pesanan</h2>
                 <div class="bg-slate-50 p-4 rounded-lg flex justify-between items-center">
@@ -22,6 +22,22 @@
                     <span class="text-lg font-bold text-slate-900">Rp {{ number_format((float) $amount, 0, ',', '.') }}</span>
                 </div>
             </section>
+
+            @if(!empty($order->payment_deadline))
+            <!-- Peringatan Batas Waktu Pembayaran -->
+            <section class="mb-6">
+                <div class="p-4 bg-red-50 border border-red-200 rounded-lg text-center">
+                    <p class="text-sm text-red-700 font-medium">
+                        <i class="fas fa-clock"></i> Selesaikan pembayaran sebelum batas waktu berakhir
+                    </p>
+                    <p id="payment-countdown" class="text-2xl font-bold text-red-700 mt-1">--:--</p>
+                    <p class="text-xs text-red-600 mt-1">
+                        Pesanan akan otomatis dibatalkan jika bukti pembayaran belum diunggah sebelum batas waktu ini.
+                    </p>
+                </div>
+            </section>
+            @endif
+
 
             <!-- QRIS -->
             <section class="payment-section mb-6">
@@ -67,6 +83,33 @@
             </form>
         </div>
     </main>
+
+        @if(!empty($order->payment_deadline))
+    <script>
+        const paymentDeadline = new Date('{{ \Carbon\Carbon::parse($order->payment_deadline)->toIso8601String() }}').getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = paymentDeadline - now;
+            const el = document.getElementById('payment-countdown');
+
+            if (!el) return;
+
+            if (distance <= 0) {
+                el.textContent = 'Waktu habis';
+                clearInterval(countdownInterval);
+                return;
+            }
+
+            const minutes = Math.floor(distance / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            el.textContent = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+        }
+
+        updateCountdown();
+        const countdownInterval = setInterval(updateCountdown, 1000);
+    </script>
+    @endif
 
     @stack('scripts')
 </x-customer-layout>

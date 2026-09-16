@@ -180,7 +180,33 @@ class ChatbotApiController extends Controller
                     'message' => 'Pesan Anda telah terkirim. Admin akan segera membalas.'
                 ]);
             }
-            
+                        // Check if this message needs to be escalated to admin (complaint, urgent issue, or explicit request)
+            if ($this->needsAdminEscalation($userMessage)) {
+                $conversation->update([
+                    'needs_admin_response' => true
+                ]);
+
+                $escalationMessage = "Terima kasih sudah menghubungi kami. 🙏 Pesan Anda sudah kami teruskan ke admin dan akan segera ditindaklanjuti.\n\nMohon ditunggu sebentar, admin kami akan membalas langsung di percakapan ini.";
+
+                ChatMessage::create([
+                    'conversation_id' => $conversation->id,
+                    'chat_conversation_id' => $conversation->id,
+                    'sender_type' => 'bot',
+                    'message' => $escalationMessage,
+                    'metadata' => ['escalated' => true],
+                    'is_read_by_user' => true
+                ]);
+
+                $conversation->touch();
+
+                return response()->json([
+                    'success' => true,
+                    'bot_response' => $escalationMessage,
+                    'conversation_id' => $conversation->id,
+                    'admin_handling' => false,
+                    'escalated' => true
+                ]);
+            }
             // Bot responds only if admin hasn't taken over
             $botResponseData = $this->generateBotResponse($userMessage, $productContext);
             
@@ -218,7 +244,32 @@ class ChatbotApiController extends Controller
             ], 500);
         }
     }
-    
+        /**
+     * Detect if a customer message should be escalated directly to admin
+     * (complaints, urgent issues, or explicit requests to talk to a human)
+     */
+    protected function needsAdminEscalation(string $userMessage): bool
+    {
+        $msg = strtolower($userMessage);
+
+        $escalationKeywords = [
+            // Keluhan/komplain
+            'komplain', 'keluhan', 'kecewa', 'rusak', 'cacat',
+            'masalah', 'error', 'salah kirim', 'tidak sesuai', 'tidak puas',
+            'refund', 'pengembalian', 'garansi', 'batal',
+            // Permintaan bicara langsung dengan admin/manusia
+            'hubungi admin', 'bicara dengan admin', 'panggil admin',
+            'customer service', 'bicara dengan orang',
+        ];
+
+        foreach ($escalationKeywords as $keyword) {
+            if (str_contains($msg, $keyword)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
     /**
      * Generate bot response based on user message
      * Fetches real product data from database when product context is provided
@@ -315,7 +366,7 @@ class ChatbotApiController extends Controller
         // Check for custom design questions
         if (str_contains($msg, 'custom') || str_contains($msg, 'desain') || str_contains($msg, 'design')) {
             if ($product->custom_design_allowed) {
-                return "🎨 *Custom Design untuk {$productName}*\n\n✅ Ya! Produk ini mendukung custom design.\n\nCara order custom:\n1. Tambahkan produk ke keranjang\n2. Upload desain Anda saat checkout\n3. Tim kami akan review dalam 1x24 jam\n\nFormat desain yang diterima: PNG, JPG, AI, PSD";
+                return "🎨 *Custom Design untuk {$productName}*\n\n✅ Ya! Produk ini mendukung custom design.\n\nCara order custom:\n1. Buka halaman produk ini dan pilih menu Custom Design\n2. Upload desain Anda dan pilih bagian/jenis cutting\n3. Tim kami akan me-review pengajuan desain Anda\n\nFormat desain yang diterima: JPG, PNG, PDF (maks. 10 MB)";
             } else {
                 return "❌ Maaf, *{$productName}* tidak mendukung custom design.\n\nNamun produk ini tersedia dalam berbagai pilihan warna standar yang menarik! Cek halaman detail produk untuk melihat pilihan warna.";
             }
@@ -378,18 +429,11 @@ class ChatbotApiController extends Controller
             return $response;
         }
         
-        // Check for shipping questions
-        if (str_contains($msg, 'kirim') || str_contains($msg, 'pengiriman') || str_contains($msg, 'ongkir')) {
-            $response = "📦 *Info Pengiriman {$productName}*\n\n";
-            $response .= "• Estimasi Jawa: 2-4 hari kerja\n";
-            $response .= "• Estimasi Luar Jawa: 3-7 hari kerja\n";
-            $response .= "• Pengiriman via JNE, J&T, SiCepat\n\n";
-            
-            if ($product->weight) {
-                $response .= "Berat produk: {$product->weight} gram\n";
-            }
-            
-            $response .= "\nOngkos kirim dihitung saat checkout berdasarkan lokasi Anda.";
+        // Check for pickup/pengambilan questions (sistem ini pickup-only, tidak ada pengiriman kurir)
+        if (str_contains($msg, 'kirim') || str_contains($msg, 'pengiriman') || str_contains($msg, 'ongkir') || str_contains($msg, 'ambil') || str_contains($msg, 'pickup')) {
+            $response = "🏬 *Pengambilan Pesanan {$productName}*\n\n";
+            $response .= "Saat ini pesanan hanya dapat diambil langsung di toko (pickup), belum ada layanan pengiriman kurir.\n\n";
+            $response .= "Setelah pesanan disetujui dan pembayaran diverifikasi, Anda dapat memilih tanggal pengambilan dan mengambil pesanan langsung di toko kami sesuai jadwal yang dipilih.";
             return $response;
         }
         
@@ -414,7 +458,7 @@ class ChatbotApiController extends Controller
         $response .= "• Stok & ketersediaan\n";
         $response .= "• Pilihan warna/ukuran\n";
         $response .= "• Custom design\n";
-        $response .= "• Pengiriman";
+        $response .= "• Cara pengambilan (pickup)";
         
         return $response;
     }
@@ -439,7 +483,7 @@ class ChatbotApiController extends Controller
         
         if (str_contains($msg, 'custom') || str_contains($msg, 'desain')) {
             if ($customAllowed) {
-                return "🎨 *Custom Design untuk {$productName}*\n\nYa! Produk ini mendukung custom design. Anda bisa mengunggah desain Anda sendiri saat checkout.";
+                return "🎨 *Custom Design untuk {$productName}*\n\nYa! Produk ini mendukung custom design. Anda bisa mengunggah desain Anda sendiri melalui halaman Custom Design.";
             } else {
                 return "❌ Maaf, {$productName} tidak mendukung custom design. Namun tersedia dalam berbagai pilihan warna standar yang menarik!";
             }
@@ -489,9 +533,9 @@ class ChatbotApiController extends Controller
             return 'Untuk informasi harga lengkap, silakan kunjungi halaman katalog atau detail produk.';
         }
         
-        // Check promo/diskon BEFORE stock check (karena kata "ada" bisa memicu stock check)
+        // Belum ada program promo aktif di sistem ini - jawab jujur, jangan mengarang promo
         if (str_contains($msg, 'promo') || str_contains($msg, 'diskon') || str_contains($msg, 'sale')) {
-            return "🎉 Promo Saat Ini:\n\n• Diskon untuk pembelian pertama\n• Free ongkir min. belanja Rp 200.000\n• Potongan harga untuk order custom dalam jumlah besar\n\nKunjungi halaman utama untuk promo terbaru!";
+            return "Saat ini belum ada promo atau diskon yang sedang berjalan. 🙏\n\nUntuk info promo terbaru di kemudian hari, Anda bisa cek kembali halaman utama toko kami secara berkala.";
         }
         
         if (str_contains($msg, 'stok') || str_contains($msg, 'tersedia') || str_contains($msg, 'stock')) {
@@ -499,13 +543,14 @@ class ChatbotApiController extends Controller
             return "Kami memiliki {$inStockCount} produk yang tersedia saat ini! Untuk cek ketersediaan produk spesifik, silakan lihat halaman detail produk.";
         }
         
-        if (str_contains($msg, 'kirim') || str_contains($msg, 'pengiriman') || str_contains($msg, 'ongkir')) {
-            return "📦 Info Pengiriman:\n\n• Jawa: 2-4 hari kerja\n• Luar Jawa: 3-7 hari kerja\n• Pengiriman via JNE, J&T, SiCepat\n\nOngkos kirim dihitung saat checkout berdasarkan lokasi Anda.";
+        // Sistem pickup-only - tidak ada layanan pengiriman kurir
+        if (str_contains($msg, 'kirim') || str_contains($msg, 'pengiriman') || str_contains($msg, 'ongkir') || str_contains($msg, 'ambil') || str_contains($msg, 'pickup')) {
+            return "🏬 Info Pengambilan Pesanan:\n\nSaat ini seluruh pesanan hanya dapat diambil langsung di toko (pickup), kami belum menyediakan layanan pengiriman kurir.\n\nSetelah pesanan disetujui dan pembayaran diverifikasi, Anda bisa memilih tanggal pengambilan lalu mengambil pesanan langsung di toko.";
         }
         
         if (str_contains($msg, 'custom') || str_contains($msg, 'desain') || str_contains($msg, 'design')) {
             $customCount = Product::where('is_active', true)->where('custom_design_allowed', true)->count();
-            return "🎨 Custom Design:\n\nYa! Kami menerima custom design. Saat ini ada {$customCount} produk yang mendukung custom design.\n\nCara order custom:\n1. Pilih produk dengan label CUSTOM\n2. Upload desain Anda saat checkout\n3. Tim kami akan review dalam 1x24 jam";
+            return "🎨 Custom Design:\n\nYa! Kami menerima custom design. Saat ini ada {$customCount} produk yang mendukung custom design.\n\nCara order custom:\n1. Pilih produk yang mendukung custom design\n2. Upload desain Anda melalui halaman Custom Design\n3. Tim kami akan me-review pengajuan desain Anda";
         }
         
         if (str_contains($msg, 'kategori') || str_contains($msg, 'produk') || str_contains($msg, 'jual')) {
@@ -536,14 +581,14 @@ class ChatbotApiController extends Controller
         }
         
         if (str_contains($msg, 'halo') || str_contains($msg, 'hai') || str_contains($msg, 'hello') || str_contains($msg, 'hi')) {
-            return "Halo! 👋 Selamat datang di LGI Store. Ada yang bisa saya bantu hari ini?\n\nAnda bisa tanya tentang:\n• Harga produk\n• Ketersediaan stok\n• Custom design\n• Pengiriman\n• Promo";
+            return "Halo! 👋 Selamat datang di LGI Store. Ada yang bisa saya bantu hari ini?\n\nAnda bisa tanya tentang:\n• Harga produk\n• Ketersediaan stok\n• Custom design\n• Cara pengambilan pesanan (pickup)";
         }
         
         if (str_contains($msg, 'terima kasih') || str_contains($msg, 'thanks') || str_contains($msg, 'makasih')) {
             return "Sama-sama! 😊 Senang bisa membantu Anda. Jika ada pertanyaan lain, jangan ragu untuk bertanya ya!\n\nSelamat berbelanja di LGI Store!";
         }
         
-        return "Terima kasih atas pertanyaan Anda! 😊\n\nUntuk bantuan lebih lanjut, Anda bisa:\n• Kunjungi halaman Chat untuk berbicara dengan tim support\n• Cek halaman FAQ untuk pertanyaan umum\n• Atau tanyakan langsung tentang harga, stok, custom design, atau pengiriman.";
+               return "Maaf, saya belum sepenuhnya memahami pertanyaan Anda. 🙏\n\nAnda bisa coba tanyakan tentang:\n• Harga & rekomendasi produk\n• Stok & ketersediaan\n• Custom design\n• Cara pengambilan pesanan (pickup)\n\nAtau ketik \"hubungi admin\" untuk berbicara langsung dengan tim kami.";
     }
 
     /**

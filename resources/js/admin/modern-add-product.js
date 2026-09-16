@@ -1071,7 +1071,7 @@ class ModernAddProductManager {
                 original_price: v.original_price || 0,
                 stock: v.stock || 0,
                 image: null, // Will be set to File object if user uploads new image
-                imagePreview: v.image ? `/storage/${v.image}` : null,
+                imagePreview: v.image ? (v.image.startsWith('http://') || v.image.startsWith('https://') ? v.image : `/storage/${v.image}`) : null,
                 existingImagePath: v.image || null // Keep track of existing image path
             }));
             console.log('📦 Loaded variants from product:', this.variants);

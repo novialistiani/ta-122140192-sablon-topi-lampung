@@ -122,7 +122,7 @@ class ChatbotCustomer extends Component
             'Rekomendasi harga murah',
             'Lihat kategori produk',
             'Custom design',
-            'Promo terbaru'
+            'Cara Pengambilan Pesanan'
         ];
     }
 
@@ -203,32 +203,41 @@ class ChatbotCustomer extends Component
         
         $lowerMessage = strtolower($message);
         $response = '';
-        $this->productRecommendations = [];
+                $this->productRecommendations = [];
+        $isEscalated = false;
 
-        // Check for greetings first
-        $greetingResponse = $this->handleGreeting($lowerMessage);
-        if ($greetingResponse) {
-            $response = $greetingResponse;
+        // Check if message needs to be escalated to admin (complaint, urgent issue, or explicit request)
+        if ($this->needsAdminEscalation($lowerMessage)) {
+            $this->conversation->update(['needs_admin_response' => true]);
+            $response = "Terima kasih sudah menghubungi kami. 🙏 Pesan Anda sudah kami teruskan ke admin dan akan segera ditindaklanjuti.\n\nMohon ditunggu sebentar, admin kami akan membalas langsung di percakapan ini.";
+            $isEscalated = true;
         }
+        // Check for greetings first
+        elseif ($greetingResponse = $this->handleGreeting($lowerMessage)) { $response = $greetingResponse; }
         // Process different intents
-        elseif ($this->containsAny($lowerMessage, ['harga murah', 'murah', 'termurah', 'budget', 'hemat', 'promo'])) {
+        elseif ($this->containsAny($lowerMessage, ['promo', 'diskon', 'sale'])) {
+            $response = $this->handlePromoQuery();
+        } elseif ($this->containsAny($lowerMessage, ['harga murah', 'murah', 'termurah', 'budget', 'hemat'])) {
             $response = $this->handleCheapPriceRecommendation();
-        } elseif ($this->containsAny($lowerMessage, ['kategori', 'category', 'jenis produk', 'lihat kategori'])) {
-            $response = $this->handleCategoryList();
-        } elseif ($this->containsAny($lowerMessage, ['custom', 'desain', 'sablon', 'design'])) {
-            $response = $this->handleCustomDesign();
         } elseif ($this->containsAny($lowerMessage, ['topi', 'cap', 'hat'])) {
             $response = $this->handleCategoryProducts('Topi');
         } elseif ($this->containsAny($lowerMessage, ['kaos', 'baju', 't-shirt', 'shirt'])) {
             $response = $this->handleCategoryProducts('Kaos');
         } elseif ($this->containsAny($lowerMessage, ['jaket', 'hoodie', 'jacket'])) {
             $response = $this->handleCategoryProducts('Jaket');
+        } elseif ($this->containsAny($lowerMessage, ['kategori', 'category', 'jenis produk', 'lihat kategori'])) {
+            $response = $this->handleCategoryList();
+        } elseif ($this->containsAny($lowerMessage, ['custom', 'desain', 'sablon', 'design'])) {
+            $response = $this->handleCustomDesign();
         } elseif ($this->containsAny($lowerMessage, ['subcategory', 'sub kategori', 'subkategori'])) {
             $response = $this->handleSubcategoryList();
         } elseif ($this->containsAny($lowerMessage, ['stok', 'stock', 'ready', 'tersedia'])) {
             $response = $this->handleStockQuery();
         } elseif ($this->containsAny($lowerMessage, ['kontak', 'hubungi', 'wa', 'whatsapp', 'admin'])) {
             $response = $this->handleContactInfo();
+        } elseif ($this->containsAny($lowerMessage, ['ambil', 'pickup', 'pengambilan', 'kirim', 'pengiriman', 'ongkir'])) {
+             $response = $this->handlePickupInfo();
+
         } else {
             // Check if message contains category name
             $foundCategory = $this->findCategory($lowerMessage);
@@ -239,24 +248,28 @@ class ChatbotCustomer extends Component
             }
         }
 
-        // Save bot response
+                // Save bot response
         ChatMessage::create([
             'conversation_id' => $this->conversation->id,
             'chat_conversation_id' => $this->conversation->id,
             'sender_type' => 'bot',
             'message' => $response,
             'is_read_by_user' => true,
-            'metadata' => !empty($this->productRecommendations) ? ['products' => $this->productRecommendations] : null
+            'metadata' => !empty($this->productRecommendations) ? ['products' => $this->productRecommendations] : ($isEscalated ? ['escalated' => true] : null)
         ]);
 
         $this->isTyping = false;
         $this->loadChatHistory();
         
-        // Set contextual quick replies
-        $this->setContextualQuickReplies($lowerMessage);
+        if ($isEscalated) {
+            $this->quickReplies = [];
+        } else {
+            // Set contextual quick replies
+            $this->setContextualQuickReplies($lowerMessage);
+        }
     }
 
-    protected function containsAny($haystack, $needles)
+        protected function containsAny($haystack, $needles)
     {
         foreach ($needles as $needle) {
             if (str_contains($haystack, $needle)) {
@@ -264,6 +277,23 @@ class ChatbotCustomer extends Component
             }
         }
         return false;
+    }
+
+    /**
+     * Detect if a customer message should be escalated directly to admin
+     * (complaints, urgent issues, or explicit requests to talk to a human)
+     */
+    protected function needsAdminEscalation($message)
+    {
+        $escalationKeywords = [
+            'komplain', 'keluhan', 'kecewa', 'rusak', 'cacat',
+            'masalah', 'error', 'salah kirim', 'tidak sesuai', 'tidak puas',
+            'refund', 'pengembalian', 'garansi', 'batal',
+            'hubungi admin', 'bicara dengan admin', 'panggil admin',
+            'customer service', 'bicara dengan orang',
+        ];
+
+        return $this->containsAny($message, $escalationKeywords);
     }
 
     protected function findCategory($message)
@@ -426,14 +456,21 @@ class ChatbotCustomer extends Component
 
         return $response;
     }
-
-    protected function handleContactInfo()
+    protected function handlePickupInfo()
+    {
+    return "🏬 Pengambilan Pesanan:\n\nSaat ini seluruh pesanan hanya dapat diambil langsung di toko (pickup), kami belum menyediakan layanan pengiriman kurir.\n\nSetelah pesanan disetujui dan pembayaran diverifikasi, Anda bisa memilih tanggal pengambilan lalu mengambil pesanan langsung di toko.";
+    }
+        protected function handlePromoQuery()
+    {
+         return "Saat ini belum ada promo atau diskon yang sedang berjalan. 🙏\n\nUntuk info promo terbaru di kemudian hari, Anda bisa cek kembali halaman utama toko kami secara berkala.";
+    }
+        protected function handleContactInfo()
     {
         return "📞 Kontak LGI Store:\n\n" .
-            "📱 WhatsApp: 0821-7839-6916\n" .
-            "📧 Email: noreply@lgistore.com\n\n" .
-            "Kami siap membantu Anda 24/7! 😊\n\n" .
-            "Atau Anda bisa langsung klik tombol WhatsApp di halaman produk untuk konsultasi.";
+            "Untuk pertanyaan seputar produk, pesanan, atau keluhan, Anda bisa langsung chat di sini ya — admin kami akan membalas langsung di percakapan ini.\n\n" .
+            "Kalau butuh kontak alternatif:\n" .
+            "📱 WhatsApp: 0895-0858-5888\n" .
+            "📧 Email: sablontopilampung@gmail.com";
     }
 
     protected function handleGreeting($message)
@@ -517,12 +554,12 @@ class ChatbotCustomer extends Component
         }
     }
 
-    protected function handleDefaultResponse()
+        protected function handleDefaultResponse()
     {
         $responses = [
-            "Terima kasih atas pertanyaannya! Ada yang bisa saya bantu lainnya?\n\nAnda bisa bertanya tentang:\n• Rekomendasi harga murah\n• Kategori produk\n• Custom design\n• Stok produk",
-            "Saya siap membantu Anda menemukan produk yang tepat! Coba tanyakan tentang kategori produk atau rekomendasi harga.",
-            "Silakan beri tahu saya lebih detail tentang yang Anda cari. Misalnya: 'kaos murah' atau 'topi custom'",
+            "Maaf, saya belum sepenuhnya memahami pertanyaan Anda. 🙏\n\nAnda bisa bertanya tentang:\n• Rekomendasi harga murah\n• Kategori produk\n• Custom design\n• Stok produk\n\nAtau ketik \"hubungi admin\" untuk berbicara langsung dengan tim kami.",
+            "Saya siap membantu Anda menemukan produk yang tepat! Coba tanyakan tentang kategori produk atau rekomendasi harga.\n\nKalau butuh bantuan lebih lanjut, ketik \"hubungi admin\" ya.",
+            "Silakan beri tahu saya lebih detail tentang yang Anda cari. Misalnya: 'kaos murah' atau 'topi custom'.\n\nAtau ketik \"hubungi admin\" untuk berbicara dengan tim kami.",
         ];
 
         return $responses[array_rand($responses)];

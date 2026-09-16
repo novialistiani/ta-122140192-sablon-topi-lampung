@@ -26,7 +26,7 @@ class LoginForm extends Form
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function authenticate(): void
+    function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 

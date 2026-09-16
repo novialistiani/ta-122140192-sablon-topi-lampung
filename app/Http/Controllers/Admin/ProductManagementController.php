@@ -524,29 +524,23 @@ class ProductManagementController extends Controller
                     $product->customDesignPrices()->detach();
                 }
 
-                // Handle variants update
+                                // Handle variants update (UPDATE existing instead of delete+recreate,
+                // supaya variant_id tidak berubah dan tidak merusak referensi di order lama)
                 if ($request->filled('variants')) {
-                    // Get old variants to preserve images
+                    // Get old variants keyed by color-size
                     $oldVariants = $product->variants()->get()->keyBy(function($item) {
                         return $item->color . '-' . $item->size;
                     });
-                    
-                    // Delete old variant images from storage if needed
-                    foreach ($oldVariants as $oldVariant) {
-                        if ($oldVariant->image && Storage::disk('public')->exists($oldVariant->image)) {
-                            // We'll only delete if not being reused
-                        }
-                    }
-                    
-                    // Delete old variants
-                    $product->variants()->delete();
-                    
+
                     $variants = json_decode($request->variants, true);
-                    
+                    $processedKeys = [];
+
                     if (is_array($variants)) {
                         foreach ($variants as $index => $variantData) {
-                            $variant = [
-                                'product_id' => $product->id,
+                            $key = $variantData['color'] . '-' . $variantData['size'];
+                            $processedKeys[] = $key;
+
+                            $variantFields = [
                                 'color' => $variantData['color'],
                                 'size' => $variantData['size'],
                                 'price' => $variantData['price'] ?? 0,
@@ -554,29 +548,40 @@ class ProductManagementController extends Controller
                                 'stock' => $variantData['stock'] ?? 0,
                             ];
 
-                            // Check if new image uploaded
+                            // Check if new image uploaded for this variant
                             $hasNewImage = false;
                             if ($request->hasFile('variant_images')) {
                                 $variantImages = $request->file('variant_images');
                                 if (isset($variantImages[$index]) && $variantImages[$index]) {
-                                    $variant['image'] = $this->compressAndStoreImage($variantImages[$index], 'variants');
+                                    $variantFields['image'] = $this->compressAndStoreImage($variantImages[$index], 'variants');
                                     $hasNewImage = true;
                                 }
                             }
-                            
-                            // If no new image, try to keep old image
-                            if (!$hasNewImage) {
-                                $key = $variantData['color'] . '-' . $variantData['size'];
-                                if (isset($oldVariants[$key]) && $oldVariants[$key]->image) {
-                                    $variant['image'] = $oldVariants[$key]->image;
-                                }
-                            }
 
-                            ProductVariant::create($variant);
+                            if (isset($oldVariants[$key])) {
+                                // Kombinasi warna+ukuran sudah ada -> UPDATE saja, ID tetap sama
+                                $existingVariant = $oldVariants[$key];
+                                if (!$hasNewImage) {
+                                    // Gak ada gambar baru, jangan timpa gambar lama
+                                    unset($variantFields['image']);
+                                }
+                                $existingVariant->update($variantFields);
+                            } else {
+                                // Kombinasi baru -> baru bikin row baru
+                                $variantFields['product_id'] = $product->id;
+                                ProductVariant::create($variantFields);
+                            }
                         }
                     }
-                }
-            });
+
+                    // Hapus variant yang benar-benar sudah tidak ada lagi di form
+                    foreach ($oldVariants as $key => $oldVariant) {
+                        if (!in_array($key, $processedKeys)) {
+                            $oldVariant->delete();
+                        }
+                    }
+                    }
+                });
 
             return response()->json([
                 'success' => true,
@@ -780,7 +785,6 @@ class ProductManagementController extends Controller
 
     /**
      * 🎯 HELPER METHOD: Compress and optimize uploaded image
-     * 
      * LOGIKA KOMPRESI AGRESIF:
      * 1. Baca file yang diupload
      * 2. Cek dimensi dan resize proportional

@@ -286,12 +286,12 @@
                         $recId = $item['id'] ?? ($item->id ?? null);
                         $recName = $item['name'] ?? ($item->name ?? 'Produk');
                         $recPrice = $item['price'] ?? ($item->formatted_price ?? '0');
-                        $recImage = $item['image'] ?? (isset($item->image) ? asset('storage/'.$item->image) : 'https://via.placeholder.com/300');
+                        $recImage = $item['image'] ?? (isset($item->image) ? asset('storage/'.$item->image) : 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27400%27%3E%3Crect fill=%27%23f0f0f0%27 width=%27400%27 height=%27400%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 font-size=%2724%27 fill=%27%23999%27 text-anchor=%27middle%27 dy=%27.3em%27%3ENo Image%3C/text%3E%3C/svg%3E');
                     @endphp
                     <div class="recommendation-card" data-product-id="{{ $recId }}" tabindex="0">
                         <a href="{{ route('product.detail', ['id' => $recId, 'name' => $recName, 'price' => $recPrice, 'image' => $recImage]) }}" class="recommendation-link" aria-label="Lihat {{ $recName }}">
                             <div class="recommendation-image">
-                                <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" width="200" height="160" onerror="this.src='https://via.placeholder.com/200x160?text=No+Image'">
+                                <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" width="200" height="160" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27400%27%3E%3Crect fill=%27%23f0f0f0%27 width=%27400%27 height=%27400%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 font-size=%2724%27 fill=%27%23999%27 text-anchor=%27middle%27 dy=%27.3em%27%3ENo Image%3C/text%3E%3C/svg%3E'">
                                 @if(!empty($item['custom_design_allowed']) && $item['custom_design_allowed'])
                                     <div class="product-ribbon small" aria-hidden="true">CUSTOM</div>
                                 @endif

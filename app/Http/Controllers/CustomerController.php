@@ -1053,7 +1053,7 @@ public function submitPickupPayment(Request $request)
             ], 422);
         }
 
-        DB::beginTransaction();
+        \DB::beginTransaction();
         try {
             $user = auth()->user();
             if (!$user) {
@@ -1410,7 +1410,16 @@ $pricePerItem = $variant ? (float) $variant->price : (float) $product->price;
             $regularOrders = $regularOrdersQuery->orderBy('created_at', 'desc')->get();
             $customOrders = $customOrdersQuery->orderBy('created_at', 'desc')->get();
         }
-        
+        // Enhance regular orders' item images with proper fallback (variant/product)
+        $regularOrders = $regularOrders->map(function ($order) {
+            $items = collect($order->items)->values()->map(function ($item) {
+                $product = \App\Models\Product::find($item['product_id'] ?? null);
+                $item['image'] = $this->resolveItemImage($item, $product);
+                return $item;
+            })->toArray();
+            $order->items = $items;
+            return $order;
+        });
         // Apply status filter
         if ($status) {
             $regularOrders = $regularOrders->filter(function ($order) use ($status) {
