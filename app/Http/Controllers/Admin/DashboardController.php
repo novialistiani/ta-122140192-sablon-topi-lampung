@@ -281,17 +281,17 @@ class DashboardController
         $allSales = $regularSales->concat($customSales);
         
         $salesData = $allSales->groupBy(function($item) {
-                return $item['created_at']->format('M');
-            })
-            ->map(function($group, $label) {
-                return [
-                    'label' => $label,
-                    'sales' => $group->count(),
-                    'revenue' => (int) $group->sum('total')
-                ];
-            })
-            ->values()
-            ->sortBy('label');
+        return $item['created_at']->format('Y-m'); // key sortable: 2026-07, 2026-08, dst
+    })
+    ->map(function($group) {
+        return [
+            'label' => $group->first()['created_at']->format('M'),
+            'sales' => $group->count(),
+            'revenue' => (int) $group->sum('total')
+        ];
+    })
+    ->sortKeys() // urutkan berdasarkan key "Y-m" (kronologis), bukan label "M" (alfabetis)
+    ->values();
 
         return response()->json([
             'labels' => $salesData->pluck('label')->toArray(),
