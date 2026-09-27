@@ -1,5 +1,5 @@
 <x-customer-layout title="Pemesanan" active="pemesanan">
-    @vite(['resources/css/guest/Pemesanan.css'])
+    @vite(['resources/css/customer/Pembayaran.css'])
 
     <!-- Main Content -->
     <main class="checkout-main">

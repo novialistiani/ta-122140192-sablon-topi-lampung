@@ -98,9 +98,7 @@ class PosController extends Controller
 
             foreach ($validated['items'] as $itemInput) {
                 $product = Product::findOrFail($itemInput['product_id']);
-                $variant = $itemInput['variant_id']
-                    ? ProductVariant::where('id', $itemInput['variant_id'])->where('product_id', $product->id)->first()
-                    : null;
+                 $variant = ($itemInput['variant_id'] ?? null) ? ProductVariant::where('id', $itemInput['variant_id'] ?? null)->where('product_id', $product->id)->first() : null; 
 
                 $availableStock = $variant ? $variant->stock : $product->stock;
                 if ($itemInput['quantity'] > $availableStock) {

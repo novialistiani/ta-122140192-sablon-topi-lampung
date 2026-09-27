@@ -702,13 +702,15 @@ class CustomerController extends Controller
                 return redirect()->route('order-list')->with('error', 'Pesanan tidak ditemukan atau belum disetujui');
             }
             
-            $items = collect($order->items);
+           $items = collect($order->items)->map(function ($item) {
+                $product = \App\Models\Product::find($item['product_id'] ?? null);
+                $item['image'] = $this->resolveItemImage($item, $product);
+                return $item;
+});
             $subtotal = $order->subtotal;
         }
         
-        // Use dummy address and shipping for display (since we're skipping those steps)
-        $address = $user->addresses()->where('is_primary', true)->first() ?? $user->addresses()->first();
-        $shippingMethod = 'delivery'; // Default
+        
         
         // Store in session for processOrder
         $request->session()->put('payment_order_type', $orderType);
@@ -811,7 +813,13 @@ class CustomerController extends Controller
                 $order = \App\Models\Order::where('user_id', $user->id)
                     ->findOrFail($orderId);
                 
-                $items = collect($order->items);
+                $items = collect($order->items)->values()->map(function ($item) {
+    $product = \App\Models\Product::find($item['product_id'] ?? null);
+
+    $item['image'] = $this->resolveItemImage($item, $product);
+
+    return $item;
+});
                 $subtotal = $order->subtotal;
             }
             
@@ -1379,98 +1387,121 @@ $pricePerItem = $variant ? (float) $variant->price : (float) $product->price;
      * Display order list page with user's orders
      * Includes both regular orders and custom design orders
      */
-    public function orderList()
-    {
-        $user = auth()->user();
-        
-        // Get filter inputs
-        $kategori = request()->get('kategori', '');
-        $status = request()->get('status', '');
-        $tglMulai = request()->get('tgl_mulai', '');
-        $tglAkhir = request()->get('tgl_akhir', '');
-        
-        // Get regular orders
-        $regularOrdersQuery = \App\Models\Order::where('user_id', $user->id);
-        
-        // Get custom design orders
-        $customOrdersQuery = \App\Models\CustomDesignOrder::where('user_id', $user->id)
-            ->with(['uploads', 'product', 'variant']);
-        
-        // Apply filters
-        if ($kategori === 'regular') {
-            // Only regular orders
-            $regularOrders = $regularOrdersQuery->orderBy('created_at', 'desc')->get();
-            $customOrders = collect([]);
-        } elseif ($kategori === 'custom') {
-            // Only custom orders
-            $regularOrders = collect([]);
-            $customOrders = $customOrdersQuery->orderBy('created_at', 'desc')->get();
-        } else {
-            // Both
-            $regularOrders = $regularOrdersQuery->orderBy('created_at', 'desc')->get();
-            $customOrders = $customOrdersQuery->orderBy('created_at', 'desc')->get();
+    public function orderList(Request $request)
+{
+    $user = auth()->user();
+
+    // Ambil filter dari URL
+    $kategori = $request->input('kategori');
+    $status = $request->input('status');
+    $tglMulai = $request->input('tgl_mulai');
+    $tglAkhir = $request->input('tgl_akhir');
+
+    // =========================
+    // REGULAR ORDERS
+    // =========================
+    $regularOrdersQuery = Order::where('user_id', $user->id);
+
+    if ($kategori === 'custom') {
+        // Jika memilih Custom Design, jangan ambil pesanan reguler
+        $regularOrders = collect();
+    } else {
+        // Filter status
+        if (!empty($status)) {
+            $regularOrdersQuery->where('status', $status);
         }
-        // Enhance regular orders' item images with proper fallback (variant/product)
+
+        // Filter tanggal mulai
+        if (!empty($tglMulai)) {
+            $regularOrdersQuery->whereDate('created_at', '>=', $tglMulai);
+        }
+
+        // Filter tanggal akhir
+        if (!empty($tglAkhir)) {
+            $regularOrdersQuery->whereDate('created_at', '<=', $tglAkhir);
+        }
+
+        $regularOrders = $regularOrdersQuery
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Resolve gambar produk
         $regularOrders = $regularOrders->map(function ($order) {
-            $items = collect($order->items)->values()->map(function ($item) {
-                $product = \App\Models\Product::find($item['product_id'] ?? null);
-                $item['image'] = $this->resolveItemImage($item, $product);
-                return $item;
-            })->toArray();
+            $items = collect($order->items)
+                ->values()
+                ->map(function ($item) {
+                    $product = Product::find($item['product_id'] ?? null);
+
+                    $item['image'] = $this->resolveItemImage($item, $product);
+
+                    return $item;
+                })
+                ->toArray();
+
             $order->items = $items;
+
             return $order;
         });
-        // Apply status filter
-        if ($status) {
-            $regularOrders = $regularOrders->filter(function ($order) use ($status) {
-                return $order->status === $status;
-            });
-            $customOrders = $customOrders->filter(function ($order) use ($status) {
-                return $order->status === $status;
-            });
-        }
-        
-        // Apply date filters
-        if ($tglMulai) {
-            $startDate = \Carbon\Carbon::createFromFormat('Y-m-d', $tglMulai)->startOfDay();
-            $regularOrders = $regularOrders->filter(function ($order) use ($startDate) {
-                return $order->created_at >= $startDate;
-            });
-            $customOrders = $customOrders->filter(function ($order) use ($startDate) {
-                return $order->created_at >= $startDate;
-            });
-        }
-        
-        if ($tglAkhir) {
-            $endDate = \Carbon\Carbon::createFromFormat('Y-m-d', $tglAkhir)->endOfDay();
-            $regularOrders = $regularOrders->filter(function ($order) use ($endDate) {
-                return $order->created_at <= $endDate;
-            });
-            $customOrders = $customOrders->filter(function ($order) use ($endDate) {
-                return $order->created_at <= $endDate;
-            });
-        }
-        
-        // Merge and sort by created_at
-        $allOrders = $regularOrders->concat($customOrders)
-            ->sortByDesc('created_at')
-            ->values();
-        
-        // Manual pagination
-        $perPage = 10;
-        $currentPage = request()->get('page', 1);
-        $offset = ($currentPage - 1) * $perPage;
-        
-        $orders = new \Illuminate\Pagination\LengthAwarePaginator(
-            $allOrders->slice($offset, $perPage),
-            $allOrders->count(),
-            $perPage,
-            $currentPage,
-            ['path' => request()->url(), 'query' => request()->query()]
-        );
-
-        return view('customer.order-list', compact('orders'));
     }
+
+    // =========================
+    // CUSTOM DESIGN ORDERS
+    // =========================
+    $customOrdersQuery = CustomDesignOrder::where('user_id', $user->id)
+        ->with(['uploads', 'product', 'variant']);
+
+    if ($kategori === 'regular') {
+        // Jika memilih Reguler, jangan ambil pesanan custom
+        $customOrders = collect();
+    } else {
+        // Filter status
+        if (!empty($status)) {
+            $customOrdersQuery->where('status', $status);
+        }
+
+        // Filter tanggal mulai
+        if (!empty($tglMulai)) {
+            $customOrdersQuery->whereDate('created_at', '>=', $tglMulai);
+        }
+
+        // Filter tanggal akhir
+        if (!empty($tglAkhir)) {
+            $customOrdersQuery->whereDate('created_at', '<=', $tglAkhir);
+        }
+
+        $customOrders = $customOrdersQuery
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
+    // =========================
+    // GABUNGKAN ORDER
+    // =========================
+    $allOrders = $regularOrders
+        ->concat($customOrders)
+        ->sortByDesc('created_at')
+        ->values();
+
+    // =========================
+    // PAGINATION
+    // =========================
+    $perPage = 10;
+    $currentPage = max(1, (int) $request->input('page', 1));
+    $offset = ($currentPage - 1) * $perPage;
+
+    $orders = new \Illuminate\Pagination\LengthAwarePaginator(
+        $allOrders->slice($offset, $perPage)->values(),
+        $allOrders->count(),
+        $perPage,
+        $currentPage,
+        [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]
+    );
+
+    return view('customer.order-list', compact('orders'));
+}
 
     /**
      * Display order detail page
@@ -1631,106 +1662,75 @@ $pricePerItem = $variant ? (float) $variant->price : (float) $product->price;
      * Check payment status page
      */
     public function paymentStatus(Request $request)
-    {
-        $user = auth()->user();
-        $orderType = $request->query('type', 'regular');
-        $orderId = $request->query('order_id');
+{
+    $user = auth()->user();
+    $orderType = $request->query('type', 'regular');
+    $orderId = $request->query('order_id');
 
-        if (!$orderId) {
-            return redirect()->route('order-list')->with('error', 'Order ID tidak ditemukan');
-        }
+    if (!$orderId) {
+        return redirect()->route('order-list')->with('error', 'Order ID tidak ditemukan');
+    }
 
-        try {
-            if ($orderType === 'custom') {
-                $order = \App\Models\CustomDesignOrder::with(['product', 'variant', 'uploads'])
-                    ->where('user_id', $user->id)
-                    ->where('id', $orderId)
-                    ->firstOrFail();
-                
-                // Priority: first upload image > product image > variant image
-                $customImage = null;
-                if ($order->uploads && $order->uploads->count() > 0) {
-                    $customImage = $order->uploads->first()->file_path;
-                } elseif ($order->product && !empty($order->product->image)) {
-                    $customImage = $order->product->image;
-                } elseif ($order->variant && !empty($order->variant->image)) {
-                    $customImage = $order->variant->image;
-                }
-                
-                $orderData = [
-                    'id' => $order->id,
-                    'type' => 'custom',
-                    'product_name' => $order->product_name,
-                    'quantity' => $order->quantity,
-                    'total_price' => $order->total_price,
-                    'product_price' => $order->product_price,
-                    'custom_price' => $order->total_price - $order->product_price,
-                    'status' => $order->status,
-                    'created_at' => $order->created_at,
-                    'approved_at' => $order->approved_at,
-                    'image' => $customImage,
-                    'cutting_type' => $order->cutting_type,
-                    'special_materials' => $order->special_materials,
-                    'description' => $order->additional_description,
-                ];
-            } else {
-                $order = \App\Models\Order::with(['user'])
-                    ->where('user_id', $user->id)
-                    ->where('id', $orderId)
-                    ->firstOrFail();
-                
-                $orderData = [
-                    'id' => $order->id,
-                    'type' => 'regular',
-                    'items' => $order->items,
-                    'subtotal' => $order->subtotal,
-                    'discount' => $order->discount,
-                    'total_price' => $order->total,
-                    'status' => $order->status,
-                    'created_at' => $order->created_at,
-                    'approved_at' => $order->approved_at ?? null,
-                ];
+    try {
+        if ($orderType === 'custom') {
+            $order = \App\Models\CustomDesignOrder::with(['product', 'variant', 'uploads'])
+                ->where('user_id', $user->id)
+                ->where('id', $orderId)
+                ->firstOrFail();
+
+            $customImage = null;
+            if ($order->uploads && $order->uploads->count() > 0) {
+                $customImage = $order->uploads->first()->file_path;
+            } elseif ($order->product && !empty($order->product->image)) {
+                $customImage = $order->product->image;
             }
 
-            // Get Virtual Account for this user
-            $virtualAccount = \App\Models\VirtualAccount::where('user_id', $user->id)
-                ->where('status', 'pending')
-                ->where('expired_at', '>', now())
-                ->latest()
-                ->first();
+            $orderData = [
+                'id' => $order->id,
+                'type' => 'custom',
+                'product_name' => $order->product_name,
+                'quantity' => $order->quantity,
+                'total_price' => $order->total_price,
+                'status' => $order->status,
+                'created_at' => $order->created_at,
+                'approved_at' => $order->approved_at,
+                'image' => $customImage,
+                // >>> ganti sumber data pembayaran <
+                'payment_status' => $order->payment_status,
+                'paid_at' => $order->paid_at,
+                'payment_proof' => $order->payment_proof,
+                'pickup_date' => $order->pickup_date,
+            ];
+        } else {
+            $order = \App\Models\Order::where('user_id', $user->id)
+                ->where('id', $orderId)
+                ->firstOrFail();
 
-            // Get Payment Transaction
-            $paymentTransaction = \App\Models\PaymentTransaction::where('user_id', $user->id)
-                ->where(function($q) use ($orderId, $orderType) {
-                    $q->where('order_id', $orderId)
-                      ->where('order_type', $orderType);
-                })
-                ->orWhere(function($q) use ($virtualAccount) {
-                    if ($virtualAccount) {
-                        $q->where('virtual_account_id', $virtualAccount->id);
-                    }
-                })
-                ->latest()
-                ->first();
-
-            // Get payment history
-            $paymentHistory = \App\Models\PaymentTransaction::where('user_id', $user->id)
-                ->latest()
-                ->take(5)
-                ->get();
-
-            return view('customer.payment-status', compact(
-                'orderData',
-                'virtualAccount',
-                'paymentTransaction',
-                'paymentHistory'
-            ));
-
-        } catch (\Exception $e) {
-            \Log::error('Payment Status Error: ' . $e->getMessage());
-            return redirect()->route('order-list')->with('error', 'Gagal memuat status pembayaran');
+            $orderData = [
+                'id' => $order->id,
+                'type' => 'regular',
+                'items' => $order->items,
+                'subtotal' => $order->subtotal,
+                'discount' => $order->discount,
+                'total_price' => $order->total,
+                'status' => $order->status,
+                'created_at' => $order->created_at,
+                'approved_at' => $order->approved_at ?? null,
+                // >>> ganti sumber data pembayaran <
+                'payment_status' => $order->payment_status,
+                'paid_at' => $order->paid_at,
+                'payment_proof' => $order->payment_proof,
+                'pickup_date' => $order->pickup_date,
+            ];
         }
+
+        return view('customer.payment-status', compact('orderData'));
+
+    } catch (\Exception $e) {
+        \Log::error('Payment Status Error: ' . $e->getMessage());
+        return redirect()->route('order-list')->with('error', 'Gagal memuat status pembayaran');
     }
+}
 
     /**
      * API endpoint: Get dashboard statistics

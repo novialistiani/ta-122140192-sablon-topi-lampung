@@ -16,11 +16,15 @@ class OrderFactory extends Factory
         return [
             'user_id' => User::factory(),
             'order_number' => 'ORD-' . strtoupper($this->faker->bothify('???-####')),
-            'items' => json_encode([
+            'items' => ([
                 [
                     'product_id' => Product::factory(),
                     'quantity' => $this->faker->numberBetween(1, 10),
+                    'name' => 'Produk Uji',
                     'price' => $this->faker->numberBetween(50000, 500000),
+                    'image' => null,
+                    'color' => null,
+                    'size' => null,
                 ]
             ]),
             'subtotal' => $this->faker->numberBetween(50000, 1000000),

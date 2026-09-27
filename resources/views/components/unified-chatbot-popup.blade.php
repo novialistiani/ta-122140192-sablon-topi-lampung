@@ -979,7 +979,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleQuickReply(type) {
         const questions = {
             'stok': 'Apakah stok produk ini tersedia?',
-            'harga': 'Rekomendasi produk harga murah',
+            'harga': 'Berapa estimasi harga produk?',
             'pickup': 'Bagaimana cara pengambilan pesanan?',
             'custom': 'Apakah bisa custom desain?'
         };

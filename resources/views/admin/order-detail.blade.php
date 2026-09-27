@@ -981,7 +981,7 @@
         <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 12px;">
             <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 12px 16px; font-size: 14px; color: #92400e; margin-right: auto;">
                 <i class="fas fa-info-circle"></i> <strong>Pesanan sudah disetujui, menunggu pembayaran.</strong><br>
-                Customer dapat melakukan pembayaran melalui WhatsApp. Klik tombol di bawah untuk mengkonfirmasi pembayaran telah diterima.
+                Customer dapat melakukan pembayaran melalui QRIS yang tersedia. Klik tombol di bawah untuk mengkonfirmasi pembayaran telah diterima.
             </div>
             <form method="POST" action="{{ route('admin.order.mark-payment-received', ['id' => $order->id, 'type' => $orderType]) }}" style="display: inline; margin: 0;">
                 @csrf

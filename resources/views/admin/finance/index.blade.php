@@ -94,45 +94,45 @@
                             <span class="stat-badge-{{ $revenueChange >= 0 ? 'up' : 'down' }}">
                                 <i class="fas fa-arrow-{{ $revenueChange >= 0 ? 'up' : 'down' }}"></i> {{ number_format(abs($revenueChange), 1) }}%
                             </span>
-                            <span class="stat-label-small">Dibandingkan dengan Oktober 2025</span>
+                            <span class="stat-label-small">Dibandingkan periode sebelumnya</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Transaksi VA --}}
+            {{-- Transaksi Dibayar (QRIS) --}}
             <div class="stats-card">
                 <div class="flex items-start">
                     <div class="stat-icon-wrapper stat-icon-purple">
-                        <i class="fas fa-credit-card stat-icon"></i>
+                        <i class="fas fa-qrcode stat-icon"></i>
                     </div>
                     <div>
-                        <p class="stat-content">Transaksi VA</p>
-                        <h3 class="stat-value">{{ $vaTransactions }}</h3>
+                        <p class="stat-content">Transaksi Dibayar (QRIS)</p>
+                        <h3 class="stat-value">{{ $paidCount }}</h3>
                         <div class="stat-trend">
-                            <span class="stat-badge-{{ $vaChange >= 0 ? 'up' : 'down' }}">
-                                <i class="fas fa-arrow-{{ $vaChange >= 0 ? 'up' : 'down' }}"></i> {{ number_format(abs($vaChange), 1) }}%
+                            <span class="stat-badge-{{ $paidChange >= 0 ? 'up' : 'down' }}">
+                                <i class="fas fa-arrow-{{ $paidChange >= 0 ? 'up' : 'down' }}"></i> {{ number_format(abs($paidChange), 1) }}%
                             </span>
-                            <span class="stat-label-small">Dibandingkan dengan Oktober 2025</span>
+                            <span class="stat-label-small">Dibandingkan periode sebelumnya</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Transaksi E-Wallet --}}
+            {{-- Menunggu Verifikasi --}}
             <div class="stats-card">
                 <div class="flex items-start">
                     <div class="stat-icon-wrapper stat-icon-green">
-                        <i class="fas fa-mobile-alt stat-icon"></i>
+                        <i class="fas fa-hourglass-half stat-icon"></i>
                     </div>
                     <div>
-                        <p class="stat-content">Transaksi E-Wallet</p>
-                        <h3 class="stat-value">Rp {{ number_format($ewalletTransactions * 99000, 0, ',', '.') }}</h3>
+                        <p class="stat-content">Menunggu Verifikasi</p>
+                        <h3 class="stat-value">{{ $pendingVerificationCount }}</h3>
                         <div class="stat-trend">
-                            <span class="stat-badge-{{ $ewalletChange >= 0 ? 'up' : 'down' }}">
-                                <i class="fas fa-arrow-{{ $ewalletChange >= 0 ? 'up' : 'down' }}"></i> {{ number_format(abs($ewalletChange), 1) }}%
+                            <span class="stat-badge-{{ $pendingChange >= 0 ? 'up' : 'down' }}">
+                                <i class="fas fa-arrow-{{ $pendingChange >= 0 ? 'up' : 'down' }}"></i> {{ number_format(abs($pendingChange), 1) }}%
                             </span>
-                            <span class="stat-label-small">Dibandingkan dengan Oktober 2025</span>
+                            <span class="stat-label-small">Dibandingkan periode sebelumnya</span>
                         </div>
                     </div>
                 </div>
@@ -159,57 +159,52 @@
                     <thead>
                         <tr style="background: #f9fafb; border-bottom: 2px solid #e5e7eb;">
                             <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Tanggal</th>
-                            <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">ID Transaksi</th>
+                            <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">ID Pesanan</th>
                             <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Customer</th>
-                            <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Payment Method</th>
+                            <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Barang</th>
+                            <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Metode Pembayaran</th>
                             <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Total</th>
                             <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($transactions as $transaction)
-                        <tr style="border-bottom: 1px solid #e5e7eb; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f9fafb'" onmouseout="this.style.backgroundColor='white'">
+                        <tr style="border-bottom: 1px solid #e5e7eb;" onmouseover="this.style.backgroundColor='#f9fafb'" onmouseout="this.style.backgroundColor='white'">
                             <td style="padding: 16px; font-size: 14px; color: #374151; white-space: nowrap;">
                                 {{ $transaction->created_at->format('d/m/Y H:i') }}
                             </td>
                             <td style="padding: 16px; font-size: 14px; font-weight: 500; color: #1f2937; white-space: nowrap;">
-                                {{ $transaction->transaction_id }}
+                                {{ $transaction->display_id }}
                             </td>
                             <td style="padding: 16px; font-size: 14px; color: #374151;">
                                 {{ $transaction->user->name ?? 'N/A' }}
                             </td>
                             <td style="padding: 16px; font-size: 14px; color: #374151;">
+                                {{ $transaction->display_item }}
+                            </td>
+                            <td style="padding: 16px; font-size: 14px; color: #374151;">
                                 <span style="display: inline-flex; align-items: center; padding: 4px 12px; background: #eff6ff; color: #1e40af; border-radius: 9999px; font-size: 12px; font-weight: 500;">
-                                    <i class="fas fa-credit-card" style="margin-right: 6px;"></i>
-                                    {{ strtoupper($transaction->payment_channel ?? 'N/A') }}
+                                    <i class="fas fa-qrcode" style="margin-right: 6px;"></i> QRIS
                                 </span>
                             </td>
                             <td style="padding: 16px; font-size: 14px; font-weight: 600; color: #059669; white-space: nowrap;">
-                                Rp {{ number_format($transaction->amount, 0, ',', '.') }}
+                                Rp {{ number_format($transaction->display_total, 0, ',', '.') }}
                             </td>
                             <td style="padding: 16px;">
-                                @if($transaction->status === 'paid')
+                                @if($transaction->payment_status === 'paid')
                                     <span style="display: inline-flex; align-items: center; padding: 6px 12px; background: #d1fae5; color: #065f46; border-radius: 9999px; font-size: 12px; font-weight: 600;">
                                         <i class="fas fa-check-circle" style="margin-right: 6px;"></i> Sudah Dibayar
                                     </span>
-                                @elseif($transaction->virtualAccount && !$transaction->virtualAccount->isExpired())
-                                    <span style="display: inline-flex; align-items: center; padding: 6px 12px; background: #dbeafe; color: #1e40af; border-radius: 9999px; font-size: 12px; font-weight: 600;">
-                                        <i class="fas fa-clock" style="margin-right: 6px;"></i> VA Aktif
-                                    </span>
-                                @elseif($transaction->status === 'expired')
-                                    <span style="display: inline-flex; align-items: center; padding: 6px 12px; background: #fee2e2; color: #991b1b; border-radius: 9999px; font-size: 12px; font-weight: 600;">
-                                        <i class="fas fa-times-circle" style="margin-right: 6px;"></i> Expired
-                                    </span>
                                 @else
                                     <span style="display: inline-flex; align-items: center; padding: 6px 12px; background: #fef3c7; color: #92400e; border-radius: 9999px; font-size: 12px; font-weight: 600;">
-                                        <i class="fas fa-hourglass-half" style="margin-right: 6px;"></i> Pending
+                                        <i class="fas fa-hourglass-half" style="margin-right: 6px;"></i> Menunggu Verifikasi
                                     </span>
                                 @endif
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" style="padding: 48px 16px; text-align: center; color: #9ca3af;">
+                            <td colspan="7" style="padding: 48px 16px; text-align: center; color: #9ca3af;">
                                 <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 12px; display: block; opacity: 0.5;"></i>
                                 <p style="font-size: 14px; margin: 0;">Tidak ada transaksi dalam periode ini</p>
                             </td>
@@ -218,29 +213,27 @@
                     </tbody>
                 </table>
             </div>
-            
+
             {{-- Pagination --}}
             <div style="padding: 1rem; border-top: 1px solid #e5e7eb;">
                 {{ $transactions->links() }}
             </div>
         </div>
     </div>
-    {{-- End Dashboard Content --}}
 
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Revenue Chart
         const ctx = document.getElementById('revenueChart').getContext('2d');
         const chartData = @json($chartData);
-        
+
         const labels = chartData.map(item => {
             const date = new Date(item.date);
             return date.toLocaleDateString('id-ID', { month: 'short', day: 'numeric' });
         });
-        
+
         const data = chartData.map(item => item.total);
-        
+
         new Chart(ctx, {
             type: 'line',
             data: {
@@ -258,9 +251,7 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: false
-                    },
+                    legend: { display: false },
                     tooltip: {
                         callbacks: {
                             label: function(context) {

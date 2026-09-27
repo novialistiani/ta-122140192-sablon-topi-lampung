@@ -411,16 +411,27 @@ function loadCustomerAnalytics() {
                 renderRFMChart(d.rfmTop);
                 
                 // Render RFM Table with ranking
-                if (els['rfm-table'] && d.rfmTop && d.rfmTop.length > 0) {
-                    els['rfm-table'].innerHTML = d.rfmTop.map((c, idx) => `
+                                if (els['rfm-table'] && d.rfmTop && d.rfmTop.length > 0) {
+                    const segmentColors = {
+                        'Champion': '#10b981',
+                        'Loyal': '#3b82f6',
+                        'Recent': '#8b5cf6',
+                        'At Risk': '#ef4444',
+                        'Regular': '#9ca3af',
+                    };
+                    els['rfm-table'].innerHTML = d.rfmTop.map((c, idx) => {
+                        const color = segmentColors[c.segment] || '#9ca3af';
+                        return `
                         <tr>
                             <td><strong>#${idx + 1}</strong></td>
                             <td><strong>${c.customer}</strong></td>
                             <td>${c.recency} days</td>
                             <td>${c.frequency}x</td>
                             <td><strong>Rp ${Number(c.monetary).toLocaleString('id-ID', {maxFractionDigits: 0})}</strong></td>
+                            <td><span style="padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; color: white; background: ${color};">${c.segment}</span></td>
                         </tr>
-                    `).join('');
+                    `;
+                    }).join('');
                 }
             }
         })
@@ -611,3 +622,9 @@ function loadConversionFunnel() {
         })
         .catch(err => console.error('Conversion Funnel Error:', err));
 }
+        document.getElementById('exportBtn')?.addEventListener('click', function() {
+            const params = new URLSearchParams();
+            if (dateRange.start) params.append('start_date', dateRange.start);
+            if (dateRange.end) params.append('end_date', dateRange.end);
+            window.location.href = `/admin/analytics/export?${params.toString()}`;
+});

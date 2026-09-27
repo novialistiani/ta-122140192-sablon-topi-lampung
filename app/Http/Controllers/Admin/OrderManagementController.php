@@ -30,19 +30,21 @@ class OrderManagementController extends Controller
     {
         $orderType = $request->get('type', 'all'); // 'all', 'regular', or 'custom'
 
-        if ($orderType === 'all') {
+                if ($orderType === 'all') {
             // Get custom orders separately
-            $customOrdersQuery = CustomDesignOrder::with('user')
-                ->where('status', '!=', 'completed');
+            $customOrdersQuery = CustomDesignOrder::with('user');
 
             // Get regular orders separately  
-            $regularOrdersQuery = Order::with('user')
-                ->where('status', '!=', 'completed');
+            $regularOrdersQuery = Order::with('user');
 
-            // Apply filters to both queries
+            // Apply status filter, or exclude completed orders by default
+            // (completed orders have their own dedicated History page)
             if ($request->filled('status')) {
                 $customOrdersQuery->where('status', $request->status);
                 $regularOrdersQuery->where('status', $request->status);
+            } else {
+                $customOrdersQuery->where('status', '!=', 'completed');
+                $regularOrdersQuery->where('status', '!=', 'completed');
             }
 
             // Payment status filter

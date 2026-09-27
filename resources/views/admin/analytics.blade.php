@@ -10,6 +10,7 @@
             <input type="date" id="endDate" style="padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 12px;">
             <button id="filterBtn" style="padding: 6px 16px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.3s;">Filter</button>
             <button id="resetBtn" style="padding: 6px 16px; background: #e5e7eb; color: #374151; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.3s;">Reset</button>
+            <button id="exportBtn" style="padding: 6px 16px; background: #059669; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 500;">📥 Export ke Excel</button>
         </div>
 
         <!-- 1. SALES & REVENUE OVERVIEW -->
@@ -137,6 +138,7 @@
                             <th>Recency (Days)</th>
                             <th>Frequency</th>
                             <th>Monetary Value</th>
+                            <th>Segment</th> 
                         </tr>
                     </thead>
                     <tbody id="rfm-table">

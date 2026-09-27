@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\PaymentTransaction;
-use App\Models\VirtualAccount;
+use App\Models\Order;
+use App\Models\CustomDesignOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -13,199 +13,226 @@ class FinanceController extends Controller
 {
     /**
      * Display finance dashboard
+     * Data ditarik dari tabel orders & custom_design_orders (pembayaran QRIS),
+     * bukan dari PaymentTransaction/VirtualAccount (sistem lama yang sudah tidak dipakai).
      */
     public function index(Request $request)
     {
         $startDate = $request->input('start_date', now()->startOfMonth()->format('Y-m-d'));
         $endDate = $request->input('end_date', now()->format('Y-m-d'));
-        
-        // Convert to Carbon instances
+
         $start = Carbon::parse($startDate)->startOfDay();
         $end = Carbon::parse($endDate)->endOfDay();
-        
-        // Total Pemasukan (paid transactions)
-        $totalRevenue = PaymentTransaction::where('status', 'paid')
-            ->whereBetween('paid_at', [$start, $end])
-            ->sum('amount');
-        
-        // Transaksi VA count
-        $vaTransactions = PaymentTransaction::where('payment_method', 'va')
-            ->whereBetween('created_at', [$start, $end])
-            ->count();
-        
-        // Transaksi E-Wallet count (future)
-        $ewalletTransactions = PaymentTransaction::where('payment_method', 'ewallet')
-            ->whereBetween('created_at', [$start, $end])
-            ->count();
-        
-        // Calculate percentage changes (compare to previous period)
+
+        [$totalRevenue, $paidCount, $pendingVerificationCount] = $this->getSummary($start, $end);
+
+        // Periode sebelumnya untuk perbandingan persentase
         $periodLength = $start->diffInDays($end);
-        $prevStart = $start->copy()->subDays($periodLength);
-        $prevEnd = $start->copy()->subDay();
-        
-        $prevRevenue = PaymentTransaction::where('status', 'paid')
-            ->whereBetween('paid_at', [$prevStart, $prevEnd])
-            ->sum('amount');
-        
-        $prevVACount = PaymentTransaction::where('payment_method', 'va')
-            ->whereBetween('created_at', [$prevStart, $prevEnd])
-            ->count();
-        
-        $prevEwalletCount = PaymentTransaction::where('payment_method', 'ewallet')
-            ->whereBetween('created_at', [$prevStart, $prevEnd])
-            ->count();
-        
-        // Calculate percentages
+        $prevStart = $start->copy()->subDays($periodLength + 1);
+        $prevEnd = $start->copy()->subSecond();
+
+        [$prevRevenue, $prevPaidCount, $prevPendingCount] = $this->getSummary($prevStart, $prevEnd);
+
         $revenueChange = $prevRevenue > 0 ? (($totalRevenue - $prevRevenue) / $prevRevenue) * 100 : 0;
-        $vaChange = $prevVACount > 0 ? (($vaTransactions - $prevVACount) / $prevVACount) * 100 : 0;
-        $ewalletChange = $prevEwalletCount > 0 ? (($ewalletTransactions - $prevEwalletCount) / $prevEwalletCount) * 100 : 0;
-        
-        // Chart data - daily revenue
-        $chartData = PaymentTransaction::select(
-                DB::raw('DATE(paid_at) as date'),
-                DB::raw('SUM(amount) as total')
-            )
-            ->where('status', 'paid')
-            ->whereBetween('paid_at', [$start, $end])
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
-        
-        // Transactions list with pagination
-        $transactions = PaymentTransaction::with(['user', 'virtualAccount'])
-            ->whereBetween('created_at', [$start, $end])
-            ->orderBy('created_at', 'desc')
-            ->paginate(25);
-        
+        $paidChange = $prevPaidCount > 0 ? (($paidCount - $prevPaidCount) / $prevPaidCount) * 100 : 0;
+        $pendingChange = $prevPendingCount > 0 ? (($pendingVerificationCount - $prevPendingCount) / $prevPendingCount) * 100 : 0;
+
+        $chartData = $this->getChartData($start, $end);
+        $transactions = $this->getTransactions($start, $end, $request->get('page', 1));
+
         return view('admin.finance.index', compact(
             'totalRevenue',
-            'vaTransactions',
-            'ewalletTransactions',
+            'paidCount',
+            'pendingVerificationCount',
             'revenueChange',
-            'vaChange',
-            'ewalletChange',
+            'paidChange',
+            'pendingChange',
             'chartData',
             'transactions',
             'startDate',
             'endDate'
         ));
     }
-    
+
     /**
-     * Export transactions to Excel
+     * Hitung total pemasukan, jumlah transaksi dibayar, dan jumlah menunggu verifikasi
+     * dalam suatu rentang tanggal (gabungan pesanan reguler & custom design).
+     */
+    private function getSummary($start, $end)
+    {
+        $regularRevenue = Order::where('payment_status', 'paid')
+            ->whereBetween('paid_at', [$start, $end])
+            ->sum('total');
+
+        $customRevenue = CustomDesignOrder::where('payment_status', 'paid')
+            ->whereBetween('paid_at', [$start, $end])
+            ->sum('total_price');
+
+        $totalRevenue = $regularRevenue + $customRevenue;
+
+        $paidCount = Order::where('payment_status', 'paid')
+                ->whereBetween('paid_at', [$start, $end])->count()
+            + CustomDesignOrder::where('payment_status', 'paid')
+                ->whereBetween('paid_at', [$start, $end])->count();
+
+        $pendingVerificationCount = Order::where('payment_status', 'pending_verification')
+                ->whereBetween('created_at', [$start, $end])->count()
+            + CustomDesignOrder::where('payment_status', 'pending_verification')
+                ->whereBetween('created_at', [$start, $end])->count();
+
+        return [$totalRevenue, $paidCount, $pendingVerificationCount];
+    }
+
+    /**
+     * Data grafik pemasukan harian (gabungan pesanan reguler & custom design)
+     */
+    private function getChartData($start, $end)
+    {
+        $regularChart = Order::select(
+                DB::raw('DATE(paid_at) as date'),
+                DB::raw('SUM(total) as total')
+            )
+            ->where('payment_status', 'paid')
+            ->whereBetween('paid_at', [$start, $end])
+            ->groupBy('date')
+            ->get();
+
+        $customChart = CustomDesignOrder::select(
+                DB::raw('DATE(paid_at) as date'),
+                DB::raw('SUM(total_price) as total')
+            )
+            ->where('payment_status', 'paid')
+            ->whereBetween('paid_at', [$start, $end])
+            ->groupBy('date')
+            ->get();
+
+        $chartMap = [];
+        foreach ($regularChart as $row) {
+            $chartMap[$row->date] = ($chartMap[$row->date] ?? 0) + $row->total;
+        }
+        foreach ($customChart as $row) {
+            $chartMap[$row->date] = ($chartMap[$row->date] ?? 0) + $row->total;
+        }
+        ksort($chartMap);
+
+        return collect($chartMap)->map(function ($total, $date) {
+            return (object) ['date' => $date, 'total' => $total];
+        })->values();
+    }
+
+    /**
+     * Daftar transaksi gabungan (reguler & custom design) yang sudah dibayar
+     * atau sedang menunggu verifikasi, dengan pagination manual.
+     */
+    private function getTransactions($start, $end, $currentPage)
+    {
+        $regularTransactions = Order::with('user')
+            ->whereIn('payment_status', ['paid', 'pending_verification'])
+            ->whereBetween('created_at', [$start, $end])
+            ->get()
+            ->map(function ($order) {
+                $order->order_type = 'regular';
+                $order->display_id = 'ORD-' . $order->id;
+                $order->display_item = $order->items[0]['name'] ?? 'Pesanan Reguler';
+                $order->display_total = $order->total;
+                return $order;
+            });
+
+        $customTransactions = CustomDesignOrder::with('user')
+            ->whereIn('payment_status', ['paid', 'pending_verification'])
+            ->whereBetween('created_at', [$start, $end])
+            ->get()
+            ->map(function ($order) {
+                $order->order_type = 'custom';
+                $order->display_id = 'CUS-' . $order->id;
+                $order->display_item = $order->product_name;
+                $order->display_total = $order->total_price;
+                return $order;
+            });
+
+        $all = $regularTransactions->concat($customTransactions)
+            ->sortByDesc('created_at')
+            ->values();
+
+        $perPage = 25;
+        $offset = ($currentPage - 1) * $perPage;
+
+        return new \Illuminate\Pagination\LengthAwarePaginator(
+            $all->slice($offset, $perPage)->values(),
+            $all->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+    }
+
+    /**
+     * Export transaksi ke CSV
      */
     public function export(Request $request)
     {
         $startDate = $request->input('start_date', now()->startOfMonth()->format('Y-m-d'));
         $endDate = $request->input('end_date', now()->format('Y-m-d'));
-        
+
         $start = Carbon::parse($startDate)->startOfDay();
         $end = Carbon::parse($endDate)->endOfDay();
-        
-        $transactions = PaymentTransaction::with(['user', 'virtualAccount'])
+
+        $regularTransactions = Order::with('user')
+            ->whereIn('payment_status', ['paid', 'pending_verification'])
             ->whereBetween('created_at', [$start, $end])
-            ->orderBy('created_at', 'desc')
-            ->get();
-        
+            ->get()
+            ->map(function ($order) {
+                $order->display_id = 'ORD-' . $order->id;
+                $order->display_item = $order->items[0]['name'] ?? 'Pesanan Reguler';
+                $order->display_total = $order->total;
+                return $order;
+            });
+
+        $customTransactions = CustomDesignOrder::with('user')
+            ->whereIn('payment_status', ['paid', 'pending_verification'])
+            ->whereBetween('created_at', [$start, $end])
+            ->get()
+            ->map(function ($order) {
+                $order->display_id = 'CUS-' . $order->id;
+                $order->display_item = $order->product_name;
+                $order->display_total = $order->total_price;
+                return $order;
+            });
+
+        $transactions = $regularTransactions->concat($customTransactions)
+            ->sortByDesc('created_at')
+            ->values();
+
         $filename = 'transactions_' . date('Y-m-d_His') . '.csv';
-        
+
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
-        
-        $callback = function() use ($transactions) {
+
+        $callback = function () use ($transactions) {
             $file = fopen('php://output', 'w');
-            
-            // CSV Headers
+
             fputcsv($file, [
-                'Tanggal',
-                'ID Transaksi',
-                'Customer',
-                'Barang',
-                'Metode Pembayaran',
-                'Nomor VA',
-                'Status VA',
-                'Total',
-                'Status Pembayaran'
+                'Tanggal', 'ID Pesanan', 'Customer', 'Barang',
+                'Metode Pembayaran', 'Total', 'Status Pembayaran'
             ]);
-            
+
             foreach ($transactions as $trx) {
-                $vaNumber = $trx->virtualAccount ? $trx->virtualAccount->va_number : '-';
-                $vaStatus = $this->getVAStatus($trx);
-                $paymentChannel = strtoupper($trx->payment_channel ?? 'N/A');
-                
                 fputcsv($file, [
                     $trx->created_at->format('d/m/Y H:i'),
-                    $trx->transaction_id,
+                    $trx->display_id,
                     $trx->user->name ?? 'N/A',
-                    $this->getItemName($trx),
-                    $paymentChannel,
-                    $vaNumber,
-                    $vaStatus,
-                    number_format($trx->amount, 0, ',', '.'),
-                    $this->getStatusText($trx->status)
+                    $trx->display_item,
+                    'QRIS',
+                    number_format($trx->display_total, 0, ',', '.'),
+                    $trx->payment_status === 'paid' ? 'Sudah Dibayar' : 'Menunggu Verifikasi'
                 ]);
             }
-            
+
             fclose($file);
         };
-        
+
         return response()->stream($callback, 200, $headers);
-    }
-    
-    /**
-     * Get VA status text
-     */
-    private function getVAStatus($transaction)
-    {
-        if (!$transaction->virtualAccount) {
-            return '-';
-        }
-        
-        $va = $transaction->virtualAccount;
-        
-        if ($va->status === 'paid') {
-            return 'Sudah Dibayar';
-        }
-        
-        if ($va->isExpired()) {
-            return 'Expired';
-        }
-        
-        return 'VA Aktif';
-    }
-    
-    /**
-     * Get status text in Indonesian
-     */
-    private function getStatusText($status)
-    {
-        $statuses = [
-            'pending' => 'Pending',
-            'paid' => 'Sudah Dibayar',
-            'failed' => 'Gagal',
-            'expired' => 'Kadaluarsa'
-        ];
-        
-        return $statuses[$status] ?? $status;
-    }
-    
-    /**
-     * Get item name from transaction
-     */
-    private function getItemName($transaction)
-    {
-        if ($transaction->order_type === 'custom') {
-            $order = \App\Models\CustomDesignOrder::find($transaction->order_id);
-            return $order ? $order->product_name : 'Custom Design';
-        } elseif ($transaction->order_type === 'regular') {
-            $order = \App\Models\Order::find($transaction->order_id);
-            if ($order && isset($order->items[0])) {
-                return $order->items[0]['name'] ?? 'Regular Order';
-            }
-        }
-        
-        return 'N/A';
     }
 }

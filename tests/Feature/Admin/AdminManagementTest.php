@@ -104,4 +104,30 @@ class AdminManagementTest extends TestCase
     {
         $this->assertIsIterable(Admin::all());
     }
+    
+    /** @test */
+    public function admin_can_see_overdue_badge_on_order_list()
+    {
+        Order::factory()->create([
+            'status' => 'approved',
+            'pickup_date' => now()->subDays(2),
+        ]);
+
+        $response = $this->actingAs($this->admin, 'admin')->get(route('admin.order-list'));
+
+        $response->assertOk()->assertSee('Terlambat');
+    }
+
+    /** @test */
+    public function admin_does_not_see_overdue_badge_when_order_completed()
+    {
+        Order::factory()->create([
+            'status' => 'completed',
+            'pickup_date' => now()->subDays(2),
+        ]);
+
+        $response = $this->actingAs($this->admin, 'admin')->get(route('admin.order-list'));
+
+        $response->assertOk()->assertDontSee('Terlambat');
+    }
 }

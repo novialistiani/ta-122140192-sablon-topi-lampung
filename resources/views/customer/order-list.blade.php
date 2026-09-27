@@ -15,7 +15,7 @@
         <!-- Filters -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-3 sticky top-0 z-10">
                     <h3 class="text-lg font-semibold mb-4">Filter Pesanan</h3>
-                    <form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <form method="GET" action="{{ route('order-list') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                         <!-- Kategori Filter -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Pesanan</label>
@@ -55,8 +55,8 @@
                         <!-- Buttons -->
                         <div class="flex items-end gap-2">
                             <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm shadow-sm">
-                                <i class="fas fa-filter mr-1"></i> Filter
-                            </button>
+    <i class="fas fa-filter mr-1"></i> Filter
+</button>
                             <a href="{{ route('order-list') }}" class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium text-center text-sm border border-gray-300">
                                 <i class="fas fa-redo mr-1"></i> Reset
                             </a>

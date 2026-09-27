@@ -47,6 +47,9 @@ export default defineConfig({
                 'resources/css/admin/chatbot-management.css',
                 'resources/js/admin/chatbot-management.js',
                 'resources/css/admin/admin-notifications.css',
+                'resources/css/admin/pos.css',
+                'resources/js/admin/pos.js',
+                
                 
                 // Auth
                 'resources/css/auth/forgot-password.css',

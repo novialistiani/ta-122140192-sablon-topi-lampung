@@ -58,26 +58,8 @@ class DashboardController
             ? round((($currentMonthSold - $previousMonthSold) / $previousMonthSold) * 100, 1)
             : 0;
 
-        // Top products (by order count)
-        $topProducts = Product::select('products.id', 'products.name')
-            ->leftJoin('product_variants', 'products.id', '=', 'product_variants.product_id')
-            ->leftJoin('orders', function($join) {
-                $join->on('product_variants.id', '=', DB::raw('JSON_EXTRACT(orders.items, "$[*].variant_id")'))
-                    ->orWhereRaw('orders.items LIKE CONCAT("%\"", product_variants.id, "%")');
-            })
-            ->groupBy('products.id', 'products.name')
-            ->selectRaw('COUNT(orders.id) as order_count, COUNT(DISTINCT product_variants.id) as variant_count')
-            ->orderByDesc('order_count')
-            ->limit(5)
-            ->get()
-            ->map(function($product) {
-                return [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'order_count' => $product->order_count ?? 0,
-                    'variant_count' => $product->variant_count ?? 0
-                ];
-            });
+        // Top products (by order count) - computed from JSON 'items' column, see getTopProductsData()
+        $topProducts = $this->getTopProductsData(5);
 
         // Recent orders with customer details (combining regular and custom orders)
         $regularOrders = Order::with('user')
@@ -169,6 +151,77 @@ class DashboardController
             'orderStatusBreakdown' => $orderStatusBreakdown,
             'salesByMonth' => $salesByMonth,
         ]);
+    }
+
+    /**
+     * Hitung produk terlaris berdasarkan jumlah kemunculan variant_id
+     * di kolom 'items' (JSON) pada semua order.
+     *
+     * Menggantikan pendekatan JOIN SQL sebelumnya, yang gagal karena
+     * MySQL tidak bisa membandingkan integer dengan hasil
+     * JSON_EXTRACT(..., "$[*]...") (yang mengembalikan array, bukan
+     * nilai tunggal), sehingga JOIN tersebut jatuh ke fallback LIKE
+     * yang rawan salah tangkap (false match pada substring angka).
+     */
+    private function getTopProductsData($limit = 5)
+    {
+        $variantCounts = [];
+
+        // Ambil semua order, hitung berapa kali tiap variant_id muncul di items
+        $orders = Order::query()->select('items')->get();
+        foreach ($orders as $order) {
+            $items = is_array($order->items) ? $order->items : json_decode($order->items, true);
+            if (!is_array($items)) continue;
+
+            foreach ($items as $item) {
+                $variantId = $item['variant_id'] ?? null;
+                if ($variantId === null) continue;
+                $variantCounts[$variantId] = ($variantCounts[$variantId] ?? 0) + 1;
+            }
+        }
+
+        if (empty($variantCounts)) {
+            return collect();
+        }
+
+        // Petakan variant_id -> product_id
+        $variants = ProductVariant::whereIn('id', array_keys($variantCounts))->get()->keyBy('id');
+
+        $productOrderCounts = [];
+        foreach ($variantCounts as $variantId => $count) {
+            $variant = $variants->get($variantId);
+            if (!$variant) continue;
+
+            $productId = $variant->product_id;
+            $productOrderCounts[$productId] = ($productOrderCounts[$productId] ?? 0) + $count;
+        }
+
+        if (empty($productOrderCounts)) {
+            return collect();
+        }
+
+        arsort($productOrderCounts); // urutkan dari order_count tertinggi
+        $topProductIds = array_slice(array_keys($productOrderCounts), 0, $limit, true);
+
+        $products = Product::whereIn('id', $topProductIds)
+            ->withCount('variants')
+            ->get()
+            ->keyBy('id');
+
+        $result = collect();
+        foreach ($topProductIds as $productId) {
+            $product = $products->get($productId);
+            if (!$product) continue;
+
+            $result->push([
+                'id' => $product->id,
+                'name' => $product->name,
+                'order_count' => $productOrderCounts[$productId],
+                'variant_count' => $product->variants_count ?? 0,
+            ]);
+        }
+
+        return $result;
     }
 
     /**
@@ -315,27 +368,6 @@ class DashboardController
     public function getTopProducts(Request $request)
     {
         $limit = $request->query('limit', 5);
-
-        $products = Product::select('products.id', 'products.name')
-            ->leftJoin('product_variants', 'products.id', '=', 'product_variants.product_id')
-            ->leftJoin('orders', function($join) {
-                $join->on('product_variants.id', '=', DB::raw('JSON_EXTRACT(orders.items, "$[*].variant_id")'))
-                    ->orWhereRaw('orders.items LIKE CONCAT("%\"", product_variants.id, "%")');
-            })
-            ->groupBy('products.id', 'products.name')
-            ->selectRaw('COUNT(orders.id) as order_count, COUNT(DISTINCT product_variants.id) as variant_count')
-            ->orderByDesc('order_count')
-            ->limit($limit)
-            ->get()
-            ->map(function($product) {
-                return [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'order_count' => $product->order_count ?? 0,
-                    'variant_count' => $product->variant_count ?? 0
-                ];
-            });
-
-        return response()->json($products);
+        return response()->json($this->getTopProductsData($limit));
     }
 }

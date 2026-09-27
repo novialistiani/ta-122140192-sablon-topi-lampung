@@ -304,17 +304,17 @@
                 </div>
 
                 <!-- Alert Notifications -->
-                @if($virtualAccount && $virtualAccount->status === 'pending')
+                @if($orderData['payment_status'] === 'pending' || $orderData['payment_status'] === 'unpaid')
                     <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <strong>Menunggu Pembayaran</strong><br>
-                    <span id="alert-countdown">Silakan lakukan pembayaran sebelum waktu habis</span>
-                </div>
-                @elseif($paymentTransaction && $paymentTransaction->status === 'paid')
+                         <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Menunggu Pembayaran</strong><br>
+                        Silakan lakukan pembayaran dan unggah bukti pembayaran.
+                    </div>
+                @elseif($orderData['payment_status'] === 'paid')
                     <div class="alert alert-success">
-                        <i class="fas fa-check-circle"></i>
+                         <i class="fas fa-check-circle"></i>
                         <strong>Pembayaran Berhasil!</strong><br>
-                        Pesanan Anda sedang diproses.
+                         Pesanan Anda sedang diproses.
                     </div>
                 @endif
 
@@ -374,7 +374,7 @@
                     @foreach($orderData['items'] as $item)
                     <div class="product-item">
                         @if(!empty($item['image']))
-                            <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] }}" class="product-image">
+                           <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="product-image">
                         @else
                             <div class="product-image" style="background: #e9ecef; display: flex; align-items: center; justify-content: center;">
                                 <i class="fas fa-image" style="font-size: 32px; color: #adb5bd;"></i>
@@ -429,85 +429,41 @@
             <div class="card">
                 <h3 class="card-title"><i class="fas fa-credit-card"></i> Detail Pembayaran</h3>
                 
-                @if($virtualAccount)
-                    <!-- Virtual Account Card -->
-                    <div class="va-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <i class="fas fa-university" style="font-size: 24px;"></i>
-                                <div style="margin-top: 8px; font-size: 18px; font-weight: 600;">
-                                    {{ strtoupper($virtualAccount->bank_code) }} Virtual Account
-                                </div>
-                            </div>
-                            <span class="status-badge" style="background: rgba(255,255,255,0.3); color: white;">
-                                {{ ucfirst($virtualAccount->status) }}
-                            </span>
-                        </div>
-                        
-                        <div class="va-number">
-                            {{ $virtualAccount->va_number }}
-                        </div>
-
-                        <div class="va-info">
-                            <div>
-                                <div style="font-size: 13px; opacity: 0.8;">Total Pembayaran</div>
-                                <div style="font-size: 20px; font-weight: 600; margin-top: 4px;">
-                                    Rp {{ number_format($virtualAccount->amount, 0, ',', '.') }}
-                                </div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 13px; opacity: 0.8;">Sisa Waktu</div>
-                                <div id="countdown-timer" style="font-size: 24px; font-weight: 700; margin-top: 8px; color: #ef4444; font-family: monospace;">
-                                    Loading...
-                                </div>
-                                <div id="expired-date" style="font-size: 11px; opacity: 0.7; margin-top: 8px; color: #64748b;">
-                                    Berlaku sampai: <span id="expired-time-display">{{ $virtualAccount->expired_at->format('d M Y, H:i') }} WIB</span>
-                                </div>
-                            </div>
-                        </div>
+                @if($orderData['payment_status'] === 'paid')
+                    <div class="alert alert-success">
+                         <i class="fas fa-check-circle"></i>
+                        <strong>Pembayaran berhasil.</strong><br>
+                         Bukti pembayaran telah diverifikasi.
                     </div>
 
-                    <div class="alert alert-info">
-                        <strong><i class="fas fa-info-circle"></i> Cara Pembayaran:</strong><br>
-                        1. Salin nomor Virtual Account di atas<br>
-                        2. Buka aplikasi mobile banking atau ATM<br>
-                        3. Pilih menu Transfer/Bayar<br>
-                        4. Masukkan nomor VA dan konfirmasi pembayaran
+                @if($orderData['paid_at'])
+                     <div class="info-row">
+                        <span class="info-label">Dibayar Pada</span>
+                         <span class="info-value">
+                {{ $orderData['paid_at']->format('d M Y, H:i') }}
+                     </span>
                     </div>
                 @endif
 
-                @if($paymentTransaction)
-                    <h4 style="font-size: 16px; font-weight: 600; margin: 24px 0 12px;">Informasi Transaksi</h4>
-                    <div class="info-row">
-                        <span class="info-label">ID Transaksi</span>
-                        <span class="info-value">#{{ $paymentTransaction->id }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Metode Pembayaran</span>
-                        <span class="info-value">{{ strtoupper($paymentTransaction->payment_method) }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Jumlah</span>
-                        <span class="info-value">Rp {{ number_format($paymentTransaction->amount, 0, ',', '.') }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Status</span>
-                        <span class="info-value">
-                            <span class="status-badge status-{{ $paymentTransaction->status }}">
-                                {{ ucfirst($paymentTransaction->status) }}
-                            </span>
-                        </span>
-                    </div>
-                    @if($paymentTransaction->paid_at)
-                    <div class="info-row">
-                        <span class="info-label">Dibayar Pada</span>
-                        <span class="info-value">{{ $paymentTransaction->paid_at->format('d M Y, H:i') }}</span>
-                    </div>
-                    @endif
+                @elseif($orderData['payment_status'] === 'waiting_verification')
+                        <div class="alert alert-warning">
+                                <i class="fas fa-clock"></i>
+                                 <strong>Menunggu Verifikasi</strong><br>
+                                Bukti pembayaran telah dikirim dan sedang diperiksa oleh admin.
+                        </div>
+
                 @else
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-circle"></i>
-                        Belum ada transaksi pembayaran untuk pesanan ini.
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-circle"></i>
+                                 <strong>Belum Dibayar</strong><br>
+                                  Belum ada pembayaran untuk pesanan ini.
+                        </div>
+                @endif
+
+                @if($orderData['payment_proof'])
+                    <div class="info-row">
+                            <span class="info-label">Bukti Pembayaran</span>
+                            <span class="info-value">Sudah diunggah</span>
                     </div>
                 @endif
             </div>
@@ -529,18 +485,15 @@
                 </div>
                 @endif
 
-                @if($virtualAccount)
-                <div class="timeline-item">
-                    <div class="timeline-date">{{ $virtualAccount->created_at->format('d M Y, H:i') }}</div>
-                    <div class="timeline-content">Virtual Account dibuat</div>
-                </div>
-                @endif
+            
 
-                @if($paymentTransaction && $paymentTransaction->paid_at)
-                <div class="timeline-item">
-                    <div class="timeline-date">{{ $paymentTransaction->paid_at->format('d M Y, H:i') }}</div>
+                @if($orderData['paid_at'])
+                   <div class="timeline-item">
+                    <div class="timeline-date">
+                        {{ $orderData['paid_at']->format('d M Y, H:i') }}
+                    </div>
                     <div class="timeline-content">Pembayaran berhasil</div>
-                </div>
+                    </div>
                 @endif
 
                 @if($orderData['status'] === 'processing')
@@ -564,126 +517,7 @@
         </div>
     </div>
 
-    @if($virtualAccount && $virtualAccount->status === 'pending')
-    <script>
-        console.log('Countdown script loaded');
-        
-        // Wait for DOM to be ready
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM Content Loaded - Starting countdown');
-            
-            // Countdown Timer for VA Expiry
-            const expiredAtISO = '{{ $virtualAccount->expired_at->toISOString() }}';
-            console.log('Expired At ISO:', expiredAtISO);
-            
-            const expiredAt = new Date(expiredAtISO).getTime();
-            console.log('Expired At Timestamp:', expiredAt);
-            console.log('Current Time:', new Date().getTime());
-            
-            const countdownElement = document.getElementById('countdown-timer');
-            const alertCountdown = document.getElementById('alert-countdown');
-            
-            if (!countdownElement) {
-                console.error('Countdown element not found!');
-                return;
-            }
-            
-            console.log('Countdown element found:', countdownElement);
-            
-            function updateCountdown() {
-                const now = new Date().getTime();
-                const distance = expiredAt - now;
-                
-                if (distance < 0) {
-                    // VA Expired
-                    if (countdownElement) {
-                        countdownElement.textContent = 'EXPIRED';
-                        countdownElement.style.color = '#991b1b';
-                    }
-                    if (alertCountdown) {
-                        alertCountdown.innerHTML = '<strong style="color: #991b1b;">Virtual Account sudah expired!</strong>';
-                    }
+    
                     
-                    // Auto refresh page after 2 seconds to update status
-                    setTimeout(() => {
-                        location.reload();
-                    }, 2000);
                     
-                    return;
-                }
-                
-                // Calculate time components
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                
-                // Format display
-                let displayText = '';
-                let alertText = '';
-                
-                if (days > 0) {
-                    displayText = `${days}d ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                    alertText = `Silakan lakukan pembayaran dalam ${days} hari ${hours} jam ${minutes} menit ${seconds} detik`;
-                } else if (hours > 0) {
-                    displayText = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                    alertText = `Silakan lakukan pembayaran dalam ${hours} jam ${minutes} menit ${seconds} detik`;
-                } else if (minutes > 0) {
-                    displayText = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                    alertText = `Silakan lakukan pembayaran dalam ${minutes} menit ${seconds} detik`;
-                } else {
-                    displayText = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                    alertText = `<strong style="color: #dc2626;">Segera bayar! Tersisa ${seconds} detik!</strong>`;
-                }
-                
-                if (countdownElement) {
-                    countdownElement.textContent = displayText;
-                    console.log('Timer updated:', displayText);
-                }
-                
-                if (alertCountdown) {
-                    alertCountdown.innerHTML = alertText;
-                }
-                
-                // Change color based on time remaining
-                if (countdownElement) {
-                    if (distance < 5 * 60 * 1000) {
-                        // Less than 5 minutes - red and blink
-                        countdownElement.style.color = '#dc2626';
-                        countdownElement.style.animation = 'blink 1s ease-in-out infinite';
-                    } else if (distance < 15 * 60 * 1000) {
-                        // Less than 15 minutes - orange
-                        countdownElement.style.color = '#ea580c';
-                        countdownElement.style.animation = 'none';
-                    } else {
-                        // More than 15 minutes - red (default)
-                        countdownElement.style.color = '#ef4444';
-                        countdownElement.style.animation = 'none';
-                    }
-                }
-            }
-        
-            // Update immediately
-            updateCountdown();
-            console.log('First countdown update completed');
-            
-            // Update every second
-            const countdownInterval = setInterval(function() {
-                updateCountdown();
-            }, 1000);
-            console.log('Countdown interval started');
-            
-            // Add blink animation
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes blink {
-                    0%, 100% { opacity: 1; }
-                    50% { opacity: 0.3; }
-                }
-            `;
-            document.head.appendChild(style);
-            console.log('Blink animation style added');
-        }); // End DOMContentLoaded
-    </script>
-    @endif
 </x-customer-layout>

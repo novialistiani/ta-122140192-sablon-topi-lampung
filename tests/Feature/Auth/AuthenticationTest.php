@@ -64,7 +64,9 @@ class AuthenticationTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertSeeVolt('layout.navigation');
+            ->assertSee('Dashboard')
+            ->assertSee('Keranjang')
+            ->assertSee('Profil');
     }
 
     public function test_users_can_logout(): void

@@ -8,9 +8,11 @@ use App\Models\CustomDesignOrder;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\PaymentTransaction;
+use App\Exports\AnalyticsReportExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AnalyticsController extends Controller
 {
@@ -325,7 +327,7 @@ class AnalyticsController extends Controller
                 if ($allOrders->count() === 0) continue;
                 
                 $lastOrder = $allOrders->sortByDesc('created_at')->first();
-                $recency = now()->diffInDays($lastOrder->created_at);
+                $recency = now()->diffInDays($lastOrder->created_at, true);
                 $frequency = $allOrders->count();
                 // Sum both Order.total and CustomDesignOrder.total_price
                 $monetary = $orders->sum('total') + $customOrders->sum('total_price');
@@ -336,6 +338,7 @@ class AnalyticsController extends Controller
                     'recency' => $recency,
                     'frequency' => $frequency,
                     'monetary' => $monetary,
+                    'segment' => $this->getRFMSegment($recency, $frequency, $monetary),
                 ];
             }
             
@@ -364,116 +367,34 @@ class AnalyticsController extends Controller
     
     /**
      * Get conversion funnel data
+     *
+     * Funnel disederhanakan menjadi 3 tahap yang datanya benar-benar dapat
+     * diukur dari basis data (Checkout Dibuat -> Pembayaran Selesai ->
+     * Pesanan Selesai). Tahap "Visitors", "Product Views", dan "Add to Cart"
+     * pada versi sebelumnya dihapus karena tidak dapat diukur secara valid:
+     * sistem tidak memiliki page-view tracking, dan keranjang belanja
+     * disimpan menggunakan Session (bukan tabel basis data permanen),
+     * sehingga tidak meninggalkan jejak historis yang bisa di-query.
      */
     public function getConversionFunnel()
     {
         try {
             $period = request()->get('period', 'month');
-            
+
             // Support date range filtering
             $startDate = request()->get('start_date');
             $endDate = request()->get('end_date');
-            
+
             if ($startDate && $endDate) {
-                // Date range filtering
                 $startDate = Carbon::createFromFormat('Y-m-d', $startDate)->startOfDay();
                 $endDate = Carbon::createFromFormat('Y-m-d', $endDate)->endOfDay();
             } else {
-                // Period-based filtering
                 $startDate = $this->getStartDate($period);
                 $endDate = now();
             }
-            
-            // Approximate visitor count from new users
-            $visitors = User::whereBetween('created_at', [$startDate, $endDate])
-                ->count();
-            
-            if ($visitors === 0) {
-                $visitors = User::count();
-            }
-            
-            // Product views (approximation - total orders count)
-            $productViews = Order::whereBetween('created_at', [$startDate, $endDate])
-                ->count();
-            
-            $productViews += CustomDesignOrder::whereBetween('created_at', [$startDate, $endDate])
-                ->count();
-            
-            // Add to cart (approximation - pending orders)
-            $addToCart = Order::where('status', 'pending')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
-            
-            $addToCart += CustomDesignOrder::where('status', 'pending')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
-            
-            // Checkout initiated (created orders)
-            $checkoutCount = Order::whereBetween('created_at', [$startDate, $endDate])
-                ->count();
-            
-            $checkoutCount += CustomDesignOrder::whereBetween('created_at', [$startDate, $endDate])
-                ->count();
-            
-            // Completed payments - only from Order model (CustomDesignOrder has no payment_status)
-            $completedPayments = Order::where('payment_status', 'paid')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
-            
-            // For custom orders, assume approved = payment made
-            $completedPayments += CustomDesignOrder::where('status', 'approved')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
-            
-            // Completed orders
-            $completedOrders = Order::where('status', 'completed')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
-            
-            $completedOrders += CustomDesignOrder::where('status', 'completed')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
-            
-            // Calculate rates
-            $productViewRate = $visitors > 0 ? round(($productViews / $visitors) * 100, 2) : 0;
-            $addToCartRate = $productViews > 0 ? round(($addToCart / $productViews) * 100, 2) : 0;
-            $checkoutRate = $addToCart > 0 ? round(($checkoutCount / $addToCart) * 100, 2) : 0;
-            $paymentRate = $checkoutCount > 0 ? round(($completedPayments / $checkoutCount) * 100, 2) : 0;
-            $completionRate = $completedPayments > 0 ? round(($completedOrders / $completedPayments) * 100, 2) : 0;
-            
-            $funnel = [
-                [
-                    'stage' => '1. Visitors',
-                    'count' => $visitors,
-                    'rate' => 100,
-                ],
-                [
-                    'stage' => '2. Product Views',
-                    'count' => $productViews,
-                    'rate' => $productViewRate,
-                ],
-                [
-                    'stage' => '3. Add to Cart',
-                    'count' => $addToCart,
-                    'rate' => $addToCartRate,
-                ],
-                [
-                    'stage' => '4. Checkout',
-                    'count' => $checkoutCount,
-                    'rate' => $checkoutRate,
-                ],
-                [
-                    'stage' => '5. Payment Complete',
-                    'count' => $completedPayments,
-                    'rate' => $paymentRate,
-                ],
-                [
-                    'stage' => '6. Order Complete',
-                    'count' => $completedOrders,
-                    'rate' => $completionRate,
-                ],
-            ];
-            
+
+            $funnel = $this->buildConversionFunnelData($startDate, $endDate);
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -484,6 +405,154 @@ class AnalyticsController extends Controller
             \Log::error('Conversion Funnel Error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Hitung data funnel 3 tahap untuk rentang tanggal tertentu.
+     * Dipakai bersama oleh getConversionFunnel() (JSON) dan exportExcel().
+     */
+    private function buildConversionFunnelData($startDate, $endDate)
+    {
+        // Tahap 1: Checkout dibuat (semua order pada periode ini, apapun statusnya)
+        $checkoutCount = Order::whereBetween('created_at', [$startDate, $endDate])->count();
+        $checkoutCount += CustomDesignOrder::whereBetween('created_at', [$startDate, $endDate])->count();
+
+        // Tahap 2: Pembayaran selesai
+        // Order reguler: payment_status = 'paid'
+        // Custom design order: tidak memiliki payment_status, gunakan status 'approved' sebagai proksi pembayaran diterima
+        $completedPayments = Order::where('payment_status', 'paid')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        $completedPayments += CustomDesignOrder::where('status', 'approved')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        // Tahap 3: Pesanan selesai
+        $completedOrders = Order::where('status', 'completed')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        $completedOrders += CustomDesignOrder::where('status', 'completed')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        // Rate dihitung relatif terhadap tahap pertama (checkout),
+        // sehingga funnel dijamin menurun atau tetap di setiap tahap berikutnya
+        $paymentRate = $checkoutCount > 0 ? round(($completedPayments / $checkoutCount) * 100, 2) : 0;
+        $completionRate = $checkoutCount > 0 ? round(($completedOrders / $checkoutCount) * 100, 2) : 0;
+
+        return [
+            [
+                'stage' => '1. Checkout Dibuat',
+                'count' => $checkoutCount,
+                'rate' => 100,
+            ],
+            [
+                'stage' => '2. Pembayaran Selesai',
+                'count' => $completedPayments,
+                'rate' => $paymentRate,
+            ],
+            [
+                'stage' => '3. Pesanan Selesai',
+                'count' => $completedOrders,
+                'rate' => $completionRate,
+            ],
+        ];
+    }
+
+    /**
+     * Export laporan analytics (ringkasan penjualan, conversion funnel,
+     * dan top customers RFM) ke file Excel.
+     */
+    public function exportExcel()
+    {
+        $period = request()->get('period', 'month');
+        $startDateParam = request()->get('start_date');
+        $endDateParam = request()->get('end_date');
+
+        if ($startDateParam && $endDateParam) {
+            $startDate = Carbon::parse($startDateParam)->startOfDay();
+            $endDate = Carbon::parse($endDateParam)->endOfDay();
+            $periodLabel = $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y');
+        } else {
+            $startDate = $this->getStartDate($period);
+            $endDate = now();
+            $periodLabel = $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y');
+        }
+
+        // --- Ringkasan Penjualan ---
+        $orders = Order::where('status', 'completed')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+        $customOrders = CustomDesignOrder::where('status', 'completed')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+
+        $allOrders = Order::whereBetween('created_at', [$startDate, $endDate])->count();
+        $allCustomOrders = CustomDesignOrder::whereBetween('created_at', [$startDate, $endDate])->count();
+        $totalAllOrders = $allOrders + $allCustomOrders;
+
+        $totalRevenue = $orders->sum('total') + $customOrders->sum('total_price');
+        $completedOrders = $orders->count() + $customOrders->count();
+        $averageOrderValue = $completedOrders > 0 ? $totalRevenue / $completedOrders : 0;
+        $conversionRate = $totalAllOrders > 0 ? ($completedOrders / $totalAllOrders) * 100 : 0;
+
+        $prevStartDate = $this->getPreviousPeriodStart($period, $startDate);
+        $prevEndDate = $startDate->copy()->subSecond();
+        $prevRevenue = Order::where('status', 'completed')
+            ->whereBetween('created_at', [$prevStartDate, $prevEndDate])
+            ->sum('total')
+            + CustomDesignOrder::where('status', 'completed')
+            ->whereBetween('created_at', [$prevStartDate, $prevEndDate])
+            ->sum('total_price');
+        $revenueGrowth = $prevRevenue > 0 ? (($totalRevenue - $prevRevenue) / $prevRevenue) * 100 : 0;
+
+        $salesOverview = [
+            'totalRevenue' => round($totalRevenue, 2),
+            'completedOrders' => $completedOrders,
+            'totalOrders' => $totalAllOrders,
+            'conversionRate' => round($conversionRate, 2),
+            'averageOrderValue' => round($averageOrderValue, 2),
+            'revenueGrowth' => round($revenueGrowth, 2),
+        ];
+
+        // --- Conversion Funnel (pakai helper yang sama dengan endpoint JSON) ---
+        $funnelData = $this->buildConversionFunnelData($startDate, $endDate);
+
+        // --- Top Customers (RFM) ---
+        $rfmData = [];
+        $customers = User::select('id', 'name', 'email')->get();
+        foreach ($customers as $customer) {
+            $custOrders = Order::where('user_id', $customer->id)->get();
+            $custCustomOrders = CustomDesignOrder::where('user_id', $customer->id)->get();
+            $allCustOrders = $custOrders->concat($custCustomOrders);
+
+            if ($allCustOrders->count() === 0) continue;
+
+            $lastOrder = $allCustOrders->sortByDesc('created_at')->first();
+            $recency = now()->diffInDays($lastOrder->created_at, true);
+            $frequency = $allCustOrders->count();
+            $monetary = $custOrders->sum('total') + $custCustomOrders->sum('total_price');
+
+            $rfmData[] = [
+                'customer' => $customer->name,
+                'email' => $customer->email,
+                'recency' => $recency,
+                'frequency' => $frequency,
+                'monetary' => $monetary,
+                'segment' => $this->getRFMSegment($recency, $frequency, $monetary),
+            ];
+        }
+        usort($rfmData, fn($a, $b) => $b['monetary'] <=> $a['monetary']);
+        $topRFMData = array_slice($rfmData, 0, 10);
+
+        $fileName = 'laporan-analytics-' . now()->format('Y-m-d') . '.xlsx';
+
+        return Excel::download(
+            new AnalyticsReportExport($periodLabel, $salesOverview, $funnelData, $topRFMData),
+            $fileName
+        );
     }
     
     // ============ Helper Methods ============
@@ -604,4 +673,3 @@ class AnalyticsController extends Controller
         }
     }
 }
-

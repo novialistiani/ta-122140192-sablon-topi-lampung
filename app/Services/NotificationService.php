@@ -289,7 +289,7 @@ class NotificationService
         return $this->create([
             'type' => 'payment_received',
             'notifiable_type' => 'App\\Models\\User',
-            'notifiable_id' => $order->customer_id,
+            'notifiable_id' => $order->user_id,
             'title' => 'Pembayaran Diterima',
             'message' => "Pembayaran untuk pesanan {$orderType} #{$order->id} telah diterima. Pesanan akan segera diproses.",
             'data' => [
