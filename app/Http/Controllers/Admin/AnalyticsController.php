@@ -49,7 +49,9 @@ class AnalyticsController extends Controller
             $startDate = request()->get('start_date');
             $endDate = request()->get('end_date');
             
-            if ($startDate && $endDate) {
+            $isCustomRange = (bool) ($startDate && $endDate);
+            
+            if ($isCustomRange) {
                 // Date range filtering
                 $startDate = \Carbon\Carbon::parse($startDate)->startOfDay();
                 $endDate = \Carbon\Carbon::parse($endDate)->endOfDay();
@@ -80,8 +82,7 @@ class AnalyticsController extends Controller
             $conversionRate = $totalAllOrders > 0 ? ($completedOrders / $totalAllOrders) * 100 : 0;
             
             // Get previous period data for comparison
-            $prevStartDate = $this->getPreviousPeriodStart($period, $startDate);
-            $prevEndDate = $startDate->copy()->subSecond();
+            [$prevStartDate, $prevEndDate] = $this->getPreviousPeriodRange($period, $startDate, $endDate, $isCustomRange);
             
             $prevOrders = Order::where('status', 'completed')
                 ->whereBetween('created_at', [$prevStartDate, $prevEndDate])
@@ -293,15 +294,17 @@ class AnalyticsController extends Controller
             $totalCustomersInPeriod = User::where('created_at', '<=', $endDate)->count();
             
             // Customers who made purchases IN THIS PERIOD
-            $customersWithOrdersInPeriod = Order::whereBetween('created_at', [$startDate, $endDate])
-                ->distinct('user_id')
-                ->count('user_id');
+            // Gabungan pelanggan unik dari pesanan reguler dan custom design
+            $activeUserIds = Order::whereBetween('created_at', [$startDate, $endDate])
+                ->pluck('user_id')
+                ->merge(
+                    CustomDesignOrder::whereBetween('created_at', [$startDate, $endDate])
+                        ->pluck('user_id')
+                )
+                ->filter()
+                ->unique();
             
-            $customersWithCustomOrdersInPeriod = CustomDesignOrder::whereBetween('created_at', [$startDate, $endDate])
-                ->distinct('user_id')
-                ->count('user_id');
-            
-            $activeCustomersInPeriod = max($customersWithOrdersInPeriod, $customersWithCustomOrdersInPeriod);
+            $activeCustomersInPeriod = $activeUserIds->count();
             
             // Total active customers all-time (for comparison)
             $totalActiveCustomersAllTime = max(
@@ -417,16 +420,17 @@ class AnalyticsController extends Controller
         $checkoutCount = Order::whereBetween('created_at', [$startDate, $endDate])->count();
         $checkoutCount += CustomDesignOrder::whereBetween('created_at', [$startDate, $endDate])->count();
 
-        // Tahap 2: Pembayaran selesai
-        // Order reguler: payment_status = 'paid'
-        // Custom design order: tidak memiliki payment_status, gunakan status 'approved' sebagai proksi pembayaran diterima
-        $completedPayments = Order::where('payment_status', 'paid')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->count();
+                // Tahap 2: Pembayaran selesai
+        // Baik order reguler maupun custom design menggunakan payment_status = 'paid',
+        // yang diisi melalui konfirmasi pembayaran manual oleh admin (QRIS statis, tanpa payment gateway otomatis)
+    $completedPayments = Order::where('payment_status', 'paid')
+    ->whereBetween('created_at', [$startDate, $endDate])
+    ->count();
 
-        $completedPayments += CustomDesignOrder::where('status', 'approved')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->count();
+
+$completedPayments += CustomDesignOrder::where('payment_status', 'paid')
+    ->whereBetween('created_at', [$startDate, $endDate])
+    ->count();
 
         // Tahap 3: Pesanan selesai
         $completedOrders = Order::where('status', 'completed')
@@ -471,7 +475,9 @@ class AnalyticsController extends Controller
         $startDateParam = request()->get('start_date');
         $endDateParam = request()->get('end_date');
 
-        if ($startDateParam && $endDateParam) {
+        $isCustomRange = (bool) ($startDateParam && $endDateParam);
+
+        if ($isCustomRange) {
             $startDate = Carbon::parse($startDateParam)->startOfDay();
             $endDate = Carbon::parse($endDateParam)->endOfDay();
             $periodLabel = $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y');
@@ -498,8 +504,7 @@ class AnalyticsController extends Controller
         $averageOrderValue = $completedOrders > 0 ? $totalRevenue / $completedOrders : 0;
         $conversionRate = $totalAllOrders > 0 ? ($completedOrders / $totalAllOrders) * 100 : 0;
 
-        $prevStartDate = $this->getPreviousPeriodStart($period, $startDate);
-        $prevEndDate = $startDate->copy()->subSecond();
+        [$prevStartDate, $prevEndDate] = $this->getPreviousPeriodRange($period, $startDate, $endDate, $isCustomRange);
         $prevRevenue = Order::where('status', 'completed')
             ->whereBetween('created_at', [$prevStartDate, $prevEndDate])
             ->sum('total')
@@ -587,6 +592,26 @@ class AnalyticsController extends Controller
             default:
                 return $startDate->copy()->subMonth();
         }
+    }
+    
+    /**
+     * Tentukan rentang periode pembanding untuk perhitungan growth.
+     * - Rentang tanggal bebas: periode sebelumnya memiliki durasi yang sama
+     *   dan berakhir tepat sebelum tanggal awal rentang yang dipilih.
+     * - Berbasis periode (day/week/month/year): mundur satu periode kalender.
+     */
+    private function getPreviousPeriodRange($period, $startDate, $endDate, $isCustomRange)
+    {
+        $prevEndDate = $startDate->copy()->subSecond();
+
+        if ($isCustomRange) {
+            $lengthInSeconds = $endDate->timestamp - $startDate->timestamp;
+            $prevStartDate = $prevEndDate->copy()->subSeconds($lengthInSeconds);
+        } else {
+            $prevStartDate = $this->getPreviousPeriodStart($period, $startDate);
+        }
+
+        return [$prevStartDate, $prevEndDate];
     }
     
     private function getDateFormat($groupBy)

@@ -3,15 +3,16 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Admin;
-use App\Models\User;
 use App\Models\Order;
-use App\Models\CustomDesignOrder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
 class AdminManagementTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected Admin $admin;
 
     protected function setUp(): void
     {
@@ -19,115 +20,167 @@ class AdminManagementTest extends TestCase
         $this->admin = Admin::factory()->create(['email' => 'admin@example.com']);
     }
 
-    /** @test */
-    public function admin_can_be_created()
+    public function test_admin_can_view_order_list(): void
     {
-        $admin = Admin::create([
-            'name' => 'Admin Baru',
-            'email' => 'admin.baru@example.com',
-            'password' => bcrypt('password123'),
-        ]);
+        Order::factory()->count(3)->create();
 
-        $this->assertDatabaseHas('admins', [
-            'email' => 'admin.baru@example.com',
-        ]);
+        $response = $this->actingAs($this->admin, 'admin')
+            ->get(route('admin.order-list'));
+
+        $response->assertOk();
     }
 
-    /** @test */
-    public function admin_can_view_all_orders()
+    public function test_guest_cannot_view_order_list(): void
     {
-        Order::factory()->count(5)->create();
+        $response = $this->get(route('admin.order-list'));
 
-        $orders = Order::all();
-
-        $this->assertCount(5, $orders);
+        $response->assertRedirect();
     }
 
-    /** @test */
-    public function admin_can_update_order_status()
+    public function test_admin_can_approve_pending_order(): void
     {
         $order = Order::factory()->create(['status' => 'pending']);
 
-        $order->update(['status' => 'processing']);
+        $this->actingAs($this->admin, 'admin')
+            ->post(route('admin.order.approve', $order->id) . '?type=regular');
+
+        $order = $order->fresh();
+        $this->assertEquals('approved', $order->status);
+        $this->assertNotNull($order->approved_at);
+        $this->assertNotNull($order->payment_deadline);
+    }
+
+    public function test_reject_order_requires_reason(): void
+    {
+        $order = Order::factory()->create(['status' => 'pending']);
+
+        $response = $this->actingAs($this->admin, 'admin')
+            ->post(route('admin.order.reject', $order->id) . '?type=regular', []);
+
+        $response->assertSessionHasErrors('reason');
+        $this->assertEquals('pending', $order->fresh()->status);
+    }
+
+    public function test_admin_can_reject_order_with_reason(): void
+    {
+        $order = Order::factory()->create(['status' => 'pending']);
+
+        $this->actingAs($this->admin, 'admin')
+            ->post(route('admin.order.reject', $order->id) . '?type=regular', [
+                'reason' => 'Desain tidak sesuai ketentuan',
+            ]);
+
+        $order = $order->fresh();
+        $this->assertEquals('rejected', $order->status);
+        $this->assertEquals('Desain tidak sesuai ketentuan', $order->admin_notes);
+    }
+
+    public function test_cannot_set_processing_when_order_unpaid(): void
+    {
+        $order = Order::factory()->create([
+            'status' => 'approved',
+            'payment_status' => 'unpaid',
+        ]);
+
+        $this->actingAs($this->admin, 'admin')
+            ->patch(route('admin.order.update-status', $order->id) . '?type=regular', [
+                'status' => 'processing',
+            ]);
+
+        $this->assertNotEquals('processing', $order->fresh()->status);
+    }
+
+    public function test_can_set_processing_when_order_paid(): void
+    {
+        $order = Order::factory()->create([
+            'status' => 'approved',
+            'payment_status' => 'paid',
+        ]);
+
+        $this->actingAs($this->admin, 'admin')
+            ->patch(route('admin.order.update-status', $order->id) . '?type=regular', [
+                'status' => 'processing',
+            ]);
 
         $this->assertEquals('processing', $order->fresh()->status);
     }
 
-    /** @test */
-    public function admin_can_approve_custom_design()
-    {
-        $design = CustomDesignOrder::factory()->create([
-            'status' => 'pending',
-        ]);
-
-        $design->update(['status' => 'approved']);
-
-        $this->assertEquals('approved', $design->fresh()->status);
-    }
-
-    /** @test */
-    public function admin_can_reject_custom_design()
-    {
-        $design = CustomDesignOrder::factory()->create([
-            'status' => 'pending',
-        ]);
-
-        $design->update(['status' => 'rejected']);
-
-        $this->assertEquals('rejected', $design->fresh()->status);
-    }
-
-    /** @test */
-    public function admin_can_add_notes_to_order()
-    {
-        $order = Order::factory()->create();
-
-        $notes = 'Order ini perlu perhatian khusus';
-        $order->update(['admin_notes' => $notes]);
-
-        $this->assertDatabaseHas('orders', [
-            'id' => $order->id,
-            'admin_notes' => $notes,
-        ]);
-    }
-
-    /** @test */
-    public function admin_can_manage_users()
-    {
-        $user = User::factory()->create();
-
-        $this->assertNotNull($user->id);
-    }
-
-    /** @test */
-    public function admin_can_view_activity_logs()
-    {
-        $this->assertIsIterable(Admin::all());
-    }
-    
-    /** @test */
-    public function admin_can_see_overdue_badge_on_order_list()
+    public function test_overdue_badge_is_shown_on_order_list(): void
     {
         Order::factory()->create([
             'status' => 'approved',
             'pickup_date' => now()->subDays(2),
         ]);
 
-        $response = $this->actingAs($this->admin, 'admin')->get(route('admin.order-list'));
+        $response = $this->actingAs($this->admin, 'admin')
+            ->get(route('admin.order-list'));
 
         $response->assertOk()->assertSee('Terlambat');
     }
 
-    /** @test */
-    public function admin_does_not_see_overdue_badge_when_order_completed()
+    public function test_overdue_badge_is_hidden_when_order_completed(): void
     {
         Order::factory()->create([
             'status' => 'completed',
             'pickup_date' => now()->subDays(2),
         ]);
 
-        $response = $this->actingAs($this->admin, 'admin')->get(route('admin.order-list'));
+        $response = $this->actingAs($this->admin, 'admin')
+            ->get(route('admin.order-list'));
 
         $response->assertOk()->assertDontSee('Terlambat');
+    }
+
+    public function test_expired_unpaid_order_is_auto_cancelled(): void
+    {
+        $order = Order::factory()->create([
+            'status' => 'approved',
+            'payment_status' => 'unpaid',
+            'payment_deadline' => now()->subMinutes(5),
+        ]);
+
+        Artisan::call('orders:cancel-expired');
+
+        $this->assertNotEquals('approved', $order->fresh()->status);
+    }
+
+    public function test_expired_order_with_payment_proof_is_not_auto_cancelled(): void
+    {
+        $order = Order::factory()->create([
+            'status' => 'approved',
+            'payment_status' => 'pending_verification',
+            'payment_deadline' => now()->subMinutes(5),
+        ]);
+
+        Artisan::call('orders:cancel-expired');
+
+        $this->assertEquals('approved', $order->fresh()->status);
+    }
+        public function test_can_set_completed_when_order_paid(): void
+    {
+        $order = Order::factory()->create([
+            'status' => 'processing',
+            'payment_status' => 'paid',
+        ]);
+
+        $this->actingAs($this->admin, 'admin')
+            ->patch(route('admin.order.update-status', $order->id) . '?type=regular', [
+                'status' => 'completed',
+            ]);
+
+        $this->assertEquals('completed', $order->fresh()->status);
+    }
+
+    public function test_admin_can_view_order_history_page(): void
+    {
+        Order::factory()->create([
+            'status' => 'completed',
+            'payment_status' => 'paid',
+        ]);
+
+        $response = $this->actingAs($this->admin, 'admin')
+            ->get(route('admin.order-history'));
+
+        $response->assertOk();
     }
 }

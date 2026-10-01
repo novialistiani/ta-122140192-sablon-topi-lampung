@@ -159,12 +159,14 @@
     <div class="top-navbar">
         <div class="top-navbar__left">
             <div class="top-navbar__logo-container">
-                <div class="top-navbar__logo">
-                    <i class="fas fa-shopping-bag"></i>
+                <div class="top-navbar__logo" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                    <img src="{{ asset('images/logo-lgi-Photoroom.png') }}" 
+                    alt="LGI Store"
+                    style="width: 42px; height: 42px; object-fit: contain; display: block;">
                 </div>
                 <div class="top-navbar__brand">
                     <h1 class="top-navbar__title">LGI STORE</h1>
-                    <p class="top-navbar__subtitle">Produk Eksklusif Kaos Berkualitas</p>
+                    <p class="top-navbar__subtitle">Peduli Kualitas Bukan Kuantitas</p>
                 </div>
             </div>
         </div>
