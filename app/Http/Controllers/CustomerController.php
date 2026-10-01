@@ -1247,8 +1247,7 @@ $pricePerItem = $variant ? (float) $variant->price : (float) $product->price;
         }
         
         $quantity = min((int) $validated['quantity'], $availableStock);
-        $key = md5($product->id . '|' . ($validated['color'] ?? '') . '|' . ($validated['size'] ?? ''));
-
+        $key = md5($product->id . '|' . ($validated['variant_id'] ?? '') . '|' . ($validated['color'] ?? '') . '|' . ($validated['size'] ?? ''));
         $cart = $request->session()->get('cart', []);
 
         if (isset($cart[$key])) {
@@ -1291,7 +1290,11 @@ $pricePerItem = $variant ? (float) $variant->price : (float) $product->price;
         }
 
         $product = Product::find($cart[$key]['product_id']);
-        $maxStock = $product ? max(1, (int) $product->stock) : 99;
+        $variant = !empty($cart[$key]['variant_id'])
+         ? \App\Models\ProductVariant::find($cart[$key]['variant_id'])
+        : null;
+        $stock = $variant ? (int) $variant->stock : ($product ? (int) $product->stock : 99);
+        $maxStock = max(1, $stock);
         $cart[$key]['quantity'] = min((int) $validated['quantity'], $maxStock);
 
         $request->session()->put('cart', $cart);
@@ -1865,7 +1868,7 @@ $pricePerItem = $variant ? (float) $variant->price : (float) $product->price;
                     'product' => $productNames->first(),
                     'moreProducts' => count($productNames) > 1 ? count($productNames) - 1 : 0,
                     'date' => $order->created_at->format('d M Y'),
-                    'total' => $order->total,
+                    'total' => $order->order_type === 'custom' ? $order->total_price : $order->total,
                 ];
             });
             
