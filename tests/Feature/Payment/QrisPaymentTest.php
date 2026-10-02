@@ -133,4 +133,55 @@ class QrisPaymentTest extends TestCase
 
         $response->assertSessionHas('error', 'Pesanan sudah ditandai sebagai dibayar.');
     }
+        public function test_customer_can_view_payment_page_for_approved_custom_order(): void
+    {
+        $user = User::factory()->create();
+        $order = \App\Models\CustomDesignOrder::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'approved',
+            'payment_status' => 'unpaid',
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('pemesanan', ['order_type' => 'custom', 'order_id' => $order->id]));
+
+        $response->assertOk();
+    }
+
+    public function test_customer_can_submit_payment_proof_for_custom_order(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $order = \App\Models\CustomDesignOrder::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'approved',
+            'payment_status' => 'unpaid',
+        ]);
+
+        $this->actingAs($user)->post(route('pemesanan.submit-payment'), [
+            'order_type' => 'custom',
+            'order_id' => $order->id,
+            'pickup_date' => now()->format('Y-m-d'),
+            'payment_proof' => UploadedFile::fake()->image('bukti.jpg'),
+        ]);
+
+        $this->assertEquals('pending_verification', $order->fresh()->payment_status);
+        $this->assertNotNull($order->fresh()->payment_proof);
+    }
+
+    public function test_admin_can_mark_custom_order_payment_as_received(): void
+    {
+        $admin = Admin::factory()->create();
+        $order = \App\Models\CustomDesignOrder::factory()->create([
+            'status' => 'approved',
+            'payment_status' => 'pending_verification',
+        ]);
+
+        $this->actingAs($admin, 'admin')
+            ->post(route('admin.order.mark-payment-received', $order->id) . '?type=custom');
+
+        $this->assertEquals('paid', $order->fresh()->payment_status);
+        $this->assertNotNull($order->fresh()->paid_at);
+    }
 }

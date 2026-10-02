@@ -5,7 +5,7 @@
     
     <p>Halo <strong>{{ $data['customer_name'] }}</strong>,</p>
     
-    <p>Kabar gembira! Pesanan Anda telah <strong>disetujui</strong> dan sedang dalam proses produksi.</p>
+    <p>Kabar gembira! Pesanan Anda telah <strong>disetujui</strong>. Silakan lakukan pembayaran melalui QRIS dalam waktu <strong>60 menit</strong>.</p>
     
     <div class="info-box info-box-success">
         <div class="info-item">
@@ -33,7 +33,7 @@
         </div>
     @endif
     
-    <p>Pesanan Anda akan segera diproses. Kami akan mengirimkan notifikasi ketika pesanan sudah siap dikirim atau siap diambil.</p>
+       <p>Setelah pembayaran, unggah bukti pembayaran dan pilih tanggal pengambilan di halaman detail pesanan. Pesanan akan diproses setelah pembayaran dikonfirmasi admin. Jika bukti pembayaran belum diunggah sebelum batas waktu, pesanan akan dibatalkan otomatis.</p>
     
     @if(isset($data['action_url']))
         <div class="button-container">
