@@ -319,7 +319,11 @@
                                 <div>
                                     <h4 class="font-semibold text-red-900 mb-1">Pesanan Ditolak</h4>
                                     <p class="text-sm text-red-800">
-                                        Pesanan Anda telah ditolak. Silakan hubungi admin untuk informasi lebih lanjut.
+                                                                                @if(!empty($order->admin_notes))
+                                            <span class="block mt-1"><strong>Alasan dari admin:</strong> {{ $order->admin_notes }}</span>
+                                        @else
+                                            Pesanan Anda telah ditolak. Silakan hubungi admin untuk informasi lebih lanjut.
+                                        @endif
                                     </p>
                                 </div>
                             </div>
