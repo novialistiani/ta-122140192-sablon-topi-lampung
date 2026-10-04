@@ -412,7 +412,9 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/custom-design', [CustomerController::class, 'storeCustomDesign'])
             ->name('custom-design.store');
-
+                Route::post('/custom-design/{id}/revision', [\App\Http\Controllers\CustomerController::class, 'submitRevision'])->name('custom-design.revision');
+           
+                Route::post('/custom-design/{id}/revision', [\App\Http\Controllers\CustomerController::class, 'submitRevision'])->name('custom-design.revision');
         Route::get('/chatpage', [CustomerController::class, 'chatpage'])
             ->name('chatpage');
         Route::get('/notifikasi', [CustomerController::class, 'notifikasi'])
@@ -483,6 +485,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/order-list/export', [OrderManagementController::class, 'export'])->name('admin.order-list.export');
         Route::post('/order-list/{id}/approve', [OrderManagementController::class, 'approve'])->name('admin.order.approve');
         Route::post('/order-list/{id}/reject', [OrderManagementController::class, 'reject'])->name('admin.order.reject');
+        Route::post('/order-list/{id}/request-revision', [OrderManagementController::class, 'requestRevision'])->name('admin.order.request-revision');
         Route::patch('/order-list/{id}/status', [OrderManagementController::class, 'updateStatus'])->name('admin.order.update-status');
         Route::post('/order-list/{id}/mark-payment-received', [OrderManagementController::class, 'markPaymentReceived'])->name('admin.order.mark-payment-received');
         Route::get('/management-users', [UserManagementController::class, 'index'])->name('admin.management-users');

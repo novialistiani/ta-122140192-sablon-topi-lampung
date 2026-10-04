@@ -1004,7 +1004,74 @@
         </div>
         @endif
     </div>
+        {{-- Tombol Minta Revisi (khusus pesanan custom yang menunggu review) --}}
+    @if($orderType === 'custom' && $order->status === 'pending')
+    <div style="margin-top: 16px;">
+        <button type="button" onclick="showRevisionModal()" class="btn-action" style="background: #f59e0b; color: white;">
+            <i class="fas fa-edit"></i> Minta Revisi
+        </button>
+    </div>
+    @endif
 
+    {{-- Riwayat revisi --}}
+    @if($orderType === 'custom' && $order->revisions->count())
+    <div style="margin-top: 24px; padding: 20px 24px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;">
+        <h3 style="font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 12px;">Riwayat Revisi</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <thead>
+                <tr style="text-align: left; border-bottom: 1px solid #e5e7eb;">
+                    <th style="padding: 8px 0;">Waktu</th>
+                    <th style="padding: 8px 0;">Kejadian</th>
+                    <th style="padding: 8px 0;">Keterangan</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($order->revisions as $rev)
+                <tr style="border-bottom: 1px solid #f3f4f6;">
+                    <td style="padding: 8px 0;">{{ $rev->created_at->format('d/m/Y H:i') }}</td>
+                    <td style="padding: 8px 0;">{{ $rev->type === 'admin_request' ? 'Admin meminta revisi' : 'Pelanggan mengunggah revisi' }}</td>
+                    <td style="padding: 8px 0;">
+                        @if($rev->type === 'admin_request')
+                            {{ $rev->note }}
+                        @else
+                            {{ $rev->section_name }}:
+                            <a href="{{ asset('storage/' . $rev->file_path) }}" target="_blank" style="color: #2563eb;">{{ $rev->file_name }}</a>
+                        @endif
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    @endif
+
+    {{-- Modal Minta Revisi --}}
+    <div id="revisionModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Minta Revisi Desain</h3>
+                <span class="close" onclick="closeRevisionModal()">&times;</span>
+            </div>
+            <form method="POST" action="{{ route('admin.order.request-revision', ['id' => $order->id]) }}">
+                @csrf
+                <div class="modal-body">
+                    <label for="revisionReason">Catatan Revisi:</label>
+                    <textarea id="revisionReason" name="reason" required maxlength="500" placeholder="Jelaskan bagian desain yang perlu diperbaiki..."></textarea>
+                </div>
+                <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 12px; padding: 16px 20px; border-top: 1px solid #e5e7eb;">
+                    <button type="button" onclick="closeRevisionModal()" style="padding: 10px 24px; background: #6b7280; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">Batal</button>
+                    <button type="submit" style="padding: 10px 24px; background: #f59e0b; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">Kirim Permintaan Revisi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        function showRevisionModal() { document.getElementById('revisionModal').style.display = 'block'; }
+        function closeRevisionModal() {
+            document.getElementById('revisionModal').style.display = 'none';
+            document.getElementById('revisionReason').value = '';
+        }
+    </script>
     {{-- Modal untuk reject reason --}}
     <div id="rejectModal" class="modal" style="display: none;">
         <div class="modal-content">

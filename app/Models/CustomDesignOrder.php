@@ -75,9 +75,17 @@ class CustomDesignOrder extends Model
     /**
      * Get all uploaded files for this order
      */
-    public function uploads(): HasMany
+        public function uploads(): HasMany
     {
         return $this->hasMany(CustomDesignUpload::class);
+    }
+
+    /**
+     * Get the revision history of this order
+     */
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(CustomDesignRevision::class)->orderBy('created_at');
     }
 
     /**

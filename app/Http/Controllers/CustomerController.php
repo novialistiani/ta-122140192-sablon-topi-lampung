@@ -1216,7 +1216,55 @@ $pricePerItem = $variant ? (float) $variant->price : (float) $product->price;
             ], 500);
         }
     }
+    /**
+     * Customer uploads a revised design file after admin requested a revision
+     */
+    public function submitRevision(Request $request, $id)
+    {
+        $request->validate([
+            'section_name' => 'required|string',
+            'file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
+        ]);
 
+        $order = CustomDesignOrder::where('user_id', auth()->id())->findOrFail($id);
+
+        if ($order->status !== 'revision_requested') {
+            return back()->with('error', 'Pesanan ini tidak sedang meminta revisi.');
+        }
+
+        $upload = \App\Models\CustomDesignUpload::where('custom_design_order_id', $order->id)
+            ->where('section_name', $request->section_name)
+            ->first();
+
+        if (!$upload) {
+            return back()->with('error', 'Bagian desain tidak ditemukan.');
+        }
+
+        $file = $request->file('file');
+        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('custom-designs/' . $order->id, $filename, 'public');
+
+        $order->revisions()->create([
+            'type' => 'customer_upload',
+            'section_name' => $upload->section_name,
+            'file_path' => $path,
+            'file_name' => $file->getClientOriginalName(),
+            'previous_file_path' => $upload->file_path,
+        ]);
+
+        \App\Models\CustomDesignUpload::where('id', $upload->id)->update([
+            'file_path' => $path,
+            'file_name' => $file->getClientOriginalName(),
+            'file_size' => $file->getSize(),
+        ]);
+
+        $order->update(['status' => 'pending']);
+
+        CustomDesignUploadedEvent::dispatch($order);
+
+        return redirect()->route('order-detail', ['type' => 'custom', 'id' => $order->id])
+            ->with('success', 'Revisi desain berhasil dikirim. Menunggu review admin.');
+    }
     public function addToCart(Request $request)
     {
         $validated = $request->validate([
@@ -1896,6 +1944,7 @@ $pricePerItem = $variant ? (float) $variant->price : (float) $product->price;
             'processing' => 'Diproses',
             'completed' => 'Selesai',
             'rejected' => 'Ditolak',
+            'revision_requested' => 'Perlu Revisi',
             'cancelled' => 'Dibatalkan',
             default => ucfirst($status),
         };

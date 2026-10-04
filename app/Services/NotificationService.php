@@ -329,32 +329,6 @@ class NotificationService
     }
 }
 
-    /**
-     * Notify admin when VA is activated (to Admins)
-     */
-    public function notifyAdminVAActivated($order, $vaNumber)
-{
-    $orderTypeSlug = get_class($order) === 'App\Models\CustomDesignOrder' ? 'custom' : 'regular';
-    $orderType = $orderTypeSlug === 'custom' ? 'Custom Design' : 'Regular';
-    $admins = Admin::where('status', 'active')->get();
-    
-    foreach ($admins as $admin) {
-        $this->create([
-            'type' => 'va_activated',
-            'notifiable_type' => 'App\\Models\\Admin',
-            'notifiable_id' => $admin->id,
-            'title' => 'Virtual Account Aktif',
-            'message' => "VA #{$vaNumber} untuk pesanan {$orderType} #{$order->id} telah diaktifkan.",
-            'action_url' => route('admin.order.detail', ['id' => $order->id, 'type' => $orderTypeSlug]),
-            'action_text' => 'Lihat Pesanan',
-            'data' => [
-                'order_id' => $order->id,
-                'order_type' => $orderType,
-                'va_number' => $vaNumber,
-            ],
-        ]);
-    }
-}
 
     /**
      * Notify customer when admin replies to chat (to User)

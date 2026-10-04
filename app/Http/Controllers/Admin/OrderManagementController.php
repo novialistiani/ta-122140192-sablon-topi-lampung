@@ -330,7 +330,47 @@ class OrderManagementController extends Controller
 
         return redirect()->back()->with('success', 'Pesanan berhasil ditolak.');
     }
+    /**
+     * Request a design revision from the customer (custom orders only)
+     */
+    public function requestRevision(Request $request, $id)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:500',
+        ]);
 
+        $order = CustomDesignOrder::findOrFail($id);
+
+        if ($order->status !== 'pending') {
+            return redirect()->back()->with('error', 'Revisi hanya dapat diminta untuk pesanan yang menunggu review.');
+        }
+
+        $order->update([
+                        'status' => 'revision_requested',
+            'admin_notes' => $request->reason,
+        ]);
+
+        $order->revisions()->create([
+            'type' => 'admin_request',
+            'note' => $request->reason,
+        ]);
+
+        try {
+            app(\App\Services\NotificationService::class)->notifyOrderStatusUpdate(
+                $order,
+                $order->user_id,
+                'pending',
+                'revision_requested'
+            );
+        } catch (\Exception $e) {
+            Log::warning('Failed to send revision request notification', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Permintaan revisi telah dikirim ke pelanggan.');
+    }
     /**
      * Update order status (manual processing/completed by admin)
      */

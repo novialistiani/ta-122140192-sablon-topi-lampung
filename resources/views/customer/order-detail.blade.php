@@ -311,6 +311,32 @@
                             </div>
                         </div>
                     </div>
+                                        @elseif($order->status === 'revision_requested')
+                    <div style="margin-top: 24px; padding: 16px 24px; background-color: #fff7ed; border-top: 1px solid #fed7aa; border-bottom: 1px solid #fed7aa;">
+                        <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-edit text-orange-600 mt-1" style="font-size: 20px;"></i>
+                                <div style="flex: 1;">
+                                    <h4 class="font-semibold text-orange-900 mb-1">Perlu Revisi Desain</h4>
+                                    <p class="text-sm text-orange-800">
+                                        <strong>Catatan dari admin:</strong> {{ $order->admin_notes }}
+                                    </p>
+                                    @if($type === 'custom')
+                                    <form method="POST" action="{{ route('custom-design.revision', $order->id) }}" enctype="multipart/form-data" style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+                                        @csrf
+                                        <select name="section_name" required style="padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+                                            @foreach($order->uploads as $up)
+                                                <option value="{{ $up->section_name }}">{{ $up->section_name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <input type="file" name="file" accept="image/*,.pdf" required style="font-size: 14px;">
+                                        <button type="submit" style="padding: 8px 20px; background: #f59e0b; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Unggah Revisi</button>
+                                    </form>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     @elseif($order->status === 'rejected')
                     <div style="margin-top: 24px; padding: 16px 24px; background-color: #fef2f2; border-top: 1px solid #fecaca; border-bottom: 1px solid #fecaca;">
                         <div class="bg-red-50 border border-red-200 rounded-lg p-4">
