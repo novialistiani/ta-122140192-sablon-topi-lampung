@@ -82,7 +82,7 @@
                         <div class="area-cetak-section">
                             <h3 class="area-cetak-title">AREA CETAK</h3>
                             <div class="area-image-container">
-                                <img src="https://s.alicdn.com/@sc04/kf/H18f96e8d35554c9e96dcd6ebff3676096/223366470/H18f96e8d35554c9e96dcd6ebff3676096.png" alt="Area Cetak" class="area-image">
+                                <img src="{{ isset($product) && !empty($product->design_guide) ? asset('storage/' . $product->design_guide) : 'https://s.alicdn.com/@sc04/kf/H18f96e8d35554c9e96dcd6ebff3676096/223366470/H18f96e8d35554c9e96dcd6ebff3676096.png' }}" alt="Area Cetak" class="area-image">
                             </div>
                         </div>
                     </div>

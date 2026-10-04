@@ -486,6 +486,9 @@ Route::prefix('admin')->group(function () {
         Route::post('/order-list/{id}/approve', [OrderManagementController::class, 'approve'])->name('admin.order.approve');
         Route::post('/order-list/{id}/reject', [OrderManagementController::class, 'reject'])->name('admin.order.reject');
         Route::post('/order-list/{id}/request-revision', [OrderManagementController::class, 'requestRevision'])->name('admin.order.request-revision');
+        Route::get('/design-guides', [\App\Http\Controllers\Admin\DesignGuideController::class, 'index'])->name('admin.design-guides');
+        Route::post('/design-guides/{id}', [\App\Http\Controllers\Admin\DesignGuideController::class, 'store'])->name('admin.design-guides.store');
+        Route::delete('/design-guides/{id}', [\App\Http\Controllers\Admin\DesignGuideController::class, 'destroy'])->name('admin.design-guides.destroy');
         Route::patch('/order-list/{id}/status', [OrderManagementController::class, 'updateStatus'])->name('admin.order.update-status');
         Route::post('/order-list/{id}/mark-payment-received', [OrderManagementController::class, 'markPaymentReceived'])->name('admin.order.mark-payment-received');
         Route::get('/management-users', [UserManagementController::class, 'index'])->name('admin.management-users');
