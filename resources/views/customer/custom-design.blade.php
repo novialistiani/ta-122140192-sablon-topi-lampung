@@ -445,7 +445,7 @@
             
             uploadedSections.forEach((value, key) => {
                 // Extract code from name like "A (Dada depan...)"
-                const code = key.match(/^([A-J])\s/)?.[1];
+                const code = key.match(/^([A-Z])\s/)?.[1];
                 if (code && designPrices.upload_sections[code]) {
                     const price = designPrices.upload_sections[code];
                     uploadSectionsTotal += price;
