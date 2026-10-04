@@ -108,8 +108,7 @@
                                     @php
                                         $statusClass = 'status-' . strtolower(str_replace(' ', '-', $order->status));
                                     @endphp
-                                    <span class="status {{ $statusClass }}">{{ ucfirst($order->status) }}</span>
-                                    
+                                                                        <span class="status {{ $statusClass }}">{{ $order->status === 'revision_requested' ? 'Perlu Revisi' : ucfirst($order->status) }}</span>
                                     {{-- Payment Status Badge --}}
                                         @if(isset($order->payment_status))
                                                 @if($order->payment_status === 'paid')

@@ -398,6 +398,13 @@
 .status-rejected::before { 
     background-color: #ef4444; 
 }
+.status-revision_requested {
+    color: #ea580c;
+    background-color: #ffedd5;
+}
+.status-revision_requested::before {
+    background-color: #ea580c;
+}
 
 .status-cancelled {
     color: #6b7280;

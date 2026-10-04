@@ -110,7 +110,8 @@
                             @elseif($order->status === 'rejected') bg-red-100 text-red-800
                             @elseif($order->status === 'cancelled') bg-gray-100 text-gray-800
                             @elseif($order->status === 'processing') bg-blue-100 text-blue-800
-                            @elseif($order->status === 'completed') bg-purple-100 text-purple-800
+                                        @elseif($order->status === 'revision_requested') bg-orange-100 text-orange-800
+                            @elseif($order->status === 'completed') bg-purple-100 text-purple-800app(\App\Services\NotificationService::class)->notifyDesignRevisionRequested($order, $request->reason);
                             @else bg-gray-100 text-gray-800
                             @endif">
                             @if($order->status === 'pending')
@@ -126,7 +127,7 @@
                             @elseif($order->status === 'completed')
                                 Selesai
                             @else
-                                {{ ucfirst($order->status) }}
+                                {{ $order->status === 'revision_requested' ? 'Perlu Revisi' : ucfirst($order->status) }}
                             @endif
                         </span>
                     </div>
@@ -203,6 +204,11 @@
                                 <p class="text-sm text-yellow-600 font-medium mb-3">
                                     <i class="fas fa-clock"></i> Menunggu konfirmasi admin
                                 </p>
+                                @elseif($order->status === 'revision_requested')
+                                <div class="bg-orange-50 p-2 rounded text-sm mb-3">
+                                    <p class="text-orange-600 font-medium">Perlu Revisi Desain:</p>
+                                    <p class="text-orange-800">{{ $order->admin_notes ?? 'Tidak ada catatan' }}</p>
+                                </div>
                                 @elseif($order->status === 'rejected')
                                 <div class="bg-red-50 p-2 rounded text-sm mb-3">
                                     <p class="text-red-600 font-medium">Alasan Penolakan:</p>
@@ -212,6 +218,17 @@
 
                                 {{-- Action Buttons --}}
                                 <div class="flex justify-end gap-2 flex-wrap">
+                                    @if($order->status === 'revision_requested')
+                                        <a href="{{ route('order-detail', ['type' => 'custom', 'id' => $order->id]) }}"
+                                           class="px-3 py-1 bg-orange-500 text-white text-xs rounded-lg hover:bg-orange-600 transition whitespace-nowrap">
+                                            <i class="fas fa-edit mr-1"></i> Unggah Revisi
+                                        </a>
+                                    @elseif($order->status !== 'approved')
+                                        <a href="{{ route('order-detail', ['type' => 'custom', 'id' => $order->id]) }}"
+                                           class="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition whitespace-nowrap">
+                                            <i class="fas fa-eye mr-1"></i> Detail
+                                        </a>
+                                    @endif
                                     @php
                                         // Check if order has active VA
                                         $hasActiveVA = \App\Models\VirtualAccount::where('user_id', auth()->id())

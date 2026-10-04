@@ -273,7 +273,26 @@ class NotificationService
             ],
         ]);
     }
-
+        /**
+     * Notify customer that admin requested a design revision
+     */
+    public function notifyDesignRevisionRequested($order, $note)
+    {
+        return $this->create([
+            'type' => 'order_status_update',
+            'notifiable_type' => 'App\\Models\\User',
+            'notifiable_id' => $order->user_id,
+            'title' => 'Desain Perlu Revisi',
+            'message' => "Desain custom #{$order->id} perlu direvisi. Catatan admin: {$note}",
+            'action_url' => route('order-detail', ['type' => 'custom', 'id' => $order->id]),
+            'action_text' => 'Unggah Revisi',
+            'data' => [
+                'order_id' => $order->id,
+                'order_type' => 'Custom Design',
+                'new_status' => 'revision_requested',
+            ],
+        ]);
+    }
     /**
      * Notify when payment is received (to User)
      */

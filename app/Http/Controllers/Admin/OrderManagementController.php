@@ -356,12 +356,7 @@ class OrderManagementController extends Controller
         ]);
 
         try {
-            app(\App\Services\NotificationService::class)->notifyOrderStatusUpdate(
-                $order,
-                $order->user_id,
-                'pending',
-                'revision_requested'
-            );
+            app(\App\Services\NotificationService::class)->notifyDesignRevisionRequested($order, $request->reason);
         } catch (\Exception $e) {
             Log::warning('Failed to send revision request notification', [
                 'order_id' => $order->id,
