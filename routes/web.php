@@ -557,7 +557,7 @@ Route::prefix('admin')->group(function () {
         // Custom Design Prices Management
         Route::get('/custom-design-prices', [CustomDesignPriceController::class, 'index'])->name('admin.custom-design-prices');
         Route::post('/custom-design-prices/init', [CustomDesignPriceController::class, 'initializeDefaults'])->name('admin.custom-design-prices.init');
-        
+                Route::post('/custom-design-prices', [CustomDesignPriceController::class, 'store'])->name('admin.custom-design-prices.store');
         Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile');
         Route::post('/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
         Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('admin.profile.update-avatar');

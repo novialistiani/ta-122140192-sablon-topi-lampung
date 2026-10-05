@@ -197,7 +197,27 @@
             <h2 class="section-title">
                 <i class="fas fa-upload"></i> Harga Upload Bagian
             </h2>
-            
+                       
+            @if($errors->any())
+                <div style="padding: 10px 14px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin-bottom: 12px;">{{ $errors->first() }}</div>
+            @endif
+
+            <form method="POST" action="{{ route('admin.custom-design-prices.store') }}" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 16px; padding: 14px; background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 10px;">
+                @csrf
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Kode (1 huruf)</label>
+                    <input type="text" name="code" maxlength="1" required value="{{ old('code') }}" placeholder="K" style="width: 70px; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; text-transform: uppercase;">
+                </div>
+                <div style="flex: 1; min-width: 240px;">
+                    <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Keterangan bagian</label>
+                    <input type="text" name="description" maxlength="120" required value="{{ old('description') }}" placeholder="Topi bagian depan, uk. 8x5 cm" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Harga (Rp)</label>
+                    <input type="number" name="price" min="0" step="1000" required value="{{ old('price') }}" placeholder="15000" style="width: 140px; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+                </div>
+                <button type="submit" style="padding: 9px 18px; background: #f59e0b; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">+ Tambah Bagian</button>
+            </form>
             @if($uploadSections->isEmpty())
                 <div class="empty-state">
                     <div class="empty-state-icon">📦</div>

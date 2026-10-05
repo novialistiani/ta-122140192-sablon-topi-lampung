@@ -59,7 +59,42 @@ class CustomDesignPriceController extends Controller
 
         return redirect()->route('admin.custom-design-prices')->with('success', 'Default prices initialized successfully!');
     }
+        /**
+     * Add a new upload section (e.g. for hats) to the catalog
+     */
+    public function store(Request $request)
+    {
+        $request->merge(['code' => strtoupper((string) $request->code)]);
 
+        $validated = $request->validate([
+            'code' => ['required', 'regex:/^[A-Z]$/'],
+            'description' => 'required|string|max:120',
+            'price' => 'required|numeric|min:0',
+        ], [
+            'code.regex' => 'Kode bagian harus satu huruf (A sampai Z).',
+        ]);
+
+        $exists = CustomDesignPrice::where('type', 'upload_section')
+            ->where('code', $validated['code'])
+            ->exists();
+
+        if ($exists) {
+            return redirect()->route('admin.custom-design-prices')
+                ->withErrors(['code' => 'Kode bagian ' . $validated['code'] . ' sudah dipakai.'])
+                ->withInput();
+        }
+
+        CustomDesignPrice::create([
+            'type' => 'upload_section',
+            'code' => $validated['code'],
+            'name' => $validated['code'] . ' (' . $validated['description'] . ')',
+            'price' => $validated['price'],
+            'is_active' => true,
+        ]);
+
+        return redirect()->route('admin.custom-design-prices')
+            ->with('success', 'Bagian ' . $validated['code'] . ' berhasil ditambahkan.');
+    }
     /**
      * Update price
      */
