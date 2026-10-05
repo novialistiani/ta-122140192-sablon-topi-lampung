@@ -279,7 +279,7 @@ class ModernAddProductManager {
         const customDesignControl = customDesignToggle?.closest('.control-item');
         
         // Kategori yang tidak support custom design
-        const noCustomDesignCategories = ['lainnya', 'topi', 'celana'];
+        const noCustomDesignCategories = ['lainnya', 'celana'];
         
         if (noCustomDesignCategories.includes(categoryValue)) {
             // Disable custom design

@@ -281,7 +281,7 @@ class ProductManagementController extends Controller
             ];
             
             // Enforce: Kategori lainnya, topi, celana tidak bisa custom design
-            $noCustomDesignCategories = ['lainnya', 'topi', 'celana'];
+            $noCustomDesignCategories = ['lainnya', 'celana'];
             if (in_array($request->category, $noCustomDesignCategories)) {
                 $data['custom_design_allowed'] = false;
             }
@@ -437,8 +437,8 @@ class ProductManagementController extends Controller
                 'custom_design_allowed' => $request->get('custom_design_allowed', $product->custom_design_allowed ?? false),
             ];
             
-            // Enforce: Kategori lainnya, topi, celana tidak bisa custom design
-            $noCustomDesignCategories = ['lainnya', 'topi', 'celana'];
+            // Enforce: Kategori lainnya, celana tidak bisa custom design
+            $noCustomDesignCategories = ['lainnya', 'celana'];
             if (in_array($request->category, $noCustomDesignCategories)) {
                 $data['custom_design_allowed'] = false;
             }
