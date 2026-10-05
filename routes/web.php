@@ -530,6 +530,7 @@ Route::prefix('admin')->group(function () {
         // Chatbot Admin Management
             Route::prefix('chatbot')->name('chatbot.')->group(function () {
             Route::get('/', [App\Http\Controllers\Admin\AdminChatController::class, 'index'])->name('index');
+            Route::get('/statistics', [App\Http\Controllers\Admin\AdminChatController::class, 'statistics'])->name('statistics');
             Route::get('/conversation/{id}', [App\Http\Controllers\Admin\AdminChatController::class, 'getConversation'])->name('conversation.show');
             Route::post('/conversation/{id}/take-over', [App\Http\Controllers\Admin\AdminChatController::class, 'takeOverConversation'])->name('conversation.takeover');
             Route::post('/conversation/{id}/send-message', [App\Http\Controllers\Admin\AdminChatController::class, 'sendAdminMessage'])->name('conversation.send');

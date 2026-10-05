@@ -9,6 +9,7 @@
         <div class="conversation-sidebar">
             <div class="sidebar-header">
                 <h2>Percakapan</h2>
+                                <a href="{{ route('chatbot.statistics') }}" style="font-size: 13px; color: #f59e0b; text-decoration: none; display: inline-block; margin-bottom: 8px;"><i class="fas fa-chart-bar"></i> Lihat Statistik</a>
                 <div class="filter-controls">
                     <button class="filter-btn {{ $filter === 'all' ? 'active' : '' }}" onclick="filterConversations('all')">
                         Semua

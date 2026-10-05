@@ -315,7 +315,13 @@
                 <li>
                     <a href="{{ route('admin.custom-design-prices') }}" class="sidebar__link {{ request()->routeIs('admin.custom-design-prices*') ? 'active' : '' }}">
                         <i class="fas fa-paint-brush"></i>
-                        <span>Custom Design</span>
+                                                <span>Custom Design</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.design-guides') }}" class="sidebar__link {{ request()->routeIs('admin.design-guides*') ? 'active' : '' }}">
+                        <i class="fas fa-book-open"></i>
+                        <span>Panduan Cetak</span>
                     </a>
                 </li>
             </ul>

@@ -431,6 +431,73 @@ class AdminChatController extends Controller
     /**
      * Get unread conversations count
      */
+    public function statistics(Request $request)
+    {
+        $days = (int) $request->get('days', 30);
+        $days = in_array($days, [7, 30, 90, 0], true) ? $days : 30;
+        $since = $days > 0 ? now()->subDays($days)->startOfDay() : null;
+
+        $convQuery = \App\Models\ChatConversation::query();
+        if ($since) {
+            $convQuery->where('created_at', '>=', $since);
+        }
+
+        $totalConversations = (clone $convQuery)->count();
+        $escalated = (clone $convQuery)->where(function ($q) {
+            $q->where('is_escalated', true)
+                ->orWhere('needs_admin_response', true)
+                ->orWhere('taken_over_by_admin', true);
+        })->count();
+        $escalationRate = $totalConversations > 0
+            ? round($escalated / $totalConversations * 100, 1)
+            : 0;
+
+        $msgQuery = \Illuminate\Support\Facades\DB::table('chat_messages')->where('sender_type', 'user');
+        if ($since) {
+            $msgQuery->where('created_at', '>=', $since);
+        }
+        $messages = (clone $msgQuery)->limit(5000)->pluck('message');
+        $totalUserMessages = $messages->count();
+
+        $topicMap = [
+            'Harga' => ['harga', 'biaya', 'berapa', 'murah', 'promo', 'diskon'],
+            'Stok & Ketersediaan' => ['stok', 'stock', 'ready', 'tersedia', 'habis'],
+            'Custom Design' => ['custom', 'desain', 'design', 'sablon', 'cutting', 'logo'],
+            'Pembayaran' => ['bayar', 'pembayaran', 'qris', 'transfer'],
+            'Pengiriman' => ['kirim', 'pengiriman', 'ongkir', 'alamat', 'resi'],
+            'Status Pesanan' => ['pesanan', 'order', 'status', 'batal'],
+            'Ukuran & Bahan' => ['ukuran', 'size', 'bahan', 'warna'],
+        ];
+        $topicCounts = array_fill_keys(array_keys($topicMap), 0);
+        foreach ($messages as $text) {
+            $text = mb_strtolower((string) $text);
+            foreach ($topicMap as $topic => $words) {
+                foreach ($words as $word) {
+                    if (str_contains($text, $word)) {
+                        $topicCounts[$topic]++;
+                        break;
+                    }
+                }
+            }
+        }
+        arsort($topicCounts);
+        $topics = array_filter($topicCounts);
+
+        $topProducts = (clone $convQuery)
+            ->whereNotNull('product_id')
+            ->select('product_id', \Illuminate\Support\Facades\DB::raw('COUNT(*) as total'))
+            ->groupBy('product_id')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+        $productNames = \App\Models\Product::whereIn('id', $topProducts->pluck('product_id'))->pluck('name', 'id');
+
+        return view('admin.chatbot.statistics', compact(
+            'days', 'totalConversations', 'escalated', 'escalationRate',
+            'totalUserMessages', 'topics', 'topProducts', 'productNames'
+        ));
+    }
+
     public function getUnreadCount()
     {
         $unreadNeedsResponse = ChatConversation::where('needs_admin_response', true)
@@ -572,4 +639,5 @@ class AdminChatController extends Controller
             ], 500);
         }
     }
+    
 }
