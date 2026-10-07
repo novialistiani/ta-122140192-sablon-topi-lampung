@@ -250,6 +250,7 @@ class NotificationService
     public function notifyOrderStatusUpdate($order, $userId, $oldStatus, $newStatus)
     {
         $orderType = get_class($order) === 'App\Models\CustomDesignOrder' ? 'Custom Design' : 'Regular';
+        $orderTypeSlug = $orderType === 'Custom Design' ? 'custom' : 'regular';
         $statusLabels = [
             'pending' => 'Menunggu Konfirmasi',
             'approved' => 'Disetujui',
@@ -265,6 +266,8 @@ class NotificationService
             'notifiable_id' => $userId,
             'title' => 'Status Pesanan Diperbarui',
             'message' => "Pesanan {$orderType} #{$order->id} diperbarui dari {$statusLabels[$oldStatus]} menjadi {$statusLabels[$newStatus]}.",
+            'action_url' => route('order-detail', ['type' => $orderTypeSlug, 'id' => $order->id]),
+            'action_text' => 'Lihat Pesanan',
             'data' => [
                 'order_id' => $order->id,
                 'order_type' => $orderType,
@@ -311,6 +314,8 @@ class NotificationService
             'notifiable_id' => $order->user_id,
             'title' => 'Pembayaran Diterima',
             'message' => "Pembayaran untuk pesanan {$orderType} #{$order->id} telah diterima. Pesanan akan segera diproses.",
+            'action_url' => route('order-detail', ['type' => $orderType === 'Custom Design' ? 'custom' : 'regular', 'id' => $order->id]),
+            'action_text' => 'Lihat Pesanan',
             'data' => [
                 'order_id' => $order->id,
                 'order_type' => $orderType,

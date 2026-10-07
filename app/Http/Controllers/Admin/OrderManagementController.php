@@ -692,7 +692,81 @@ class OrderManagementController extends Controller
                 ->with('error', 'Gagal mengkonfirmasi pembayaran: ' . $e->getMessage());
         }
     }
+            /**
+     * Tolak bukti pembayaran QRIS yang tidak valid
+     */
+    public function rejectPayment(Request $request, $id)
+    {
+        $orderType = $request->get('type', 'regular');
+        $reason = trim((string) $request->get('reason', ''));
 
+        $order = $orderType === 'custom'
+            ? CustomDesignOrder::findOrFail($id)
+            : Order::findOrFail($id);
+
+        if ($reason === '') {
+            return redirect()
+                ->route('admin.order.detail', ['id' => $id, 'type' => $orderType])
+                ->with('error', 'Alasan penolakan bukti pembayaran wajib diisi.');
+        }
+
+        if ($order->payment_status !== 'pending_verification') {
+            return redirect()
+                ->route('admin.order.detail', ['id' => $id, 'type' => $orderType])
+                ->with('error', 'Hanya bukti yang sedang menunggu verifikasi yang bisa ditolak.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $order->forceFill([
+                'payment_status' => 'unpaid',
+                'payment_proof' => null,
+                'payment_rejection_reason' => $reason,
+                'payment_deadline' => now()->addMinutes(60),
+            ])->save();
+
+            DB::commit();
+
+            try {
+                app(\App\Services\NotificationService::class)->create([
+                    'type' => 'payment_rejected',
+                    'notifiable_type' => 'App\\Models\\User',
+                    'notifiable_id' => $order->user_id,
+                    'title' => 'Bukti Pembayaran Ditolak',
+                    'message' => 'Bukti pembayaran pesanan #' . $order->id . ' ditolak. Alasan: ' . $reason . ' Silakan unggah ulang bukti yang benar.',
+                    'action_url' => route('order-detail', ['type' => $orderType === 'custom' ? 'custom' : 'regular', 'id' => $order->id]),
+                    'action_text' => 'Lihat Pesanan',
+                    'data' => ['order_id' => $order->id, 'order_type' => $orderType, 'reason' => $reason],
+                ]);
+            } catch (\Exception $e) {
+                Log::warning('Failed to send payment rejection notification', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+            }
+
+            Log::info('Payment proof rejected', [
+                'order_id' => $order->id,
+                'order_type' => $orderType,
+                'reason' => $reason,
+                'rejected_by' => auth()->user()->name ?? 'System',
+                'timestamp' => now()
+            ]);
+
+            return redirect()
+                ->route('admin.order.detail', ['id' => $id, 'type' => $orderType])
+                ->with('success', 'Bukti pembayaran ditolak. Pelanggan perlu mengunggah ulang bukti.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to reject payment proof', [
+                'order_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()
+                ->route('admin.order.detail', ['id' => $id, 'type' => $orderType])
+                ->with('error', 'Gagal menolak bukti pembayaran: ' . $e->getMessage());
+        }
+    }
     /**
      * Export orders to Excel
      */

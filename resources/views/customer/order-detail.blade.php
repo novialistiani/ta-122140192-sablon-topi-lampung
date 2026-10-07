@@ -1,6 +1,33 @@
 <x-customer-layout title="Detail Pesanan" active="order-list">
 
             <!-- Order Detail Content -->
+            @if(in_array($order->status, ['approved', 'processing', 'completed']))
+            @php
+                $fmt = fn($d) => $d ? \Carbon\Carbon::parse($d)->format('d/m/Y H:i') : null;
+                $steps = [
+                    ['label' => 'Disetujui', 'icon' => 'fa-check', 'done' => true, 'time' => $fmt($order->approved_at ?? null)],
+                    ['label' => 'Dibayar', 'icon' => 'fa-money-bill-wave', 'done' => $order->payment_status === 'paid', 'time' => $fmt($order->paid_at ?? null)],
+                    ['label' => 'Diproses', 'icon' => 'fa-cog', 'done' => in_array($order->status, ['processing', 'completed']), 'time' => $fmt($order->processing_at ?? null)],
+                    ['label' => 'Selesai', 'icon' => 'fa-flag-checkered', 'done' => $order->status === 'completed', 'time' => $fmt($order->completed_at ?? null)],
+                ];
+            @endphp
+            <div class="px-6 pt-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">Status Pesanan</h3>
+                    <div class="grid grid-cols-4 gap-2 text-center">
+                        @foreach($steps as $step)
+                        <div>
+                            <div style="width:56px;height:56px;border-radius:9999px;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#fff;background:{{ $step['done'] ? '#22c55e' : '#d1d5db' }};">
+                                <i class="fas {{ $step['icon'] }}"></i>
+                            </div>
+                            <p class="font-semibold mt-2 text-sm text-gray-900">{{ $step['label'] }}</p>
+                            <p class="text-xs text-gray-500">{{ $step['done'] && $step['time'] ? $step['time'] : '-' }}</p>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @endif
             <div class="p-6">
                 <div class="mb-4">
                     <a href="{{ route('order-list') }}" class="inline-flex items-center text-blue-600 hover:text-blue-700">
@@ -252,7 +279,9 @@
                                     <div>
                                         <h4 class="font-semibold text-green-900 mb-1">Pesanan Disetujui</h4>
                                         <p class="text-sm text-green-800">
-                                            @if($type === 'custom')
+                                            @if(in_array($order->payment_status, ['pending_verification', 'paid']))
+                                                Pesanan Anda sudah disetujui dan pembayaran sudah diterima sistem.
+                                            @elseif($type === 'custom')
                                                 Admin sudah menyetujui desain custom Anda. Silakan lakukan pembayaran untuk melanjutkan proses.
                                             @else
                                                 Pesanan Anda sudah disetujui. Silakan lakukan pembayaran untuk melanjutkan proses.
@@ -262,7 +291,19 @@
                                 </div>
                             </div>
 
-                                                        <!-- Payment Status Indicator -->
+                                                        @if(!empty($order->payment_rejection_reason) && (!isset($order->payment_status) || $order->payment_status === 'unpaid'))
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <div class="flex items-start gap-3">
+                                    <i class="fas fa-exclamation-circle text-red-600 mt-1" style="font-size: 20px;"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-red-900 mb-1">Bukti Pembayaran Ditolak</h4>
+                                        <p class="text-sm text-red-800">Alasan: {{ $order->payment_rejection_reason }}</p>
+                                        <p class="text-sm text-red-800 mt-1">Silakan klik "Bayar Sekarang" dan unggah ulang bukti pembayaran yang benar.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                            <!-- Payment Status Indicator -->
                             @if(!isset($order->payment_status) || $order->payment_status === 'unpaid')
                             <div class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg">
                                 <div>

@@ -966,7 +966,16 @@
     @else
     <p style="color: #ef4444; font-size: 14px;">Bukti pembayaran tidak ditemukan.</p>
     @endif
-
+        <form method="POST" action="{{ route('admin.order.reject-payment', ['id' => $order->id, 'type' => $orderType]) }}" style="margin-bottom: 14px; padding: 14px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px;">
+        @csrf
+        <label style="display: block; font-size: 13px; font-weight: 600; color: #991b1b; margin-bottom: 6px;">Bukti tidak valid? Tulis alasan penolakan</label>
+        <textarea name="reason" rows="2" required maxlength="500" placeholder="Contoh: Nominal tidak sesuai, struk bukan untuk pesanan ini" style="width: 100%; border: 1px solid #fca5a5; border-radius: 8px; padding: 8px 10px; font-size: 14px; box-sizing: border-box;"></textarea>
+        <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+            <button type="submit" onclick="return confirm('Tolak bukti pembayaran ini? Pelanggan harus mengunggah ulang bukti.')" style="padding: 10px 24px; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
+                <i class="fas fa-times"></i> Tolak Bukti
+            </button>
+        </div>
+    </form>
     <div style="display: flex; justify-content: flex-end; gap: 12px;">
         <form method="POST" action="{{ route('admin.order.mark-payment-received', ['id' => $order->id, 'type' => $orderType]) }}" style="display: inline; margin: 0;">
             @csrf

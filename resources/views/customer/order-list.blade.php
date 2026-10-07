@@ -111,7 +111,7 @@
                             @elseif($order->status === 'cancelled') bg-gray-100 text-gray-800
                             @elseif($order->status === 'processing') bg-blue-100 text-blue-800
                                         @elseif($order->status === 'revision_requested') bg-orange-100 text-orange-800
-                            @elseif($order->status === 'completed') bg-purple-100 text-purple-800app(\App\Services\NotificationService::class)->notifyDesignRevisionRequested($order, $request->reason);
+                            @elseif($order->status === 'completed') bg-purple-100 text-purple-800
                             @else bg-gray-100 text-gray-800
                             @endif">
                             @if($order->status === 'pending')
@@ -223,7 +223,7 @@
                                            class="px-3 py-1 bg-orange-500 text-white text-xs rounded-lg hover:bg-orange-600 transition whitespace-nowrap">
                                             <i class="fas fa-edit mr-1"></i> Unggah Revisi
                                         </a>
-                                    @elseif($order->status !== 'approved')
+                                    @else
                                         <a href="{{ route('order-detail', ['type' => 'custom', 'id' => $order->id]) }}"
                                            class="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition whitespace-nowrap">
                                             <i class="fas fa-eye mr-1"></i> Detail
@@ -239,7 +239,7 @@
                                             ->exists();
                                     @endphp
                                     
-                                    @if($order->status === 'approved' && $order->payment_deadline && $order->payment_deadline->isFuture())
+                                    @if($order->status === 'approved' && (($order->payment_deadline && $order->payment_deadline->isFuture()) || in_array($order->payment_status, ['pending_verification', 'paid'])))
                                         @if($hasActiveVA)
                                             {{-- Has VA: Only show "Status Pembayaran" button --}}
                                             <a href="{{ route('payment-status', ['type' => 'custom', 'order_id' => $order->id]) }}" 
@@ -248,14 +248,21 @@
                                             </a>
                                         @else
                                             {{-- No VA: Show "Detail" and "Bayar" buttons --}}
-                                            <a href="{{ route('order-detail', ['type' => 'custom', 'id' => $order->id]) }}" 
-                                               class="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition whitespace-nowrap">
-                                                <i class="fas fa-eye mr-1"></i> Detail
-                                            </a>
-                                            <a href="{{ route('pemesanan') }}?order_type=custom&order_id={{ $order->id }}" 
-                                            class="px-3 py-1 bg-green-600 text-white text-xs rounded-lg hover:bg-green-700 transition whitespace-nowrap">
-                                            <i class="fas fa-credit-card mr-1"></i> Bayar
-                                            </a>
+                                            
+                                            @if($order->payment_status === 'paid')
+    <span class="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-lg whitespace-nowrap">
+        <i class="fas fa-check-circle mr-1"></i> Sudah Dibayar
+    </span>
+@elseif($order->payment_status === 'pending_verification')
+                                                <span class="px-3 py-1 bg-gray-200 text-gray-600 text-xs rounded-lg whitespace-nowrap">
+                                                    <i class="fas fa-hourglass-half mr-1"></i> Menunggu Verifikasi
+                                                </span>
+                                            @else
+                                                <a href="{{ route('pemesanan') }}?order_type=custom&order_id={{ $order->id }}" 
+                                                   class="px-3 py-1 bg-green-600 text-white text-xs rounded-lg hover:bg-green-700 transition whitespace-nowrap">
+                                                    <i class="fas fa-credit-card mr-1"></i> Bayar
+                                                </a>
+                                            @endif
                                         @endif
                                     @elseif(in_array($order->status, ['processing', 'completed']))
                                         <a href="{{ route('payment-status', ['type' => 'custom', 'order_id' => $order->id]) }}" 
@@ -333,6 +340,10 @@
                             
                             {{-- Action Buttons --}}
                             <div class="flex justify-end gap-2 mt-3">
+                                <a href="{{ route('order-detail', ['type' => 'regular', 'id' => $order->id]) }}"
+                                   class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
+                                    <i class="fas fa-eye mr-1"></i> Detail
+                                </a>
                                 @php
                                     // Check if order has active VA
                                     $hasActiveVA = \App\Models\VirtualAccount::where('user_id', auth()->id())
@@ -343,7 +354,7 @@
                                         ->exists();
                                 @endphp
                                 
-                                @if($order->status === 'approved' && $order->payment_deadline && $order->payment_deadline->isFuture())
+                                @if($order->status === 'approved' && (($order->payment_deadline && $order->payment_deadline->isFuture()) || in_array($order->payment_status, ['pending_verification', 'paid'])))
                                     @if($hasActiveVA)
                                         {{-- Has VA: Only show "Status Pembayaran" button --}}
                                         <a href="{{ route('payment-status', ['type' => 'regular', 'order_id' => $order->id]) }}" 
@@ -351,15 +362,21 @@
                                             <i class="fas fa-receipt mr-1"></i> Status Pembayaran
                                         </a>
                                     @else
-                                        {{-- No VA: Show "Detail" and "Bayar" buttons --}}
-                                        <a href="{{ route('order-detail', ['type' => 'regular', 'id' => $order->id]) }}" 
-                                           class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
-                                            <i class="fas fa-eye mr-1"></i> Detail
-                                        </a>
-                                        <a href="{{ route('pemesanan') }}?order_type=regular&order_id={{ $order->id }}" 
-                                        class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition">
-                                        <i class="fas fa-credit-card mr-1"></i> Bayar
-                                        </a>
+                                        {{-- No VA: Show "Bayar" button --}}
+                                        @if($order->payment_status === 'paid')
+                                            <span class="px-4 py-2 bg-green-100 text-green-800 text-sm rounded-lg">
+                                                <i class="fas fa-check-circle mr-1"></i> Sudah Dibayar
+                                            </span>
+                                        @elseif($order->payment_status === 'pending_verification')
+                                            <span class="px-4 py-2 bg-gray-200 text-gray-600 text-sm rounded-lg">
+                                                <i class="fas fa-hourglass-half mr-1"></i> Menunggu Verifikasi
+                                            </span>
+                                        @else
+                                            <a href="{{ route('pemesanan') }}?order_type=regular&order_id={{ $order->id }}" 
+                                               class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition">
+                                                <i class="fas fa-credit-card mr-1"></i> Bayar
+                                            </a>
+                                        @endif
                                     @endif
                                 @elseif(in_array($order->status, ['processing', 'completed']))
                                     <a href="{{ route('payment-status', ['type' => 'regular', 'order_id' => $order->id]) }}" 

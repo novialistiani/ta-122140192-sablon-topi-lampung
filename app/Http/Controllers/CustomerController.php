@@ -893,7 +893,11 @@ public function submitPickupPayment(Request $request)
                 ->where('status', 'approved')
                 ->firstOrFail();
         }
-
+                // Cegah upload ulang selama menunggu verifikasi atau sudah lunas
+        if (in_array($order->payment_status, ['pending_verification', 'paid'])) {
+            return redirect()->route('order-list')
+                ->with('error', 'Bukti pembayaran sudah dikirim dan sedang diverifikasi admin.');
+        }
         // Simpan file bukti pembayaran
         $path = $request->file('payment_proof')->store('payment-proofs', 'public');
 
@@ -1091,7 +1095,7 @@ $pricePerItem = $variant ? (float) $variant->price : (float) $product->price;
             foreach ($request->uploads as $upload) {
                 $sectionName = $upload['section_name'];
                 // Extract code from name like "A (Dada depan...)"
-                if (preg_match('/^([A-J])\s/', $sectionName, $matches)) {
+                if (preg_match('/^([A-Z])\s/', $sectionName, $matches)) {
                     $code = $matches[1];
                     if (isset($productCustomPrices[$code])) {
                         $price = $productCustomPrices[$code]->pivot->custom_price ?? $productCustomPrices[$code]->price;

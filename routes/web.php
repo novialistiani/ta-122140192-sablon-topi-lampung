@@ -491,6 +491,7 @@ Route::prefix('admin')->group(function () {
         Route::delete('/design-guides/{id}', [\App\Http\Controllers\Admin\DesignGuideController::class, 'destroy'])->name('admin.design-guides.destroy');
         Route::patch('/order-list/{id}/status', [OrderManagementController::class, 'updateStatus'])->name('admin.order.update-status');
         Route::post('/order-list/{id}/mark-payment-received', [OrderManagementController::class, 'markPaymentReceived'])->name('admin.order.mark-payment-received');
+        Route::post('/order-list/{id}/reject-payment', [OrderManagementController::class, 'rejectPayment'])->name('admin.order.reject-payment');
         Route::get('/management-users', [UserManagementController::class, 'index'])->name('admin.management-users');
         Route::get('/management-users/customer/{id}', [UserManagementController::class, 'showCustomerDetail'])->name('admin.customer-detail');
         Route::get('/management-users/customer/{id}/export-pdf', [UserManagementController::class, 'exportCustomerPDF'])->name('admin.customer-export-pdf');

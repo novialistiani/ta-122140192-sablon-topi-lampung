@@ -127,7 +127,12 @@ class PosController extends Controller
                     $product->decrement('stock', $itemInput['quantity']);
                 }
             }
-
+                        // Tolak transaksi tunai jika uang yang diterima kurang dari total
+            if ($validated['payment_method'] === 'cash'
+                && isset($validated['cash_received'])
+                && $validated['cash_received'] < $subtotal) {
+                throw new \Exception('Uang yang diterima kurang dari total transaksi.');
+            }
             $order = Order::create([
                 'user_id' => null,
                 'items' => $items,
@@ -140,6 +145,7 @@ class PosController extends Controller
                 'pos_payment_method' => $validated['payment_method'],
                 'cashier_id' => auth('admin')->id(),
                 'paid_at' => now(),
+                'completed_at' => now(),
             ]);
 
             DB::commit();
