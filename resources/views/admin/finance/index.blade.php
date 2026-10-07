@@ -100,14 +100,14 @@
                 </div>
             </div>
 
-            {{-- Transaksi Dibayar (QRIS) --}}
+            {{-- Transaksi Dibayar --}}
             <div class="stats-card">
                 <div class="flex items-start">
                     <div class="stat-icon-wrapper stat-icon-purple">
                         <i class="fas fa-qrcode stat-icon"></i>
                     </div>
                     <div>
-                        <p class="stat-content">Transaksi Dibayar (QRIS)</p>
+                        <p class="stat-content">Transaksi Dibayar</p>
                         <h3 class="stat-value">{{ $paidCount }}</h3>
                         <div class="stat-trend">
                             <span class="stat-badge-{{ $paidChange >= 0 ? 'up' : 'down' }}">
