@@ -280,7 +280,11 @@
                                         <h4 class="font-semibold text-green-900 mb-1">Pesanan Disetujui</h4>
                                         <p class="text-sm text-green-800">
                                             @if(in_array($order->payment_status, ['pending_verification', 'paid']))
-                                                Pesanan Anda sudah disetujui dan pembayaran sudah diterima sistem.
+                                                @if($order->payment_status === 'paid')
+                                                    Pesanan Anda sudah disetujui dan pembayaran sudah dikonfirmasi admin.
+                                                @else
+                                                    Pesanan Anda sudah disetujui. Bukti pembayaran sudah dikirim dan sedang diperiksa admin.
+                                                @endif
                                             @elseif($type === 'custom')
                                                 Admin sudah menyetujui desain custom Anda. Silakan lakukan pembayaran untuk melanjutkan proses.
                                             @else
