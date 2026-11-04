@@ -14,7 +14,7 @@
     @stack('styles')
 </head>
 <body class="bg-gray-50">
-    <div class="flex h-screen">
+    <div class="flex h-dvh">
 
         <!-- Overlay (mobile only, muncul saat sidebar terbuka) -->
         <div id="customer-sidebar-overlay"
@@ -24,8 +24,8 @@
         <!-- Sidebar -->
         <div id="customer-sidebar"
              class="w-64 bg-navy-900 text-white p-6 flex flex-col overflow-y-auto
-                    fixed inset-y-0 left-0 z-50 h-screen transform -translate-x-full transition-transform duration-300 ease-in-out
-                    lg:translate-x-0 lg:static lg:sticky lg:top-0">
+                    fixed inset-y-0 left-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out
+                    lg:translate-x-0 lg:sticky lg:top-0 lg:h-dvh lg:flex-shrink-0">
 
             <button onclick="toggleCustomerSidebar()" class="lg:hidden self-end mb-4 p-1 text-gray-300 hover:text-white">
                 <span class="material-icons">close</span>
@@ -126,7 +126,7 @@
                             </a>
 
                             <!-- Notification Dropdown -->
-                            <div class="notification-dropdown absolute right-0 mt-2 w-80 max-w-[90vw] bg-white rounded-lg shadow-xl z-50" id="notification-dropdown" style="display: none;">
+                            <div class="notification-dropdown fixed left-2 right-2 top-16 sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-80 bg-white rounded-lg shadow-xl z-50" id="notification-dropdown" style="display: none;">
                                 <div class="notification-dropdown__header">
                                     <h3>Notifikasi</h3>
                                     <button class="mark-all-read-btn" id="mark-all-read" style="display: none;">
@@ -148,8 +148,8 @@
                         </div>
 
                         <!-- User Menu -->
-                        <div class="relative group">
-                            <button class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition">
+                        <div class="relative" id="user-menu">
+                            <button type="button" onclick="toggleUserMenu(event)" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition">
                                 @if(auth()->user()->avatar)
                                     <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="Avatar" class="h-8 w-8 rounded-full header-avatar">
                                 @else
@@ -162,7 +162,7 @@
                             </button>
                             
                             <!-- Dropdown Menu -->
-                            <div class="absolute right-0 mt-0 w-48 bg-white rounded-lg shadow-lg hidden group-hover:block z-50">
+                            <div id="user-menu-dropdown" class="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg hidden z-50">
                                 <a href="{{ route('profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg">
                                     <i class="fas fa-user-circle mr-2"></i> Profile
                                 </a>
@@ -179,13 +179,23 @@
             </header>
 
             <!-- Page Content -->
-            <div class="flex-1 {{ $active === 'chatpage' ? 'overflow-hidden p-0' : 'overflow-auto p-2' }}">
+            <div class="flex-1 {{ $active === 'chatpage' ? 'overflow-hidden p-0' : 'overflow-auto p-2 sm:p-4' }}">
                 {{ $slot }}
             </div>
         </div>
     </div>
 
     <script>
+        function toggleUserMenu(e) {
+            e.stopPropagation();
+            document.getElementById('user-menu-dropdown').classList.toggle('hidden');
+        }
+        document.addEventListener('click', function (e) {
+            const menu = document.getElementById('user-menu');
+            if (menu && !menu.contains(e.target)) {
+                document.getElementById('user-menu-dropdown').classList.add('hidden');
+            }
+        });
         function toggleCustomerSidebar() {
             document.getElementById('customer-sidebar').classList.toggle('-translate-x-full');
             document.getElementById('customer-sidebar-overlay').classList.toggle('hidden');

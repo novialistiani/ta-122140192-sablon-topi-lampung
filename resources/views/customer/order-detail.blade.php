@@ -11,28 +11,34 @@
                     ['label' => 'Selesai', 'icon' => 'fa-flag-checkered', 'done' => $order->status === 'completed', 'time' => $fmt($order->completed_at ?? null)],
                 ];
             @endphp
-            <div class="px-6 pt-6">
-                <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="px-3 sm:px-6 pt-3 sm:pt-6">
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
                     <h3 class="text-lg font-semibold mb-4">Status Pesanan</h3>
                     <div class="grid grid-cols-4 gap-2 text-center">
                         @foreach($steps as $step)
                         <div>
-                            <div style="width:56px;height:56px;border-radius:9999px;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#fff;background:{{ $step['done'] ? '#22c55e' : '#d1d5db' }};">
+                            <div style="width:clamp(40px,8vw,56px);height:clamp(40px,8vw,56px);border-radius:9999px;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#fff;background:{{ $step['done'] ? '#22c55e' : '#d1d5db' }};">
                                 <i class="fas {{ $step['icon'] }}"></i>
                             </div>
-                            <p class="font-semibold mt-2 text-sm text-gray-900">{{ $step['label'] }}</p>
-                            <p class="text-xs text-gray-500">{{ $step['done'] && $step['time'] ? $step['time'] : '-' }}</p>
+                            <p class="font-semibold mt-2 text-xs sm:text-sm text-gray-900">{{ $step['label'] }}</p>
+                            <p class="text-[10px] sm:text-xs text-gray-500 break-words">{{ $step['done'] && $step['time'] ? $step['time'] : '-' }}</p>
                         </div>
                         @endforeach
                     </div>
                 </div>
             </div>
             @endif
-            <div class="p-6">
-                <div class="mb-4">
+            <div class="p-3 sm:p-6">
+                <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
                     <a href="{{ route('order-list') }}" class="inline-flex items-center text-blue-600 hover:text-blue-700">
                         <i class="fas fa-arrow-left mr-2"></i> Kembali ke Daftar Pesanan
                     </a>
+                    @if(($order->payment_status ?? null) === 'paid')
+                        <a href="{{ route('order-invoice', ['type' => $type, 'id' => $order->id]) }}" target="_blank"
+                           style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: #0a1d37; color: #fff; border-radius: 8px; font-weight: 600; font-size: 14px; text-decoration: none;">
+                            <i class="fas fa-file-invoice"></i> Unduh Invoice
+                        </a>
+                    @endif
                 </div>
 
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -309,7 +315,7 @@
                             @endif
                             <!-- Payment Status Indicator -->
                             @if(!isset($order->payment_status) || $order->payment_status === 'unpaid')
-                            <div class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-white border border-gray-200 rounded-lg">
                                 <div>
                                     <h4 class="font-semibold text-gray-900 mb-1">Pembayaran Pesanan</h4>
                                     <p class="text-sm text-gray-600">
@@ -319,7 +325,7 @@
                                     </p>
                                 </div>
                                 <a href="{{ url('/pemesanan') }}?order_type={{ $type }}&order_id={{ $order->id }}"
-                                    class="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg flex items-center gap-2 transition">
+                                    class="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg flex items-center justify-center gap-2 transition">
                                     <i class="fas fa-qrcode" style="font-size: 18px;"></i>
                                     <span>Bayar Sekarang</span>
                                 </a>

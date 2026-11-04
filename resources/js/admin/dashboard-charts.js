@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const showMessage = (message) => {
             tbody.innerHTML = `
                 <tr class="table-row">
-                    <td colspan="7" class="table-td text-center py-4 text-gray-500">${message}</td>
+                    <td colspan="6" class="table-td text-center py-4 text-gray-500">${message}</td>
                 </tr>`;
         };
 
@@ -136,9 +136,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     const label = statusLabels[order.status] || order.status;
                     return `
                         <tr class="table-row">
-                            <td class="table-checkbox-cell"><input type="checkbox"></td>
+                            
                             <td class="table-td">${escapeHtml(order.product)}</td>
-                            <td class="table-td">${escapeHtml(order.id)}</td>
+                            <td class="table-td"><a href="/admin/order-list/${encodeURIComponent(order.order_id)}/detail?type=${encodeURIComponent(order.type)}" style="color:#1d4ed8; font-weight:600; text-decoration:underline;">${escapeHtml(order.id)}</a></td>
                             <td class="table-td">${escapeHtml(order.date)}</td>
                             <td class="table-td">${escapeHtml(order.customer)}</td>
                             <td class="table-td"><span style="padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; color: white; background: ${color};">${escapeHtml(label)}</span></td>

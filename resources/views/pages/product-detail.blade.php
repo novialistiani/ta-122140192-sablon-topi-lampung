@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $product['name'] ?? 'Detail Produk' }} - LGI Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    @vite(['resources/css/guest/product-detail.css', 'resources/css/components/navbar.css', 'resources/css/components/footer.css', 'resources/js/guest/product-detail.js', 'resources/js/components/navbar.js'])
+    @vite(['resources/css/guest/product-detail.css', 'resources/css/components/footer.css', 'resources/js/guest/product-detail.js'])
 </head>
 <body class="product-detail-page">
     <x-navbar />
@@ -242,8 +242,9 @@
                                     <button type="button" class="quantity-btn" data-quantity-action="increase" aria-label="Tambah jumlah" {{ $disableAttr }}>+</button>
                                 </div>
                                 <div class="quantity-warning" id="quantityWarning">
-                                    <i class="fas fa-exclamation-triangle"></i> Jumlah produk tidak mencukupi
-                                </div>
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <span id="quantityWarningText">Jumlah produk tidak mencukupi</span>
+                            </div>
                             </div>
 
                             <button type="button" class="buy-now-btn" data-product-name="{{ $product['name'] ?? '' }}" {{ $disableAttr }}>

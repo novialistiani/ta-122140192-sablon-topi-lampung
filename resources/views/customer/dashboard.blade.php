@@ -75,10 +75,10 @@
                     if (statCards.length >= 4) {
                         const formatCurrency = (value) => 'Rp ' + Number(value).toLocaleString('id-ID', {maximumFractionDigits: 0});
                         
-                        statCards[0].querySelector('p.text-2xl').textContent = formatCurrency(stats.totalSpent);
-                        statCards[1].querySelector('p.text-2xl').textContent = stats.totalItems;
-                        statCards[2].querySelector('p.text-2xl').textContent = stats.completedItems;
-                        statCards[3].querySelector('p.text-2xl').textContent = stats.cancelledItems;
+                        statCards[0].querySelector('p.font-bold').textContent = formatCurrency(stats.totalSpent);
+                        statCards[1].querySelector('p.font-bold').textContent = stats.totalItems;
+                        statCards[2].querySelector('p.font-bold').textContent = stats.completedItems;
+                        statCards[3].querySelector('p.font-bold').textContent = stats.cancelledItems;
                     }
                 },
                 
@@ -129,10 +129,10 @@
     </script>
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-4 gap-6 mb-6" data-stats-container>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6" data-stats-container>
         <div class="bg-white p-4 rounded-lg shadow" data-stat-card>
             <h3 class="text-sm text-gray-500 mb-2">Total Akumulasi</h3>
-            <p class="text-2xl font-bold mb-1">Rp {{ number_format($totalSpent, 0, ',', '.') }}</p>
+            <p class="text-lg sm:text-2xl font-bold mb-1 break-words">Rp {{ number_format($totalSpent, 0, ',', '.') }}</p>
             <p class="text-xs text-gray-500">*Akumulasi belanja selama 365 hari</p>
         </div>
         <div class="bg-white p-4 rounded-lg shadow" data-stat-card>
@@ -153,9 +153,9 @@
     </div>
 
     <!-- Customer Info and Orders -->
-    <div class="grid grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <!-- Customer Info -->
-        <div class="bg-white p-6 rounded-lg shadow">
+        <div class="bg-white p-4 sm:p-6 rounded-lg shadow">
             <h2 class="text-lg font-bold mb-4">Info Customer</h2>
             <div class="space-y-4">
                 <div>
@@ -175,13 +175,13 @@
         </div>
 
         <!-- Orders -->
-        <div class="col-span-2">
-            <div class="bg-white p-6 rounded-lg shadow">
+        <div class="lg:col-span-2 min-w-0">
+            <div class="bg-white p-4 sm:p-6 rounded-lg shadow">
                 <h2 class="text-lg font-bold mb-4">Orders Terbaru</h2>
                 
                 <!-- Orders Table -->
                 <div class="overflow-x-auto" data-orders-container>
-                    <table class="w-full">
+                    <table class="w-full min-w-[520px]">
                         <thead>
                             <tr class="text-left border-b">
                                 <th class="pb-3">ID Order</th>

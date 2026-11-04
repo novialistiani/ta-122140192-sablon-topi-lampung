@@ -51,6 +51,7 @@ class QrisPaymentTest extends TestCase
         $order = Order::factory()->create([
             'user_id' => $user->id,
             'status' => 'approved',
+            'payment_status' => 'unpaid',
         ]);
 
         $file = UploadedFile::fake()->image('bukti-transfer.jpg');
@@ -109,9 +110,10 @@ class QrisPaymentTest extends TestCase
     {
         $admin = Admin::factory()->create();
         $order = Order::factory()->create([
-            'status' => 'approved',
-            'payment_status' => 'pending_verification',
-        ]);
+        'status' => 'approved',
+        'payment_status' => 'pending_verification',
+        'payment_proof' => 'payment-proofs/bukti.jpg',
+    ]);
 
         $this->actingAs($admin, 'admin')
             ->post(route('admin.order.mark-payment-received', $order->id) . '?type=regular');
@@ -174,14 +176,29 @@ class QrisPaymentTest extends TestCase
     {
         $admin = Admin::factory()->create();
         $order = \App\Models\CustomDesignOrder::factory()->create([
-            'status' => 'approved',
-            'payment_status' => 'pending_verification',
-        ]);
+        'status' => 'approved',
+         'payment_status' => 'pending_verification',
+         'payment_proof' => 'payment-proofs/bukti.jpg',
+    ]);
 
         $this->actingAs($admin, 'admin')
             ->post(route('admin.order.mark-payment-received', $order->id) . '?type=custom');
 
         $this->assertEquals('paid', $order->fresh()->payment_status);
         $this->assertNotNull($order->fresh()->paid_at);
+    }
+        public function test_admin_cannot_mark_payment_received_for_unapproved_order(): void
+    {
+        $admin = Admin::factory()->create();
+        $order = Order::factory()->create([
+            'status' => 'pending',
+            'payment_status' => 'unpaid',
+        ]);
+
+        $response = $this->actingAs($admin, 'admin')
+            ->post(route('admin.order.mark-payment-received', $order->id) . '?type=regular');
+
+        $response->assertSessionHas('error');
+        $this->assertEquals('unpaid', $order->fresh()->payment_status);
     }
 }

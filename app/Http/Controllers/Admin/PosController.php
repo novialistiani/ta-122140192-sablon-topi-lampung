@@ -10,7 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PosController extends Controller
+
 {
+        use \App\Traits\StockManagementTrait;
     /**
      * Tampilkan halaman utama kasir (POS)
      */
@@ -95,6 +97,7 @@ class PosController extends Controller
         try {
             $items = [];
             $subtotal = 0;
+            $pendingMovements = [];
 
             foreach ($validated['items'] as $itemInput) {
                 $product = Product::findOrFail($itemInput['product_id']);
@@ -120,12 +123,14 @@ class PosController extends Controller
 
                 $subtotal += $price * $itemInput['quantity'];
 
-                // Kurangi stok
+                 // Kurangi stok
+                $stockBefore = (int) ($variant ? $variant->stock : $product->stock);
                 if ($variant) {
                     $variant->decrement('stock', $itemInput['quantity']);
                 } else {
                     $product->decrement('stock', $itemInput['quantity']);
                 }
+                $pendingMovements[] = [$product, $variant, -(int) $itemInput['quantity'], $stockBefore];
             }
                         // Tolak transaksi tunai jika uang yang diterima kurang dari total
             if ($validated['payment_method'] === 'cash'
@@ -147,7 +152,9 @@ class PosController extends Controller
                 'paid_at' => now(),
                 'completed_at' => now(),
             ]);
-
+            foreach ($pendingMovements as [$movementProduct, $movementVariant, $change, $before]) {
+                $this->recordStockMovement($movementProduct, $movementVariant, $change, $before, $before + $change, 'pos_sale', $order);
+            }
             DB::commit();
 
             return response()->json([

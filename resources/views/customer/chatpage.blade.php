@@ -26,4 +26,23 @@
             @livewire('chatbot-customer')
         </div>
     </div>
+
+    <script>
+        // Tinggi kotak chat = tinggi layar yang terlihat dikurangi posisi atasnya
+        function fitChatpage() {
+            const c = document.querySelector('.chatpage-container');
+            if (!c) return;
+            const top = c.getBoundingClientRect().top;
+            const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+            const h = Math.max(300, vh - top);
+            c.style.setProperty('height', h + 'px', 'important');
+            c.style.setProperty('max-height', h + 'px', 'important');
+        }
+        window.addEventListener('load', fitChatpage);
+        window.addEventListener('resize', fitChatpage);
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', fitChatpage);
+        }
+        fitChatpage();
+    </script>
 </x-customer-layout>

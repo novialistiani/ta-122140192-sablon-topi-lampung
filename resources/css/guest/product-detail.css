@@ -392,6 +392,7 @@ body {
     color: #1f2937;
     background: #ffffff;
     -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 .quantity-input::-webkit-outer-spin-button,
@@ -408,6 +409,7 @@ body {
 .quantity-wrapper {
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .quantity-warning {
@@ -417,6 +419,12 @@ body {
     display: none;
     align-items: center;
     gap: 4px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: max-content;
+    max-width: 260px;
+    z-index: 2;
 }
 
 .quantity-warning i {
@@ -1210,5 +1218,245 @@ body.product-detail-page .chat-btn[style*="position: fixed"] {
         min-width: 54px;
         padding: 8px 12px;
         font-size: 13px;
+    }
+}
+
+
+/* ===== RESPONSIVE TAMBAHAN ===== */
+@media (max-width: 960px) {
+    .product-gallery {
+        width: 100%;
+    }
+
+    .main-image {
+        padding: 20px;
+        max-height: none;
+    }
+
+    .product-info {
+        max-width: 100%;
+    }
+
+    .quantity-wrapper {
+        margin-bottom: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-image {
+        min-height: 260px;
+        padding: 12px;
+    }
+
+    .main-image img {
+        max-height: 300px;
+    }
+
+    .thumbnail {
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+    }
+
+    .recommendations {
+        padding: 28px 12px 32px;
+        border-radius: 14px;
+    }
+
+    .recommendation-image {
+        height: 130px;
+        padding: 10px;
+    }
+
+    .recommendation-name {
+        font-size: 13px;
+    }
+
+    .recommendation-price {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 960px) {
+    .button-row-top {
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .quantity-wrapper {
+        flex: 0 0 100%;
+    }
+
+    .buy-now-btn {
+        flex: 0 0 100%;
+        max-width: none;
+    }
+
+    /* tiga tombol sejajar, sama lebar, hanya ikon */
+    .button-row-top .custom-design-btn,
+    .button-row-top .chat-btn,
+    .button-row-top .add-to-cart-btn {
+        flex: 1 1 0 !important;
+        width: auto !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        height: 50px !important;
+        border-radius: 12px !important;
+    }
+
+    /* hapus label teks yang terpotong */
+    .button-row-top .custom-design-btn::before,
+    .button-row-top .chat-btn::before,
+    .button-row-top .add-to-cart-btn::before {
+        content: none !important;
+    }
+
+    .recommendations-title {
+        font-size: 18px;
+        margin-bottom: 20px;
+        line-height: 1.3;
+    }
+}
+
+@media (max-width: 480px) {
+    .recommendations-title {
+        font-size: 16px;
+    }
+
+    .recommendation-grid {
+        gap: 10px;
+    }
+}
+
+html, body.product-detail-page {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+.product-page,
+.product-hero,
+.product-gallery,
+.product-info,
+.purchase-actions,
+.recommendations {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 960px) {
+    .product-detail-page .product-gallery {
+        width: 100%;
+    }
+
+    .product-detail-page .quantity-selector {
+        width: fit-content;
+        padding: 0;
+        background: #fff;
+        border-radius: 8px;
+    }
+
+    .product-detail-page .quantity-wrapper {
+        flex: 0 0 100%;
+    }
+
+    .product-detail-page .button-row-top .custom-design-btn,
+    .product-detail-page .button-row-top .chat-btn,
+    .product-detail-page .button-row-top .add-to-cart-btn {
+        flex: 1 1 0 !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        height: 50px !important;
+        border-radius: 12px !important;
+    }
+
+    .product-detail-page .button-row-top .custom-design-btn::before,
+    .product-detail-page .button-row-top .chat-btn::before,
+    .product-detail-page .button-row-top .add-to-cart-btn::before {
+        content: none !important;
+    }
+}
+
+@media (max-width: 960px) {
+    .product-detail-page .product-info,
+    .product-detail-page .product-gallery,
+    .product-detail-page .main-image {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .product-detail-page .product-hero {
+        align-items: stretch;
+    }
+
+    .product-detail-page .recommendations {
+        padding: 28px 16px 32px;
+    }
+
+    .product-detail-page .recommendation-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 960px) {
+    .product-detail-page .product-gallery {
+        width: 100% !important;
+        max-width: 100% !important;
+        gap: 12px;
+        overflow: hidden;
+    }
+
+    .product-detail-page .main-image {
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 0;
+        padding: 16px;
+    }
+
+    .product-detail-page .main-image img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .product-detail-page .thumbnail-list {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 4px 4px 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-detail-page .main-image {
+        padding: 10px;
+    }
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+.main-navbar-inner {
+    max-width: 100%;
+}
+
+@media (max-width: 992px) {
+    .main-navbar-inner {
+        padding: 0 12px;
+    }
+
+    .header-actions {
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .main-navbar .brand-text {
+        min-width: 0;
+    }
+
+    .main-navbar .brand-name {
+        white-space: nowrap;
     }
 }

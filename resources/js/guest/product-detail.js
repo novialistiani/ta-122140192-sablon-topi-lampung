@@ -314,82 +314,93 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const quantitySelector = document.querySelector('.quantity-selector');
-    const quantityValue = document.getElementById('quantityValue');
-    const quantityWarning = document.getElementById('quantityWarning');
-    const cartQuantityInput = document.getElementById('cartQuantityInput');
-    let quantity = 1;
+const quantityValue = document.getElementById('quantityValue');
+const quantityWarning = document.getElementById('quantityWarning');
+const quantityWarningText = document.getElementById('quantityWarningText');
+const cartQuantityInput = document.getElementById('cartQuantityInput');
+const MAX_QUANTITY = 99;
+let quantity = 1;
+let warningTimer = null;
 
-    function updateQuantity(newQuantity, showWarning = false) {
-        // Get max quantity based on variant stock
-        let maxQuantity = 99;
-        if (currentVariant && currentVariant.stock > 0) {
-            maxQuantity = Math.min(currentVariant.stock, 99);
-        }
-        
-        // Check if exceeds stock
-        if (newQuantity > maxQuantity && showWarning) {
-            if (quantityWarning) {
-                quantityWarning.classList.add('show');
-                setTimeout(() => {
-                    quantityWarning.classList.remove('show');
-                }, 3000);
-            }
-        } else if (quantityWarning) {
-            quantityWarning.classList.remove('show');
-        }
-        
-        quantity = Math.max(1, Math.min(newQuantity, maxQuantity));
-        if (quantityValue) {
-            quantityValue.value = quantity.toString();
-        }
-        if (cartQuantityInput) {
-            cartQuantityInput.value = quantity.toString();
-        }
+function showQuantityWarning(message) {
+    if (!quantityWarning) return;
+    if (quantityWarningText) quantityWarningText.textContent = message;
+    quantityWarning.classList.add('show');
+    clearTimeout(warningTimer);
+    warningTimer = setTimeout(() => quantityWarning.classList.remove('show'), 3000);
+}
+
+function hideQuantityWarning() {
+    if (!quantityWarning) return;
+    clearTimeout(warningTimer);
+    quantityWarning.classList.remove('show');
+}
+
+function getMaxQuantity() {
+    if (currentVariant && currentVariant.stock > 0) {
+        return Math.min(currentVariant.stock, MAX_QUANTITY);
+    }
+    return MAX_QUANTITY;
+}
+
+// Mengembalikan pesan error jika jumlah melewati batas, atau '' jika valid
+function getQuantityError(requested) {
+    if (currentVariant && requested > currentVariant.stock) {
+        return `Stok tidak cukup. Stok tersedia: ${currentVariant.stock} item.`;
+    }
+    if (requested > MAX_QUANTITY) {
+        return `Jumlah maksimal per pesanan adalah ${MAX_QUANTITY}.`;
+    }
+    return '';
+}
+
+function updateQuantity(newQuantity, showWarning = false, keepWarning = false) {
+    const error = getQuantityError(newQuantity);
+    if (error && showWarning) {
+        showQuantityWarning(error);
+    } else if (!error && !keepWarning) {
+        hideQuantityWarning();
     }
 
-    if (quantitySelector && quantityValue) {
-        // Handle button clicks
-        quantitySelector.addEventListener('click', event => {
-            const action = event.target.dataset.quantityAction;
-            if (action === 'increase') {
-                // Check if we can increase
-                let maxQuantity = 99;
-                if (currentVariant && currentVariant.stock > 0) {
-                    maxQuantity = Math.min(currentVariant.stock, 99);
-                }
-                
-                if (quantity >= maxQuantity) {
-                    if (quantityWarning) {
-                        quantityWarning.classList.add('show');
-                        setTimeout(() => {
-                            quantityWarning.classList.remove('show');
-                        }, 3000);
-                    }
-                    return;
-                }
-                updateQuantity(quantity + 1);
-            } else if (action === 'decrease') {
-                updateQuantity(quantity - 1);
-            }
-        });
-        
-        // Handle direct input
-        quantityValue.addEventListener('input', event => {
-            const inputValue = parseInt(event.target.value) || 0;
-            if (inputValue > 0) {
-                updateQuantity(inputValue, true);
-            }
-        });
-        
-        // Handle blur to ensure valid value
-        quantityValue.addEventListener('blur', event => {
-            const inputValue = parseInt(event.target.value) || 1;
-            updateQuantity(inputValue > 0 ? inputValue : 1);
-        });
+    quantity = Math.max(1, Math.min(newQuantity, getMaxQuantity()));
+    if (quantityValue) {
+        quantityValue.value = quantity.toString();
     }
     if (cartQuantityInput) {
         cartQuantityInput.value = quantity.toString();
     }
+}
+
+if (quantitySelector && quantityValue) {
+    // Klik tombol + dan -
+    quantitySelector.addEventListener('click', event => {
+        const action = event.target.dataset.quantityAction;
+        if (action === 'increase') {
+            const error = getQuantityError(quantity + 1);
+            if (error) {
+                showQuantityWarning(error);
+                return;
+            }
+            updateQuantity(quantity + 1);
+        } else if (action === 'decrease') {
+            updateQuantity(quantity - 1);
+        }
+    });
+
+    // Ketik angka langsung
+    quantityValue.addEventListener('input', event => {
+        const inputValue = parseInt(event.target.value) || 0;
+        if (inputValue > 0) {
+            updateQuantity(inputValue, true);
+        }
+    });
+
+    // Saat kolom ditinggalkan, pastikan nilainya valid tanpa menghapus pesan
+    quantityValue.addEventListener('blur', event => {
+        const inputValue = parseInt(event.target.value) || 1;
+        updateQuantity(inputValue > 0 ? inputValue : 1, false, true);
+    });
+}
 
     const addToCartButton = document.querySelector('.add-to-cart-btn');
     const addToCartForm = document.getElementById('addToCartForm');

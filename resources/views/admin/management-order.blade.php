@@ -146,9 +146,15 @@
                                             </form>
                                             <button type="button" class="dropdown-item" onclick="showRejectModal({{ $order->id }}, '{{ $currentOrderType }}')">Ditolak</button>
                                         @else
-                                            <button type="button" onclick="changeStatus({{ $order->id }}, 'processing', '{{ $currentOrderType }}'); return false;" class="dropdown-item">Diproses</button>
-                                            <button type="button" onclick="changeStatus({{ $order->id }}, 'completed', '{{ $currentOrderType }}'); return false;" class="dropdown-item">Selesai</button>
-                                            <button type="button" onclick="changeStatus({{ $order->id }}, 'cancelled', '{{ $currentOrderType }}'); return false;" class="dropdown-item">Dibatalkan</button>
+                                            @if($order->payment_status === 'paid' && $order->status === 'approved')
+                                                <button type="button" onclick="changeStatus({{ $order->id }}, 'processing', '{{ $currentOrderType }}'); return false;" class="dropdown-item">Diproses</button>
+                                            @endif
+                                            @if($order->payment_status === 'paid' && $order->status === 'processing')
+                                                <button type="button" onclick="changeStatus({{ $order->id }}, 'completed', '{{ $currentOrderType }}'); return false;" class="dropdown-item">Selesai</button>
+                                            @endif
+                                           @if($order->status === 'approved')
+                                                <button type="button" onclick="changeStatus({{ $order->id }}, 'cancelled', '{{ $currentOrderType }}'); return false;" class="dropdown-item">Dibatalkan</button>
+                                            @endif
                                         @endif
                                     </div>
                                 </div>
@@ -265,35 +271,36 @@
                 submitBtn.innerHTML = 'Tolak Pesanan';
             }
 
-            function changeStatus(orderId, status, orderType) {
-                if (confirm('Apakah Anda yakin ingin mengubah status pesanan ini?')) {
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = `/admin/order-list/${orderId}/status?type=${orderType}`;
+                        async function changeStatus(orderId, status, orderType) {
+                if (!confirm('Apakah Anda yakin ingin mengubah status pesanan ini?')) {
+                    return;
+                }
 
-                    const methodField = document.createElement('input');
-                    methodField.type = 'hidden';
-                    methodField.name = '_method';
-                    methodField.value = 'PATCH';
-                    form.appendChild(methodField);
+                try {
+                    const response = await fetch(`/admin/order-list/${orderId}/status`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ status: status, type: orderType })
+                    });
 
-                    const statusField = document.createElement('input');
-                    statusField.type = 'hidden';
-                    statusField.name = 'status';
-                    statusField.value = status;
-                    form.appendChild(statusField);
+                    const data = await response.json();
 
-                    const csrfField = document.createElement('input');
-                    csrfField.type = 'hidden';
-                    csrfField.name = '_token';
-                    csrfField.value = '{{ csrf_token() }}';
-                    form.appendChild(csrfField);
+                    if (!data.success) {
+                        alert(data.message || 'Gagal mengubah status pesanan.');
+                        return;
+                    }
 
-                    document.body.appendChild(form);
-                    form.submit();
+                    window.location.reload();
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan. Silakan coba lagi.');
                 }
             }
-
             async function showOrderDetail(orderId, orderType) {
                 document.getElementById('detailOrderId').textContent = orderId;
                 document.getElementById('orderDetailModal').style.display = 'block';

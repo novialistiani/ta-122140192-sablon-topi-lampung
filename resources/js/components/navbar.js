@@ -82,3 +82,4 @@ window.NavbarComponent = {
     updateCartBadge: updateCartBadge,
     getCartCount: getCartCount
 };
+

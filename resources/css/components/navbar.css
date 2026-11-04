@@ -330,22 +330,142 @@
 
 /* Responsive Design */
 @media (max-width: 992px) {
+    .main-navbar {
+        padding: 10px 0;
+    }
+
     .main-navbar-inner {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px 12px;
+        padding: 0 12px;
+    }
+
+    .brand {
+        order: 1;
     }
 
     .header-actions {
-        justify-content: flex-end;
+        order: 2;
+        margin-left: auto;
+    }
+
+    .navbar-center {
+        order: 3;
+        flex: 1 1 100%;
+        min-width: 0;
+        max-width: none;
+        margin: 0;
+        gap: 8px;
+        align-items: stretch;
+    }
+
+    .search-area {
+        min-width: 0;
+        max-width: none;
+    }
+
+    .category-strip {
+        justify-content: flex-start;
+        padding-top: 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .category-strip::-webkit-scrollbar {
+        display: none;
+    }
+
+    .category-nav {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 16px;
+        flex-shrink: 0;
+        width: max-content;
+    }
+
+    .profile-popup {
+        position: absolute;
+        top: 100%;
+        left: 8px;
+        right: 8px;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 1023px) {
+    .main-navbar .notification-wrapper {
+        position: static;
+    }
+
+    .main-navbar .notification-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 8px;
+        right: 8px;
+        width: auto;
+        max-width: none;
+        transform: none;
     }
 }
 
 @media (max-width: 600px) {
-    .main-navbar {
-        padding: 16px;
+    .brand-tagline {
+        display: none;
     }
 
-    .category-nav {
-        gap: 20px;
+    .brand-logo-img {
+        width: 44px;
+        height: 44px;
+    }
+
+    .brand-name {
+        font-size: 15px;
+    }
+}
+
+/* ===== POPUP PROFIL DI HP ===== */
+@media (max-width: 768px) {
+    #profile-popup {
+        position: fixed !important;
+        top: 58px !important;
+        right: 12px !important;
+        left: auto !important;
+        width: min(280px, calc(100vw - 24px)) !important;
+        max-width: calc(100vw - 24px) !important;
+    }
+
+    #profile-popup .profile-popup-content {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    #profile-popup .profile-header {
+        gap: 10px;
+        padding: 14px;
+    }
+
+    #profile-popup .profile-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+    #profile-popup .profile-name,
+    #profile-popup .profile-email {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #profile-popup .profile-email {
+        font-size: 12px;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        overflow-wrap: anywhere;
     }
 }

@@ -175,3 +175,31 @@
 .pagination-info .highlight { font-weight: 600; color: #111827; }
 .page-selector { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: #6b7280; }
 .page-dropdown { padding: 6px 32px 6px 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; font-size: 0.875rem; color: #111827; appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 8px center; background-repeat: no-repeat; background-size: 16px; }
+
+/* Rapikan tabel History: kolom pendek tidak terhimpit oleh kolom Detail yang panjang */
+.history-page-wrapper .data-table .table-cell,
+.history-page-wrapper .data-table .table-header-cell {
+    vertical-align: top;
+}
+.history-page-wrapper .data-table .table-cell:nth-child(-n+4),
+.history-page-wrapper .data-table .table-header-cell:nth-child(-n+4) {
+    white-space: nowrap;
+    padding-right: 20px;
+}
+.history-page-wrapper .data-table .table-cell:nth-child(5) {
+    min-width: 320px;
+    white-space: normal;
+    word-break: break-word;
+}
+/* Beri jarak antara kolom Status dan Aksi */
+.history-page-wrapper .data-table .table-cell:nth-child(6),
+.history-page-wrapper .data-table .table-header-cell:nth-child(6) {
+    padding-left: 24px;
+    padding-right: 24px;
+    white-space: nowrap;
+}
+.history-page-wrapper .data-table .table-cell:nth-child(7),
+.history-page-wrapper .data-table .table-header-cell:nth-child(7) {
+    padding-left: 12px;
+    white-space: nowrap;
+}

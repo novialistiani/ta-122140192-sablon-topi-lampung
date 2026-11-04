@@ -472,3 +472,56 @@ body {
         padding: 20px;
     }
 }
+
+.content-wrapper {
+    padding: 12px;
+}
+
+@media (max-width: 640px) {
+    #profile-form input,
+    #password-form input {
+        font-size: 16px;
+    }
+}
+
+html, body {
+    overflow-x: hidden;
+}
+
+.content-wrapper,
+.content-wrapper * {
+    min-width: 0;
+}
+
+.content-wrapper {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+    .content-wrapper img {
+        max-width: 100%;
+    }
+
+    .content-wrapper .flex {
+        flex-wrap: wrap;
+    }
+
+    .content-wrapper p,
+    .content-wrapper span {
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 640px) {
+    .content-wrapper .flex {
+        flex-wrap: nowrap;
+    }
+
+    .content-wrapper .flex .flex {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+}
+

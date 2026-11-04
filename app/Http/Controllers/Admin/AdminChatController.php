@@ -439,7 +439,19 @@ class AdminChatController extends Controller
 
         $convQuery = \App\Models\ChatConversation::query();
         if ($since) {
-            $convQuery->where('created_at', '>=', $since);
+            // Satu pelanggan memakai satu percakapan yang dipakai ulang, sehingga yang dihitung
+            // adalah percakapan yang memiliki pesan pelanggan dalam rentang waktu,
+            // bukan percakapan yang dibuat dalam rentang waktu.
+            $activeConversationIds = \Illuminate\Support\Facades\DB::table('chat_messages')
+                ->where('sender_type', 'user')
+                ->where('created_at', '>=', $since)
+                ->selectRaw('COALESCE(conversation_id, chat_conversation_id) as cid')
+                ->pluck('cid')
+                ->filter()
+                ->unique()
+                ->values();
+
+            $convQuery->whereIn('id', $activeConversationIds);
         }
 
         $totalConversations = (clone $convQuery)->count();

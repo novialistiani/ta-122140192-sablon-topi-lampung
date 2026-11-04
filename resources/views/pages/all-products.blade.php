@@ -31,10 +31,7 @@
                         <!-- Quick Filters First -->
                         <div class="filter-section">
                             <div class="filter-checkbox-list">
-                                <label class="filter-checkbox">
-                                    <input type="checkbox" name="promo" value="1">
-                                    <span>Dengan diskon</span>
-                                </label>
+                                
                                 <label class="filter-checkbox">
                                     <input type="checkbox" name="ready" value="1">
                                     <span>Ready stok</span>

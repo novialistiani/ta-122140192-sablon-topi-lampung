@@ -363,3 +363,158 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+        /* ===== SEMUA PRODUK: HP ===== */
+.filter-toggle-btn { display: none; }
+
+@media (max-width: 768px) {
+    .catalog-inner-container {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .catalog-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    .sidebar {
+        width: 100% !important;
+        max-width: 100% !important;
+        position: static !important;
+    }
+
+    .filter-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: #001F3F;
+        color: #ffffff;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .filters-card { display: none !important; margin-top: 10px; }
+    .filters-card.open { display: block !important; }
+
+    .products-main { width: 100%; min-width: 0; }
+
+    .products-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        text-align: center;
+    }
+
+    .header-right { justify-content: center; }
+
+    .products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+    }
+
+    .price-input { min-width: 0; width: 100%; }
+
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .pagination-numbers { flex-wrap: wrap; justify-content: center; }
+}
+
+/* ===== SEMUA PRODUK: PERBAIKAN LANJUTAN HP ===== */
+@media (max-width: 768px) {
+    /* sidebar tampil lagi supaya tombol Filter di dalamnya terlihat */
+    .sidebar {
+        display: block !important;
+    }
+
+    /* cegah elemen melebihi lebar layar */
+    .catalog-content-section,
+    .catalog-inner-container,
+    .catalog-layout,
+    .products-main,
+    .products-header,
+    .header-center,
+    .header-right,
+    .select-wrapper,
+    #sort-select,
+    .products-grid,
+    .product-card {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .header-right {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .select-wrapper { flex: 1; }
+    #sort-select { width: 100%; }
+
+    .product-card { width: 100% !important; }
+}
+
+/* ===== SEMUA PRODUK: FINAL HP & TABLET ===== */
+@media (max-width: 1024px) {
+    .catalog-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    .catalog-layout .sidebar {
+        display: block !important;
+        width: 100% !important;
+        position: static !important;
+    }
+
+    .catalog-layout .filter-toggle-btn {
+        display: inline-flex !important;
+    }
+
+    .catalog-layout .filters-card {
+        display: none !important;
+    }
+
+    .catalog-layout .filters-card.open {
+        display: block !important;
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    #products-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+    }
+
+    .header-right {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 6px;
+        width: 100%;
+    }
+
+    .header-right .select-wrapper {
+        width: 100%;
+    }
+
+    .products-header {
+        text-align: left !important;
+    }
+
+    .catalog-content-section {
+        padding-bottom: 90px;
+    }
+}

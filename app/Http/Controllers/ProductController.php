@@ -11,10 +11,6 @@ class ProductController extends Controller
     {
         $query = Product::with('variants')->active();
 
-        // Filter promo (dengan diskon) - products with original_price > price
-        if ($request->boolean('promo')) {
-            $query->whereNotNull('original_price')->whereColumn('original_price', '>', 'price');
-        }
 
         // Filter ready stock - products with stock > 0
         if ($request->boolean('ready')) {

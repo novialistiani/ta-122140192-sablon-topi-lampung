@@ -24,6 +24,34 @@ $login = function () {
 
 <!-- Single root wrapper to satisfy Livewire -->
 <div class="lgi-login">
+    <style>
+        .lgi-login { position: relative; }
+        .lgi-login > .home-button {
+            position: absolute !important;
+            top: 0 !important;
+            left: 12px !important;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            z-index: 50 !important;
+        }
+        .lgi-login > .home-button a {
+            background: #fff;
+            color: #061434;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        @media (max-width: 768px) {
+            .lgi-login > .top-bar { min-height: 48px; }
+            .lgi-login .logo-section { margin-top: 12px; }
+        }
+    </style>
     <!-- Home Button -->
     <div class="home-button">
         <a href="{{ route('home') }}">

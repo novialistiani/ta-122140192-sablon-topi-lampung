@@ -1,34 +1,14 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Profil - LGI Store</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    @vite([
-        'resources/css/customer/shared.css', 
-        'resources/css/customer/profile-form.css', 
-        'resources/js/customer/profile-dropdown.js',
-        'resources/js/components/notification-dropdown.js'
-    ])
-</head>
-<body class="bg-gray-50">
-    <div class="flex h-screen">
-        <x-customer-sidebar active="profile" />
-
-        <!-- Main Content -->
-        <div class="flex-1 overflow-auto">
-            <x-customer-header title="Profile" />
+<x-customer-layout title="Profil" active="profile">
+    @vite(['resources/css/customer/profile-form.css', 'resources/js/customer/profile-dropdown.js'])
+    <div>
+        <div>
 
             <div class="content-wrapper">
                 <!-- 2 Column Layout -->
                 <div class="max-w-3xl mx-auto space-y-6">
                     <!-- Card 1: Profil Header (Avatar + Info Dasar digabung) -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                        <div class="flex items-center gap-6 mb-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6">
+                        <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-6 mb-6">
                             <div class="relative flex-shrink-0">
                                 <div class="w-24 h-24 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center">
                                     <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : '' }}"
@@ -43,7 +23,7 @@
                             <div class="flex-1">
                                 <h2 class="text-lg font-bold text-slate-900">{{ $user->name }}</h2>
                                 <p class="text-sm text-slate-500">{{ $user->email }}</p>
-                                <div class="flex gap-2 mt-3">
+                                <div class="flex gap-2 mt-3 justify-center sm:justify-start">
                                     <label for="avatar-input" class="cursor-pointer px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium rounded-lg">
                                         <i class="fas fa-camera mr-1"></i> Ganti Foto
                                     </label>
@@ -81,7 +61,7 @@
                     </div>
 
                     <!-- Card 2: Keamanan Akun (collapsible) -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6">
                         <button type="button" id="toggle-password-section" class="w-full flex items-center justify-between text-left">
                             <h3 class="text-base font-bold text-slate-900">
                                 <i class="fas fa-lock mr-2 text-slate-400"></i>Ubah Password
@@ -637,5 +617,4 @@
             }
         });
     </script>
-</body>
-</html>
+</x-customer-layout>

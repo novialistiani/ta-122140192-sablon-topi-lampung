@@ -288,6 +288,12 @@
                         <span>History</span>
                     </a>
                 </li>
+                                <li>
+                    <a href="{{ route('admin.stock-report') }}" class="sidebar__link {{ request()->routeIs('admin.stock-report*') ? 'active' : '' }}">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Laporan Stok</span>
+                    </a>
+                </li>
                 <li>
                     <a href="{{ route('admin.finance.index') }}" class="sidebar__link {{ request()->routeIs('admin.finance.*') ? 'active' : '' }}">
                         <i class="fas fa-wallet"></i>

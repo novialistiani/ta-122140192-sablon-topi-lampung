@@ -400,6 +400,8 @@ Route::middleware(['auth'])->group(function () {
         
         Route::get('/order-detail/{type}/{id}', [CustomerController::class, 'orderDetail'])
             ->name('order-detail');
+
+        Route::get('/order-detail/{type}/{id}/invoice', [CustomerController::class, 'orderInvoice'])->name('order-invoice');
         
         Route::post('/order/{type}/{id}/cancel', [CustomerController::class, 'cancelOrder'])
             ->name('order.cancel');
@@ -507,7 +509,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/activity-logs/export', [ActivityLogController::class, 'export'])->name('admin.activity-logs.export');
         Route::get('/history', [ActivityLogController::class, 'history'])->name('admin.history');
         Route::get('/history/{id}', [ActivityLogController::class, 'historyDetail'])->name('admin.history.detail');
-        
+        Route::get('/stock-report', [App\Http\Controllers\Admin\StockReportController::class, 'index'])->name('admin.stock-report');
+        Route::get('/stock-report/export', [App\Http\Controllers\Admin\StockReportController::class, 'export'])->name('admin.stock-report.export');
         // Admin Notification routes
         Route::prefix('notifications')->name('admin.notifications.')->group(function () {
             Route::get('/', [App\Http\Controllers\Admin\AdminNotificationController::class, 'index'])->name('index');

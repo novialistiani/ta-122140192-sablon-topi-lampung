@@ -131,10 +131,14 @@ class ChatbotApiController extends Controller
             
             if (!$userId) {
                 // For guest users, just return bot response without saving
-                $botResponse = $this->generateBotResponse($userMessage, $productContext);
+                $botResponseData = $this->generateBotResponse($userMessage, $productContext);
+                $botResponse = is_array($botResponseData) ? $botResponseData['message'] : $botResponseData;
+                $products = is_array($botResponseData) ? ($botResponseData['products'] ?? []) : [];
+
                 return response()->json([
                     'success' => true,
                     'bot_response' => $botResponse,
+                    'products' => $products,
                     'conversation_id' => null,
                     'admin_handling' => false
                 ]);
@@ -274,7 +278,7 @@ class ChatbotApiController extends Controller
      * Generate bot response based on user message
      * Fetches real product data from database when product context is provided
      */
-    protected function generateBotResponse(string $userMessage, $productContext = null): string
+        protected function generateBotResponse(string $userMessage, $productContext = null): array|string
     {
         $msg = strtolower($userMessage);
         

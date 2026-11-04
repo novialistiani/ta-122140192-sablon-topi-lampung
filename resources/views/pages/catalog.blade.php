@@ -36,7 +36,10 @@
     <section class="catalog-section">
         <div class="container">
             <div class="content-wrapper-new">
-                <aside class="sidebar">
+                <button type="button" class="filter-toggle-btn" onclick="document.getElementById('catalog-sidebar').classList.toggle('open')">
+                    <i class="fas fa-sliders-h"></i> Filter
+                </button>
+                <aside class="sidebar" id="catalog-sidebar">
                     <div class="filter-container">
                         <!-- Quick Filters -->
                         <div class="filter-section">
@@ -122,13 +125,15 @@
                             </div>
                             <div class="price-range-wrapper">
                                 <div class="price-inputs">
-                                    <input type="text" class="price-input" id="min-price" placeholder="Rp 0" value="Rp 0">
+                                    <input type="text" class="price-input" id="min-price" placeholder="Rp 0" value="{{ $minPriceDisplay }}">
                                     <span class="price-separator">-</span>
-                                    <input type="text" class="price-input" id="max-price" placeholder="Rp 2.500.000" value="Rp 2.500.000">
+                                    <input type="text" class="price-input" id="max-price" placeholder="Rp 2.500.000" value="{{ $maxPriceDisplay }}">
                                 </div>
                                 <div class="price-slider-container">
-                                    <input type="range" id="price-range-min" min="0" max="2500000" value="0">
-                                    <input type="range" id="price-range-max" min="0" max="2500000" value="2500000">
+                                    <input type="range" id="price-range-min" min="0" max="2500000" value="{{ $minPriceValue }}">
+                                    <input type="range" id="price-range-max" min="0" max="2500000" value="{{ $maxPriceValue }}">
+                                    <div class="price-slider-track"></div>
+                                    <div class="price-slider-range"></div>
                                 </div>
                             </div>
                         </div>
@@ -222,8 +227,36 @@
             const applyFilterBtn = document.querySelector('.apply-filter-btn');
             const sortSelect = document.getElementById('sort-select');
 
-            const colorSelections = new Set(@json($selectedColors));
-            const sizeSelections = new Set(@json($selectedSizes));
+            const colorSelections = new Set(@json(array_values($selectedColors)));
+            const sizeSelections = new Set(@json(array_values($selectedSizes)));
+
+            // Klik warna: pilih atau batal pilih
+            colorButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const color = btn.dataset.color;
+                    if (colorSelections.has(color)) {
+                        colorSelections.delete(color);
+                        btn.classList.remove('active');
+                    } else {
+                        colorSelections.add(color);
+                        btn.classList.add('active');
+                    }
+                });
+            });
+
+            // Klik ukuran: pilih atau batal pilih
+            sizeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const size = btn.dataset.size;
+                    if (sizeSelections.has(size)) {
+                        sizeSelections.delete(size);
+                        btn.classList.remove('active');
+                    } else {
+                        sizeSelections.add(size);
+                        btn.classList.add('active');
+                    }
+                });
+            });
             
             // Price slider functionality
             const minPriceInput = document.getElementById('min-price');
@@ -343,9 +376,13 @@
                 if (selectedFilters.ready) params.append('ready', '1');
                 if (selectedFilters.custom) params.append('custom', '1');
 
-                if (selectedFilters.subcategories.length > 0) {
-    params.append('subcategories', selectedFilters.subcategories.join(','));
-}
+                if (colorSelections.size > 0) {
+                    params.append('colors', Array.from(colorSelections).join(','));
+                }
+
+                if (sizeSelections.size > 0) {
+                    params.append('sizes', Array.from(sizeSelections).join(','));
+                }
 
                 if (selectedFilters.min_price) {
                     params.append('min_price', selectedFilters.min_price);

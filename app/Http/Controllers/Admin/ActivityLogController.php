@@ -60,7 +60,7 @@ class ActivityLogController extends Controller
         if ($entity) {
             if ($entity === 'order') {
                 // Filter aktivitas terkait Order
-                $query->where('subject_type', 'App\\Models\\CustomDesignOrder');
+                $query->whereIn('subject_type', ['App\\Models\\Order', 'App\\Models\\CustomDesignOrder']);
                 
                 if ($sub) {
                     $statusMap = [
@@ -111,6 +111,12 @@ class ActivityLogController extends Controller
                     // Tidak perlu filter tambahan
                 }
             }
+        }
+
+        // Filter rentang waktu (jumlah hari terakhir)
+        $range = (int) $request->get('range', 30);
+        if (in_array($range, [7, 30, 60, 90])) {
+            $query->where('created_at', '>=', now()->subDays($range)->startOfDay());
         }
 
         // Search in object name/description (simple: description LIKE)

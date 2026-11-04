@@ -1945,5 +1945,90 @@ header {
         padding: 16px;
     }
 
-    /* Product card styles handled by component */
+    /* Perbaikan tampilan filter terpilih */
+.catalog-section .size-btn.active,
+.catalog-section .size-btn.active:hover,
+.catalog-section .size-option.active,
+.catalog-section .size-option.active:hover {
+    background: #000000 !important;
+    color: #ffffff !important;
+}
+.catalog-section .color-btn.active,
+.catalog-section .color-btn.active:hover {
+    transform: scale(1) !important;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #000000 !important;
+}
+/* Perbaikan tampilan filter terpilih */
+.catalog-section .size-btn.active,
+.catalog-section .size-btn.active:hover,
+.catalog-section .size-option.active,
+.catalog-section .size-option.active:hover {
+    background: #000000 !important;
+    color: #ffffff !important;
+}
+.catalog-section .color-btn.active,
+.catalog-section .color-btn.active:hover {
+    transform: scale(1) !important;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #000000 !important;
+}
+}
+
+/* ===== RESPONSIVE KATALOG (HP & TABLET) ===== */
+.filter-toggle-btn {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .catalog-section .container {
+        padding: 20px 16px;
+    }
+
+    .catalog-section .content-wrapper-new {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .filter-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        align-self: flex-start;
+        padding: 10px 18px;
+        background: #000;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .catalog-section .sidebar {
+        display: none;
+        width: 100%;
+        position: static;
+    }
+
+    .catalog-section .sidebar.open {
+        display: block;
+    }
+}
+
+@media (max-width: 576px) {
+    .catalog-breadcrumb .breadcrumb-container {
+        padding: 12px 16px;
+    }
+
+    .catalog-section .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .catalog-section .size-options {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .page-title-inline {
+        font-size: 22px;
+    }
 }

@@ -849,3 +849,133 @@ main {
         align-self: flex-end;
     }
 }
+
+/* ===== RESPONSIVE TAMBAHAN CUSTOM DESIGN ===== */
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+.custom-design-grid,
+.form-column,
+.image-column {
+    min-width: 0;
+    max-width: 100%;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: 12px;
+    }
+
+    .content-card {
+        padding: 16px;
+        border-radius: 10px;
+    }
+
+    .area-cetak-section {
+        padding: 8px 0;
+    }
+
+    .area-image-container {
+        padding: 10px;
+    }
+
+    .product-preview-wrapper {
+        min-height: 0;
+        padding: 12px;
+    }
+
+    .product-image-large {
+        min-height: 0;
+        max-width: 260px;
+    }
+
+    .quantity-selector {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .quantity-label {
+        min-width: 0;
+    }
+
+    .qty-input {
+        width: 56px;
+    }
+
+    .breakdown-item {
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .breakdown-label {
+        min-width: 0;
+        word-break: break-word;
+    }
+
+    .breakdown-value {
+        white-space: nowrap;
+    }
+
+    .file-uploaded span {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .total-price-section {
+        gap: 8px;
+    }
+
+    .total-amount {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 576px) {
+    /* tombol hapus tetap sejajar, bukan turun ke bawah */
+    .file-uploaded {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .remove-file {
+        align-self: center;
+        flex-shrink: 0;
+    }
+
+    .product-title {
+        font-size: 20px;
+    }
+}
+
+.selected-items {
+    margin: 8px 0 12px !important;
+    gap: 8px !important;
+}
+
+.file-uploaded {
+    margin-top: 8px !important;
+    margin-bottom: 8px !important;
+    padding: 10px 14px !important;
+}
+
+.description-box {
+    margin-top: 4px;
+}
+
+.selection-item .remove-file {
+    width: 28px !important;
+    height: 28px !important;
+    border: none !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    color: #000 !important;
+    font-size: 16px !important;
+}
+
+.selection-item .remove-file:hover {
+    background: rgba(0, 0, 0, 0.12) !important;
+    transform: none !important;
+}

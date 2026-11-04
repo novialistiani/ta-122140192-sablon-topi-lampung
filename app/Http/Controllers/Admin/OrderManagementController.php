@@ -230,6 +230,11 @@ class OrderManagementController extends Controller
 
             // Commit transaction BEFORE sending email
             // This ensures order is approved even if email fails
+            try {
+                \App\Models\Admin::logActivity('approve_order', 'Admin menyetujui pesanan #' . $order->id . ' (' . $orderType . ')', null, $order);
+            } catch (\Throwable $e) {
+                \Log::warning('Gagal mencatat log approve: ' . $e->getMessage());
+            }
             DB::commit();
 
             // Dispatch event for notification based on order type
@@ -401,9 +406,15 @@ class OrderManagementController extends Controller
         // Only allow manual update to 'processing' or 'completed' if order is paid
         if (in_array($request->status, ['processing', 'completed'])) {
             if (!isset($order->payment_status) || $order->payment_status !== 'paid') {
+                $msg = 'Pesanan belum dibayar. Konfirmasi pembayaran terlebih dahulu sebelum memproses pesanan.';
+
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json(['success' => false, 'message' => $msg], 422);
+                }
+
                 return redirect()
                     ->route('admin.order.detail', ['id' => $id, 'type' => $orderType])
-                    ->with('error', 'Order harus sudah dibayar sebelum diproses');
+                    ->with('error', $msg);
             }
         }
 
@@ -477,6 +488,7 @@ class OrderManagementController extends Controller
         if ($oldStatus !== $request->status && $order->user_id) {
             try {
                 app(\App\Services\NotificationService::class)->notifyOrderStatusUpdate($order, $order->user_id, $oldStatus, $request->status);
+                \App\Models\Admin::logActivity('update_order_status', 'Admin mengubah status pesanan #' . $order->id . ' dari ' . $oldStatus . ' menjadi ' . $request->status, null, $order);
             } catch (\Exception $e) {
                 Log::warning('Failed to send status update notification', [
                     'order_id' => $order->id,
@@ -644,7 +656,18 @@ class OrderManagementController extends Controller
                 ->route('admin.order.detail', ['id' => $id, 'type' => $orderType])
                 ->with('error', 'Pesanan sudah ditandai sebagai dibayar.');
         }
-
+        // Hanya boleh dikonfirmasi jika pelanggan sudah mengunggah bukti bayar
+        if ($order->payment_status !== 'pending_verification' || empty($order->payment_proof)) {
+        return redirect()
+        ->route('admin.order.detail', ['id' => $id, 'type' => $orderType])
+        ->with('error', 'Pelanggan belum mengunggah bukti pembayaran.');
+}
+        // Pembayaran hanya boleh dikonfirmasi untuk pesanan yang sudah disetujui
+        if ($order->status !== 'approved') {
+        return redirect()
+        ->route('admin.order.detail', ['id' => $id, 'type' => $orderType])
+        ->with('error', 'Pembayaran hanya dapat dikonfirmasi untuk pesanan yang sudah disetujui.');
+        }
         try {
             DB::beginTransaction();
 
@@ -722,7 +745,7 @@ class OrderManagementController extends Controller
             $order->forceFill([
                 'payment_status' => 'unpaid',
                 'payment_proof' => null,
-                'payment_rejection_reason' => $reason,
+                'payment_rejection_reason' => $reason, 'payment_deadline' => now()->addMinutes(60),
                 'payment_deadline' => now()->addMinutes(60),
             ])->save();
 

@@ -246,9 +246,10 @@ class OrderStockAndEventTest extends TestCase
         Event::fake([PaymentReceivedEvent::class]);
 
         $order = Order::factory()->create([
-            'status' => 'approved',
-            'payment_status' => 'pending_verification',
-        ]);
+        'status' => 'approved',
+        'payment_status' => 'pending_verification',
+         'payment_proof' => 'payment-proofs/bukti.jpg',
+    ]);
 
         $this->actingAs($this->admin, 'admin')
             ->post(route('admin.order.mark-payment-received', $order->id) . '?type=regular');

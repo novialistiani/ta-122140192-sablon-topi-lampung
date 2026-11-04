@@ -392,3 +392,248 @@ body {
         width: 100%;
     }
 }
+
+/* ===== PERBAIKAN RESPONSIVE PEMESANAN ===== */
+
+/* jangan jadikan pembungkus input di dalam form sebagai kartu lagi */
+.payment-section .mb-6 {
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    border-radius: 0;
+    overflow: visible;
+}
+
+html, body {
+    overflow-x: hidden;
+}
+
+.checkout-main {
+    min-height: 0;
+}
+
+.payment-section img {
+    height: auto;
+}
+
+@media (max-width: 640px) {
+    .checkout-main {
+        padding: 16px 0 40px;
+    }
+
+    input[type="date"],
+    input[type="file"] {
+        font-size: 16px;
+        padding: 10px 12px;
+    }
+
+    #payment-countdown {
+        font-size: 24px;
+    }
+
+    .p-4.bg-white.rounded-lg.border {
+        padding: 16px 12px;
+    }
+
+    .bg-slate-50 {
+        padding: 14px;
+    }
+}
+
+/* ===== TAMPILAN BARU HALAMAN PEMESANAN ===== */
+.checkout-main {
+    background: linear-gradient(180deg, #eef2f7 0%, #f8fafc 100%) !important;
+    padding: 20px 0 48px !important;
+}
+
+.checkout-main .container {
+    max-width: 640px;
+    padding: 0 16px;
+}
+
+/* tiap bagian = kartu putih */
+.checkout-main .container > section,
+.checkout-main form.payment-section {
+    background: #fff !important;
+    border: 1px solid #e5eaf1 !important;
+    border-radius: 18px !important;
+    padding: 20px !important;
+    margin-bottom: 16px !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06) !important;
+    overflow: hidden;
+}
+
+/* judul bagian */
+.checkout-main .section-title {
+    font-size: 15px !important;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 14px !important;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkout-main .section-title::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #fbbf24, #f59e0b);
+}
+
+/* kotak info pengambilan */
+.checkout-main .bg-slate-50 {
+    display: block !important;
+    background: #fffbeb !important;
+    border: 1px solid #fde68a !important;
+    border-left: 4px solid #f59e0b !important;
+    border-radius: 12px !important;
+    padding: 14px 16px !important;
+}
+
+.checkout-main .bg-slate-50::before {
+    content: none !important;
+}
+
+.checkout-main .bg-slate-50 p {
+    margin: 0;
+}
+
+.checkout-main .bg-slate-50 p + p {
+    margin-top: 4px;
+}
+
+/* ringkasan total */
+.checkout-main .flex.justify-between.items-center {
+    background: #f0fdf4 !important;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px !important;
+    padding: 14px 16px !important;
+}
+
+.checkout-main .text-lg.font-bold.text-slate-900 {
+    color: #15803d !important;
+    font-size: 22px !important;
+    font-weight: 800;
+}
+
+/* hitung mundur */
+.checkout-main .bg-red-50.border {
+    border-radius: 14px;
+    padding: 16px !important;
+}
+
+#payment-countdown {
+    letter-spacing: 2px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* QRIS */
+.checkout-main .p-4.bg-white.rounded-lg.border {
+    background: #f8fafc !important;
+    border: 1px dashed #cbd5e1 !important;
+    border-radius: 14px !important;
+    padding: 18px 14px !important;
+}
+
+.checkout-main .payment-section img {
+    max-width: 260px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 10px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.1);
+}
+
+/* input tanggal & file */
+.checkout-main input[type="date"],
+.checkout-main input[type="file"] {
+    background: #f8fafc;
+    border: 1.5px solid #dbe3ec;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 15px;
+}
+
+.checkout-main input[type="file"]::file-selector-button {
+    background: #0f172a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    margin-right: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* tombol */
+.checkout-main .action-buttons {
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.checkout-main .btn {
+    border-radius: 14px;
+    padding: 14px 24px;
+    font-size: 15px;
+}
+
+.checkout-main .btn-orange {
+    background: #fff;
+    color: #334155;
+    border: 1.5px solid #cbd5e1;
+}
+
+.checkout-main .btn-primary {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35);
+}
+
+@media (max-width: 640px) {
+    .checkout-main .action-buttons {
+        flex-direction: column-reverse;
+    }
+
+    .checkout-main .btn {
+        width: 100%;
+    }
+
+    .checkout-main .flex.justify-between.items-center {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.checkout-main {
+    width: 100%;
+}
+
+.checkout-main .container {
+    width: 100%;
+    max-width: 640px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+.checkout-main .action-buttons {
+    display: flex !important;
+    gap: 14px !important;
+    margin-top: 20px !important;
+}
+
+.checkout-main .action-buttons .btn {
+    margin: 0 !important;
+}
+
+@media (max-width: 1023px) {
+    .checkout-main .action-buttons {
+        flex-direction: column-reverse !important;
+        gap: 14px !important;
+    }
+
+    .checkout-main .action-buttons .btn {
+        width: 100%;
+    }
+}

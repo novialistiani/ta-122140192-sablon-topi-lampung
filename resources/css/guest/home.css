@@ -1404,3 +1404,104 @@ header {
         gap: 30px;
     }
 }
+
+
+/* ===================================
+   RESPONSIVE TAMBAHAN (HP & TABLET)
+   =================================== */
+@media (max-width: 1200px) {
+    .hero.hero-elegant {
+        flex-direction: row;
+    }
+
+    .product-slider {
+        overflow-x: auto;
+        scrollbar-width: thin;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero.hero-elegant {
+        min-height: 75vh;
+        justify-content: center;
+        align-items: flex-end;
+    }
+
+    .hero-content-elegant {
+        width: 100%;
+        max-width: 100%;
+        padding: 24px 20px 40px;
+    }
+
+    .hero-title {
+        font-size: 34px;
+    }
+
+    .hero-badge {
+        font-size: 12px;
+        padding: 6px 16px;
+        margin-bottom: 16px;
+    }
+
+    .hero-cta {
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .btn-primary-hero,
+    .btn-secondary-hero {
+        padding: 14px 24px;
+        font-size: 15px;
+    }
+
+    .section-title {
+        font-size: 22px;
+    }
+
+    .product-grid {
+        grid-template-columns: none;
+        grid-auto-columns: calc((100% - 12px) / 2);
+        gap: 12px;
+    }
+
+    .product-slider {
+        scroll-snap-type: x mandatory;
+    }
+
+    .product-grid > * {
+        scroll-snap-align: start;
+    }
+
+    footer.site-footer {
+        padding: 40px 20px 28px;
+    }
+
+    .footer-stores {
+        gap: 28px;
+        margin-bottom: 32px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        margin-bottom: 24px;
+    }
+
+    .hero-content-elegant {
+        text-align: center;
+    }
+
+    .hero-features {
+        margin-top: 4px;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-grid {
+        align-items: stretch;
+    }
+
+    .product-grid > * {
+        height: 100%;
+    }
+}

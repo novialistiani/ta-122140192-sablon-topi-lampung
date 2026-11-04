@@ -13,7 +13,7 @@
     
     <div class="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-2">
         <!-- Filters -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-3 sticky top-0 z-10">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-3 md:sticky md:top-0 z-10">
                     <h3 class="text-lg font-semibold mb-4">Filter Pesanan</h3>
                     <form method="GET" action="{{ route('order-list') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                         <!-- Kategori Filter -->
@@ -85,8 +85,8 @@
 
         <!-- Orders List -->
         @forelse($orders as $order)
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-4 hover:shadow-md transition-shadow">
-                    <div class="flex justify-between items-start mb-4">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 mb-4 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start gap-2 mb-4">
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900">
                                 @if($order instanceof \App\Models\CustomDesignOrder)
@@ -104,7 +104,7 @@
                                 @endif
                             </p>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-sm font-medium
+                        <span class="px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-center
                             @if($order->status === 'pending') bg-yellow-100 text-yellow-800
                             @elseif($order->status === 'approved') bg-green-100 text-green-800
                             @elseif($order->status === 'rejected') bg-red-100 text-red-800
@@ -134,7 +134,7 @@
 
                     @if($order instanceof \App\Models\CustomDesignOrder)
                         {{-- Custom Design Order --}}
-                        <div class="flex items-start space-x-4">
+                        <div class="flex items-start gap-3 sm:gap-4">
                             @php
                                 // Priority: first upload image > variant->image > product->image > placeholder
                                 $orderImage = null;
@@ -162,7 +162,7 @@
 
                             <div class="flex-1 min-w-0">
                                 {{-- Product Info & Price Row --}}
-                                <div class="flex justify-between items-start gap-4 mb-2">
+                                <div class="flex flex-wrap justify-between items-start gap-2 sm:gap-4 mb-2">
                                     <div class="flex-1">
                                         <h4 class="font-medium text-gray-900">{{ $order->product_name }}</h4>
                                         <p class="text-sm text-gray-600">
@@ -180,7 +180,7 @@
                                 </div>
 
                                 {{-- Cutting & Design Parts --}}
-                                <div class="flex gap-4 text-sm text-gray-600 mb-2">
+                                <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 mb-2">
                                     <p><i class="fas fa-cut"></i> Cutting: <span class="font-medium">{{ $order->cutting_type }}</span></p>
                                     <p><i class="fas fa-images"></i> Bagian: <span class="font-medium">{{ $order->uploads->count() }}</span></p>
                                 </div>
@@ -288,7 +288,7 @@
                                 $items = is_array($order->items) ? $order->items : [];
                             @endphp
                             @foreach($items as $item)
-                            <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 py-2 border-b border-gray-100 last:border-b-0">
                                 <div class="flex items-center space-x-3">
                                     @if(isset($item['image']) && $item['image'])
                                         <img src="{{ $item['image'] }}" alt="{{ $item['name'] ?? 'Product' }}" class="w-12 h-12 object-cover rounded">
@@ -339,7 +339,7 @@
                             </div>
                             
                             {{-- Action Buttons --}}
-                            <div class="flex justify-end gap-2 mt-3">
+                            <div class="flex flex-wrap justify-end gap-2 mt-3">
                                 <a href="{{ route('order-detail', ['type' => 'regular', 'id' => $order->id]) }}"
                                    class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
                                     <i class="fas fa-eye mr-1"></i> Detail

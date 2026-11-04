@@ -1,10 +1,9 @@
 <x-customer-layout title="Notifikasi" active="notifikasi">
     @vite(['resources/css/customer/Notifikasi.css'])
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-3 sm:py-6">
         <!-- Header Actions -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-            <div class="flex items-center justify-between">
                 <label class="inline-flex items-center cursor-pointer">
                     <input type="checkbox" id="selectAll" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
                     <span class="ml-2 text-sm font-medium text-gray-700">Pilih semua</span>
@@ -20,20 +19,20 @@
             @forelse($notifications as $notification)
             <div class="notification-card bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow {{ $notification->is_read ? 'opacity-60' : '' }}" 
                  data-id="{{ $notification->id }}">
-                <div class="flex items-start gap-4">
+                <div class="flex flex-wrap sm:flex-nowrap items-start gap-3 sm:gap-4">
                     <input type="checkbox" class="notification-checkbox mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 flex-shrink-0" 
                            value="{{ $notification->id }}">
-                    <div class="w-12 h-12 bg-gradient-to-br from-{{ $notification->type === 'order_approved' ? 'green' : ($notification->type === 'order_rejected' ? 'red' : 'blue') }}-100 to-{{ $notification->type === 'order_approved' ? 'green' : ($notification->type === 'order_rejected' ? 'red' : 'blue') }}-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-{{ $notification->type === 'order_approved' ? 'green' : ($notification->type === 'order_rejected' ? 'red' : 'blue') }}-100 to-{{ $notification->type === 'order_approved' ? 'green' : ($notification->type === 'order_rejected' ? 'red' : 'blue') }}-200 rounded-lg flex items-center justify-center flex-shrink-0">
                         <i class="fas fa-{{ $notification->type === 'order_approved' ? 'check-circle' : ($notification->type === 'order_rejected' ? 'times-circle' : 'info-circle') }} text-{{ $notification->type === 'order_approved' ? 'green' : ($notification->type === 'order_rejected' ? 'red' : 'blue') }}-600 text-xl"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h3 class="text-base font-semibold text-gray-900 mb-1">{{ $notification->title }}</h3>
+                        <h3 class="text-sm sm:text-sm sm:text-base font-semibold text-gray-900 mb-1 break-words break-wordsv">{{ $notification->title }}</h3>
                         <p class="text-sm text-gray-600">{{ $notification->message }}</p>
                         <span class="text-xs text-gray-400 mt-1 block">{{ $notification->created_at->diffForHumans() }}</span>
                     </div>
                     @if($notification->action_url)
                     <a href="{{ $notification->action_url }}" 
-                       class="px-4 py-2 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition flex-shrink-0">
+                       class="px-4 py-2 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition flex-shrink-0 w-full sm:w-auto text-center border border-blue-100 sm:border-0">
                         Tampilkan rincian
                     </a>
                     @endif
@@ -131,7 +130,7 @@
             // Toast notification helper
             function showToast(message, type = 'info') {
                 const toast = document.createElement('div');
-                toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} z-50`;
+                toast.className = `fixed bottom-20 left-4 right-4 sm:left-auto sm:bottom-4 sm:right-4 text-center px-6 py-3 rounded-lg shadow-lg text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} z-50`;
                 toast.textContent = message;
                 document.body.appendChild(toast);
 

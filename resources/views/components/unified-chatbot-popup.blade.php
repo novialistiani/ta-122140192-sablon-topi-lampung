@@ -23,9 +23,9 @@
     <!-- Chatbot Header -->
     <div class="unified-chatbot-header">
         <div class="unified-chatbot-avatar bot-avatar">
-    <img src="{{ asset('images/logo-lgi-Photoroom.png') }}" alt="LGI Store" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-    <span class="avatar-fallback" style="display:none;">🏪</span>
-</div>
+            <img src="{{ asset('images/logo-lgi-Photoroom.png') }}" alt="LGI Store" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <span class="avatar-fallback" style="display:none;">🏪</span>
+        </div>
         <div class="unified-chatbot-info">
             <div class="unified-chatbot-name">LGI STORE</div>
             <div class="unified-chatbot-status">
@@ -95,7 +95,13 @@
 </script>
 
 <style>
-/* Unified Chatbot Popup Styles - Reset and Base */
+/* =====================================================
+   UNIFIED CHATBOT POPUP
+   Tema: biru tua (#001F3F) + kuning (#facc15)
+   Urutan: dasar -> komponen -> responsif (desktop, lalu HP)
+   ===================================================== */
+
+/* ---------- Reset dan dasar ---------- */
 .unified-chatbot-popup,
 .unified-chatbot-popup * {
     box-sizing: border-box;
@@ -107,6 +113,7 @@
     padding: 0;
 }
 
+/* ---------- Tombol pemicu ---------- */
 .unified-chatbot-trigger {
     position: fixed;
     bottom: 20px;
@@ -137,7 +144,7 @@
     display: none;
 }
 
-/* Chat Unread Badge - Green dot with number */
+/* ---------- Badge belum dibaca ---------- */
 .chat-unread-badge {
     position: absolute;
     top: -2px;
@@ -169,14 +176,16 @@
     }
 }
 
+/* ---------- Kotak popup ---------- */
 .unified-chatbot-popup {
     position: fixed;
-    bottom: 90px;
+    bottom: 80px;
     right: 20px;
     width: 360px;
     max-width: calc(100vw - 40px);
-    height: 520px;
-    max-height: calc(100vh - 120px);
+    height: calc(100vh - 235px);
+    max-height: 620px;
+    min-height: 380px;
     background-color: #ffffff;
     border-radius: 16px;
     display: none;
@@ -202,13 +211,14 @@
     }
 }
 
+/* ---------- Header ---------- */
 .unified-chatbot-header {
-    background: #fff;
-    padding: 12px 14px;
+    background: linear-gradient(135deg, #001F3F 0%, #003366 100%);
+    border-bottom: 3px solid #facc15;
+    padding: 8px 14px;
     display: flex;
     align-items: center;
     gap: 10px;
-    border-bottom: 1px solid #e5e7eb;
     flex-shrink: 0;
 }
 
@@ -216,20 +226,20 @@
     width: 40px;
     height: 40px;
     min-width: 40px;
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-    border-radius: 50%;
+    background: transparent;
+    border-radius: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #ffffff;
     flex-shrink: 0;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .unified-chatbot-avatar img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .unified-chatbot-avatar .avatar-fallback {
@@ -248,14 +258,14 @@
 .unified-chatbot-name {
     font-size: 14px;
     font-weight: 600;
-    color: #0f1e3d;
+    color: #ffffff;
     margin-bottom: 2px;
     line-height: 1.2;
 }
 
 .unified-chatbot-status {
     font-size: 11px;
-    color: #666;
+    color: rgba(255, 255, 255, 0.85);
     line-height: 1.3;
     display: flex;
     align-items: center;
@@ -273,7 +283,7 @@
 .unified-chatbot-close {
     background: transparent;
     border: none;
-    color: #6b7280;
+    color: #ffffff;
     cursor: pointer;
     padding: 6px;
     border-radius: 50%;
@@ -284,11 +294,11 @@
 }
 
 .unified-chatbot-close:hover {
-    background: #e5e7eb;
-    color: #374151;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
 }
 
-/* Product Context Badge */
+/* ---------- Badge konteks produk ---------- */
 .unified-product-context {
     display: flex;
     align-items: center;
@@ -331,6 +341,7 @@
     background: rgba(255, 255, 255, 0.3);
 }
 
+/* ---------- Area pesan ---------- */
 .unified-chatbot-body {
     display: flex;
     flex-direction: column;
@@ -344,7 +355,7 @@
     padding: 12px;
     overflow-y: auto;
     overflow-x: hidden;
-    background-color: #ffffff;
+    background-color: #f1f5f9;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -363,7 +374,6 @@
     border-radius: 2px;
 }
 
-/* Clean Chat Messages */
 .unified-chatbot-popup .unified-message {
     display: inline-flex;
     flex-direction: column;
@@ -391,12 +401,10 @@
     background: none !important;
 }
 
-/* Hide avatars */
 .unified-chatbot-popup .unified-message-avatar {
     display: none !important;
 }
 
-/* System message style */
 .unified-chatbot-popup .unified-message.system-message {
     max-width: 90%;
     align-self: center;
@@ -419,9 +427,6 @@
     margin: 0 !important;
 }
 
-/* FIX: selector sebelumnya hilang di sini, jadi style bubble pesan (padding,
-   border-radius, font-size, dst) tidak pernah kepasang. Sekarang dikembalikan
-   ke .unified-message-bubble */
 .unified-chatbot-popup .unified-message-bubble {
     display: inline-block;
     padding: 6px 10px !important;
@@ -433,17 +438,19 @@
     white-space: pre-line;
 }
 
-/* Bot message - Light gray bubble */
+/* Bubble bot: putih */
 .unified-chatbot-popup .unified-message.bot-message .unified-message-bubble {
-    background: #f0f0f0 !important;
-    color: #1a1a1a;
+    background: #ffffff !important;
+    color: #1f2937;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 31, 63, 0.08);
     border-top-left-radius: 3px;
 }
 
-/* User message - Green bubble ONLY */
+/* Bubble user: biru tua */
 .unified-chatbot-popup .unified-message.user-message .unified-message-bubble {
-    background: #dcf8c6 !important;
-    color: #1a1a1a;
+    background: linear-gradient(135deg, #003366 0%, #001F3F 100%) !important;
+    color: #ffffff;
     border-top-right-radius: 3px;
 }
 
@@ -457,13 +464,15 @@
     text-indent: 0 !important;
 }
 
-/* Time inside bubble */
 .unified-chatbot-popup .unified-message-bubble .unified-message-time {
     font-size: 10px;
     color: #667781;
 }
 
-/* Bot message time - block at bottom right */
+.unified-chatbot-popup .unified-message.user-message .unified-message-time {
+    color: rgba(255, 255, 255, 0.7);
+}
+
 .unified-chatbot-popup .unified-message.bot-message .unified-message-bubble .unified-message-time {
     display: block;
     text-align: right;
@@ -471,7 +480,7 @@
     padding: 0 !important;
 }
 
-/* Product Card inside Chat Message */
+/* ---------- Kartu produk di dalam chat ---------- */
 .unified-chatbot-popup .chat-product-card {
     display: flex;
     flex-direction: column;
@@ -538,7 +547,6 @@
     text-decoration: underline;
 }
 
-/* Product Cards Grid in Bot Response */
 .unified-chatbot-popup .chat-product-cards-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -600,9 +608,7 @@
     color: #e53935;
 }
 
-/* Adjust user message with product card */
 .unified-chatbot-popup .unified-message.user-message.product-inquiry-message .unified-message-bubble {
-    background: #dcf8c6;
     max-width: 280px;
 }
 
@@ -611,12 +617,13 @@
     margin-bottom: 5px;
 }
 
+/* ---------- Quick reply (desktop: turun baris, semua terlihat) ---------- */
 .unified-quick-replies {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     padding: 8px 12px;
-    background: #fff;
+    background: #ffffff;
     border-top: 1px solid #e5e7eb;
     flex-shrink: 0;
 }
@@ -624,21 +631,23 @@
 .unified-quick-reply {
     padding: 6px 12px;
     border-radius: 16px;
-    border: 1px solid #d1d5db;
-    background: #fff;
+    border: 1px solid #facc15;
+    background: #fffbeb;
     font-size: 12px;
-    color: #374151;
+    font-weight: 500;
+    color: #001F3F;
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
 }
 
 .unified-quick-reply:hover {
-    background: #0f172a;
-    color: #fff;
-    border-color: #0f172a;
+    background: #facc15;
+    color: #001F3F;
+    border-color: #facc15;
 }
 
+/* ---------- Input ---------- */
 .unified-chatbot-input-wrapper {
     padding: 10px 12px;
     padding-bottom: 12px;
@@ -655,6 +664,7 @@
 
 .unified-chatbot-input {
     flex: 1;
+    min-width: 0;
     padding: 10px 14px;
     border: 1.5px solid #e5e7eb;
     border-radius: 22px;
@@ -665,13 +675,14 @@
 }
 
 .unified-chatbot-input:focus {
-    border-color: #0f172a;
+    border-color: #facc15;
     background: #fff;
+    box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25);
 }
 
 .unified-chatbot-send {
-    background: #0f172a;
-    color: white;
+    background: #facc15;
+    color: #001F3F;
     border: none;
     width: 38px;
     height: 38px;
@@ -690,10 +701,10 @@
 }
 
 .unified-chatbot-send:hover {
-    background: #1e293b;
+    background: #fbbf24;
 }
 
-/* Typing indicator */
+/* ---------- Indikator mengetik ---------- */
 .unified-typing-indicator {
     display: flex;
     gap: 4px;
@@ -717,30 +728,170 @@
     30% { transform: translateY(-8px); opacity: 1; }
 }
 
-/* Responsive */
+/* =====================================================
+   RESPONSIF HP (<= 480px): popup layar penuh
+   ===================================================== */
 @media (max-width: 480px) {
     .unified-chatbot-popup {
-        width: calc(100% - 20px);
-        right: 10px;
-        bottom: 80px;
-        height: 65vh;
-        max-height: calc(100vh - 100px);
+        inset: 0;
+        width: 100%;
+        max-width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        max-height: none;
+        min-height: 0;
+        border-radius: 0;
     }
-    
-    .unified-quick-reply {
-        font-size: 12px;
-        padding: 6px 12px;
+
+    .unified-chatbot-header {
+        padding: 10px 14px;
+        padding-top: calc(10px + env(safe-area-inset-top, 0px));
     }
-    
-    .unified-message-avatar {
-        width: 28px;
-        height: 28px;
-        min-width: 28px;
+
+    .unified-chatbot-avatar {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
     }
-    
-    .unified-message-avatar .material-icons {
+
+    .unified-chatbot-input-wrapper {
+        padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* cegah auto-zoom iOS */
+    .unified-chatbot-input {
         font-size: 16px;
     }
+
+    /* tombol tutup lebih mudah disentuh */
+    .unified-chatbot-close {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* quick reply satu baris yang bisa digeser (hanya di HP) */
+    .unified-quick-replies {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .unified-quick-reply {
+        flex: 0 0 auto;
+    }
+
+    .unified-chatbot-messages {
+        padding: 12px 10px;
+    }
+
+    /* bubble lebih lebar */
+    .unified-chatbot-popup .unified-message {
+        max-width: 85%;
+    }
+
+    .unified-chatbot-popup .unified-message-bubble {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .unified-chatbot-popup .unified-message.user-message.product-inquiry-message {
+        max-width: 85%;
+    }
+
+    .unified-chatbot-popup .unified-message.user-message.product-inquiry-message .unified-message-bubble {
+        max-width: 100%;
+    }
+
+    .unified-chatbot-popup .chat-product-card {
+        max-width: 100%;
+    }
+
+    .unified-chatbot-popup .chat-product-image {
+        height: 90px;
+    }
+
+    /* tombol pemicu mengikuti safe area */
+    .unified-chatbot-trigger {
+        right: 16px;
+        bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    }
+}
+
+/* popup desktop sedikit lebih lebar supaya 4 quick reply muat satu baris */
+@media (min-width: 481px) {
+    .unified-chatbot-popup {
+        width: 420px;
+        height: calc(100vh - 185px);
+        max-height: 640px;
+        min-height: 340px;
+        bottom: 76px;
+    }
+    .unified-chatbot-header { padding: 6px 14px; }
+    .unified-quick-replies { gap: 5px; padding: 6px 10px; }
+    .unified-quick-reply { padding: 5px 9px; font-size: 11px; }
+    .unified-chatbot-input-wrapper { padding: 8px 12px; }
+}
+
+/* ===== Kartu produk jadi tautan teks (tanpa gambar) ===== */
+.unified-chatbot-popup .chat-product-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+}
+
+.unified-chatbot-popup .chat-product-mini-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    box-shadow: none;
+}
+
+.unified-chatbot-popup .chat-product-mini-card:hover {
+    background: #fffbeb;
+    border-color: #facc15;
+    transform: none;
+    box-shadow: none;
+}
+
+.unified-chatbot-popup .chat-product-mini-card::after {
+    content: "\2197";
+    color: #64748b;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.unified-chatbot-popup .chat-product-mini-info {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    background: transparent;
+}
+
+.unified-chatbot-popup .chat-product-mini-name {
+    font-size: 12px;
+    color: #001F3F;
+    margin-bottom: 2px;
+}
+
+.unified-chatbot-popup .chat-product-mini-price {
+    font-size: 12px;
+}
+
+/* kartu produk di bubble pesan user */
+.unified-chatbot-popup .chat-product-card {
+    max-width: 100%;
+    margin-top: 8px;
+}
+
+.unified-chatbot-popup .chat-product-info {
+    padding: 8px 12px;
+}
+
+.unified-chatbot-popup .chat-product-price {
+    margin-bottom: 2px;
 }
 </style>
 
@@ -884,7 +1035,7 @@ document.addEventListener('DOMContentLoaded', function() {
         messageDiv.innerHTML = `
             <div class="unified-message-content">
                 <div class="unified-message-bubble">
-                    <p>${text}</p>
+                    <p>${String(text).trim()}</p>
                     ${productCardHTML}
                     <span class="unified-message-time">${time}</span>
                 </div>
@@ -1015,16 +1166,13 @@ document.addEventListener('DOMContentLoaded', function() {
         products.forEach(product => {
             const productUrl = `/produk/${product.slug || product.id}`;
             const imageUrl = product.image || '/images/no-image.png';
-            const fallbackImage = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"%3E%3Crect fill="%23e0e0e0" width="120" height="120"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="12" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
+            const fallbackImage = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22 viewBox=%220 0 120 120%22%3E%3Crect fill=%22%23e0e0e0%22 width=%22120%22 height=%22120%22/%3E%3Ctext fill=%22%23999%22 font-family=%22Arial%22 font-size=%2212%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E';
             
             productCardsHTML += `
                 <a href="${productUrl}" class="chat-product-mini-card" target="_blank">
-                    <div class="chat-product-mini-image">
-                        <img src="${imageUrl}" alt="${product.name}" onerror="this.onerror=null; this.src='${fallbackImage}'">
-                    </div>
                     <div class="chat-product-mini-info">
                         <div class="chat-product-mini-name">${product.name}</div>
-                        <div class="chat-product-mini-price">Rp ${product.formatted_price}</div>
+                        <div class="chat-product-mini-price">Rp ${product.formatted_price || Number(product.price || 0).toLocaleString('id-ID')}</div>
                     </div>
                 </a>
             `;
@@ -1036,7 +1184,7 @@ document.addEventListener('DOMContentLoaded', function() {
         messageDiv.innerHTML = `
             <div class="unified-message-content">
                 <div class="unified-message-bubble">
-                    <p>${text}</p>
+                    <p>${String(text).trim()}</p>
                     ${productCardsHTML}
                     <span class="unified-message-time">${time}</span>
                 </div>
@@ -1055,16 +1203,13 @@ document.addEventListener('DOMContentLoaded', function() {
         products.forEach(product => {
             const productUrl = `/produk/${product.slug || product.id}`;
             const imageUrl = product.image || '/images/no-image.png';
-            const fallbackImage = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"%3E%3Crect fill="%23e0e0e0" width="120" height="120"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="12" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
+            const fallbackImage = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22 viewBox=%220 0 120 120%22%3E%3Crect fill=%22%23e0e0e0%22 width=%22120%22 height=%22120%22/%3E%3Ctext fill=%22%23999%22 font-family=%22Arial%22 font-size=%2212%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E';
             
             productCardsHTML += `
                 <a href="${productUrl}" class="chat-product-mini-card" target="_blank">
-                    <div class="chat-product-mini-image">
-                        <img src="${imageUrl}" alt="${product.name}" onerror="this.onerror=null; this.src='${fallbackImage}'">
-                    </div>
                     <div class="chat-product-mini-info">
                         <div class="chat-product-mini-name">${product.name}</div>
-                        <div class="chat-product-mini-price">Rp ${product.formatted_price}</div>
+                        <div class="chat-product-mini-price">Rp ${product.formatted_price || Number(product.price || 0).toLocaleString('id-ID')}</div>
                     </div>
                 </a>
             `;
@@ -1076,7 +1221,7 @@ document.addEventListener('DOMContentLoaded', function() {
         messageDiv.innerHTML = `
             <div class="unified-message-content">
                 <div class="unified-message-bubble">
-                    <p>${text}</p>
+                    <p>${String(text).trim()}</p>
                     ${productCardsHTML}
                     <span class="unified-message-time">${time}</span>
                 </div>
@@ -1100,7 +1245,7 @@ document.addEventListener('DOMContentLoaded', function() {
             messageDiv.innerHTML = `
                 <div class="unified-message-content">
                     <div class="unified-message-bubble">
-                        <p>${text}</p>
+                        <p>${String(text).trim()}</p>
                     </div>
                 </div>
             `;
@@ -1115,7 +1260,7 @@ document.addEventListener('DOMContentLoaded', function() {
         messageDiv.innerHTML = `
             <div class="unified-message-content">
                 <div class="unified-message-bubble">
-                    <p>${text}</p>
+                    <p>${String(text).trim()}</p>
                     <span class="unified-message-time">${time}</span>
                 </div>
             </div>
@@ -1248,16 +1393,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const productUrl = `/produk/${product.slug || product.id}`;
         const imageUrl = product.image || '/images/no-image.png';
         // Use a simple gray placeholder as data URI to avoid external requests
-        const fallbackImage = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"%3E%3Crect fill="%23e0e0e0" width="120" height="120"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="12" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
+        const fallbackImage = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22 viewBox=%220 0 120 120%22%3E%3Crect fill=%22%23e0e0e0%22 width=%22120%22 height=%22120%22/%3E%3Ctext fill=%22%23999%22 font-family=%22Arial%22 font-size=%2212%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Image%3C/text%3E%3C/svg%3E';
         
         return `
             <a href="${productUrl}" class="chat-product-card" target="_blank">
-                <div class="chat-product-image">
-                    <img src="${imageUrl}" alt="${product.name}" onerror="this.onerror=null; this.src='${fallbackImage}'">
-                </div>
                 <div class="chat-product-info">
                     <div class="chat-product-name">${product.name}</div>
-                    <div class="chat-product-price">Rp ${product.formatted_price}</div>
+                    <div class="chat-product-price">Rp ${product.formatted_price || Number(product.price || product.price_min || 0).toLocaleString('id-ID')}</div>
                     <div class="chat-product-link">Lihat Detail →</div>
                 </div>
             </a>
@@ -1450,4 +1592,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // Periodically check for new messages (every 30 seconds)
     setInterval(fetchUnreadCount, 30000);
 });
+</script>
+
+<!-- Popup mengikuti tinggi layar yang terlihat saat keyboard HP muncul -->
+<script>
+(function () {
+    const popup = document.getElementById('unifiedChatbotPopup');
+    if (!popup || !window.visualViewport) return;
+
+    function fit() {
+        if (window.innerWidth > 480) {
+            popup.style.height = '';
+            popup.style.top = '';
+            popup.style.bottom = '';
+            return;
+        }
+        const vv = window.visualViewport;
+        popup.style.height = vv.height + 'px';
+        popup.style.top = vv.offsetTop + 'px';
+        popup.style.bottom = 'auto';
+    }
+
+    window.visualViewport.addEventListener('resize', fit);
+    window.visualViewport.addEventListener('scroll', fit);
+    fit();
+})();
 </script>

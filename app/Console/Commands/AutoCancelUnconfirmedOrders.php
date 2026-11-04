@@ -59,24 +59,8 @@ class AutoCancelUnconfirmedOrders extends Command
                                         "Auto-cancelled pada " . $now->format('Y-m-d H:i:s') . " karena admin tidak mengkonfirmasi dalam 24 jam."
                     ]);
 
-                    // Restore stock untuk setiap item dalam pesanan
-                    if ($order->items && is_array($order->items)) {
-                        foreach ($order->items as $item) {
-                            if (isset($item['product_id'])) {
-                                // Update product stock
-                                DB::table('products')
-                                    ->where('id', $item['product_id'])
-                                    ->increment('stock', $item['quantity'] ?? 1);
-                            }
-
-                            if (isset($item['variant_id'])) {
-                                // Update variant stock
-                                DB::table('product_variants')
-                                    ->where('id', $item['variant_id'])
-                                    ->increment('stock', $item['quantity'] ?? 1);
-                            }
-                        }
-                    }
+                    // Pesanan 'pending' belum pernah mengurangi stok (stok baru dikurangi saat admin menyetujui),
+                    // sehingga tidak ada stok yang perlu dikembalikan di sini.
 
                     DB::commit();
                     $cancelledCount++;

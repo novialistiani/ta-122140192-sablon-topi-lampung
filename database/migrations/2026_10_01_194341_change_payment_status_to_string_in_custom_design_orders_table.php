@@ -15,3 +15,5 @@
            DB::statement("ALTER TABLE custom_design_orders MODIFY payment_status ENUM('unpaid', 'va_active', 'paid', 'processing', 'failed', 'refunded') DEFAULT 'unpaid'");
        }
    };
+
+   

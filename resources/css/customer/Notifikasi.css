@@ -11,6 +11,7 @@ body {
     color: #333;
 }
 
+
 .container {
     max-width: 1400px;
     margin: 0 auto;
@@ -439,5 +440,161 @@ body {
         right: 20px;
         padding: 12px 20px;
         font-size: 14px;
+    }
+}
+
+/* ===== RAPIKAN HALAMAN NOTIFIKASI ===== */
+#notificationList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+#selectAll {
+    flex-shrink: 0;
+}
+
+.notification-card {
+    width: 100%;
+}
+
+/* baris header: pilih semua kiri, tombol kanan */
+#selectAll:first-child,
+label:has(#selectAll) {
+    margin-right: auto;
+}
+
+div:has(> label > #selectAll) {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between !important;
+    gap: 12px;
+    width: 100%;
+}
+
+/* kotak header selebar daftar kartu */
+div:has(> div > label > #selectAll) {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 16px !important;
+}
+
+@media (max-width: 640px) {
+    #markReadBtn {
+        width: 100%;
+    }
+}
+
+/* ===== NOTIFIKASI MINIMALIS ===== */
+
+/* header: tanpa kotak, satu baris tipis */
+div:has(> div > label > #selectAll) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 4px !important;
+    margin-bottom: 8px !important;
+}
+
+#markReadBtn {
+    background: transparent !important;
+    color: #2563eb !important;
+    box-shadow: none !important;
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+    border-radius: 8px;
+}
+
+#markReadBtn:hover {
+    background: #eff6ff !important;
+}
+
+/* daftar jadi satu panel dengan garis pemisah */
+#notificationList {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    gap: 0 !important;
+    overflow: hidden;
+}
+
+.notification-card {
+    border: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 12px 16px !important;
+    background: #fff;
+}
+
+.notification-card:last-child {
+    border-bottom: none !important;
+}
+
+.notification-card:hover {
+    background: #f8fafc;
+}
+
+/* ikon lebih kecil, tanpa kotak gradasi */
+.notification-card > div > div:nth-child(2) {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+}
+
+.notification-card > div > div:nth-child(2) i {
+    font-size: 14px !important;
+}
+
+.notification-card h3 {
+    font-size: 14px !important;
+    margin-bottom: 2px !important;
+}
+
+.notification-card p {
+    font-size: 13px !important;
+    color: #64748b;
+}
+
+.notification-card span.block {
+    font-size: 11px !important;
+}
+
+/* tombol rincian jadi teks kecil */
+.notification-card a {
+    font-size: 13px !important;
+    padding: 4px 8px !important;
+    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    .notification-card a {
+        width: auto !important;
+        border: none !important;
+        padding: 2px 0 !important;
+    }
+
+    #markReadBtn {
+        width: auto !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .notification-card > div {
+        flex-wrap: wrap !important;
+    }
+
+    .notification-card > div > .flex-1 {
+        flex: 1 1 calc(100% - 90px) !important;
+        min-width: 0;
+    }
+
+    .notification-card a {
+        flex: 0 0 100% !important;
+        margin-left: 74px;
+        padding: 0 !important;
+        text-align: left;
     }
 }

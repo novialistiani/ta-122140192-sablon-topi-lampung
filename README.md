@@ -32,7 +32,7 @@ npm install
 composer dev  # Menjalankan server + queue + vite sekaligus
 ```
 
-Akses aplikasi di: http://127.0.0.1:8000
+Akses sistem di: http://127.0.0.1:8000
 
 ## 📋 Fitur Utama
 

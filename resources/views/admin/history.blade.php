@@ -65,12 +65,13 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                         <input name="q" value="{{ request('q') }}" placeholder="Cari nama produk">
                     </div>
-                    <select name="range" class="range-select" onchange="this.form.submit()">
-                        <option value="30" selected>Rentang : 30 hari</option>
-                        <option value="7">Rentang : 7 hari</option>
-                        <option value="60">Rentang : 60 hari</option>
-                        <option value="90">Rentang : 90 hari</option>
-                    </select>
+                       @php $rangeNow = (int) request('range', 30); @endphp
+                         <select name="range" class="range-select" onchange="this.form.submit()">
+                          <option value="7" {{ $rangeNow === 7 ? 'selected' : '' }}>Rentang : 7 hari</option>
+                          <option value="30" {{ $rangeNow === 30 ? 'selected' : '' }}>Rentang : 30 hari</option>
+                          <option value="60" {{ $rangeNow === 60 ? 'selected' : '' }}>Rentang : 60 hari</option>
+                          <option value="90" {{ $rangeNow === 90 ? 'selected' : '' }}>Rentang : 90 hari</option>
+                         </select>
                 </form>
             </div>
         </div>

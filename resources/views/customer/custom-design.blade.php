@@ -226,7 +226,7 @@
     <!-- Success Notification Modal -->
     <div id="successModal" class="fixed inset-0 hidden items-center justify-center z-50">
         <div class="absolute inset-0 bg-black/40" onclick="closeSuccessModal()"></div>
-        <div class="relative bg-white rounded-2xl shadow-xl max-w-xl w-full mx-4 p-10 text-center">
+        <div class="relative bg-white rounded-2xl shadow-xl max-w-xl w-full mx-4 p-6 sm:p-10 text-center">
             <div class="mx-auto mb-6 w-20 h-20 rounded-full border-4 border-navy-900 text-navy-900 flex items-center justify-center text-4xl font-bold">✓</div>
             <h2 class="text-2xl font-extrabold text-navy-900 mb-2">Pesanan sudah masuk!</h2>
             <p class="text-gray-600">Silahkan cek notifikasi untuk pemberitahuan lebih lanjut</p>
@@ -570,7 +570,7 @@
                 row.className = 'file-uploaded uploaded-item selection-item';
                 row.innerHTML = `
                     <span class="selection-text">${option}</span>
-                    <button type="button" class="remove-file" onclick="removeOption('${type}', '${option}')">⊗</button>
+                    <button type="button" class="remove-file" aria-label="Batal pilih" title="Batal pilih" onclick="removeOption('${type}', '${option}')"><i class="fas fa-times"></i></button>
                 `;
                 container.appendChild(row);
             });

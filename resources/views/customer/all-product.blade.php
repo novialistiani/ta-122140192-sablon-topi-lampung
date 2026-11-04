@@ -38,18 +38,24 @@
         <div class="catalog-inner-container">
             <div class="catalog-layout">
                 <aside class="sidebar">
-                    <div class="filters-card filters-section">
+                    <button type="button" class="filter-toggle-btn" id="filter-toggle">
+    <i class="fas fa-sliders-h"></i> Filter
+</button>
+<script>
+    document.getElementById('filter-toggle').addEventListener('click', function () {
+        document.querySelector('.filters-card').classList.toggle('open');
+    });
+</script>
+<div class="filters-card filters-section">
                         <div class="filter-header">
                             <h5>Filters</h5>
                             <i class="fas fa-sliders-h"></i>
                         </div>
+                        
 
                         <!-- Promo dan lainnya Section -->
                         <div class="filter-checkbox-section">
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="promo-diskon" name="promo" {{ $promoChecked ? 'checked' : '' }}>
-                                <label for="promo-diskon">Dengan diskon</label>
-                            </div>
+                            
                             <div class="checkbox-item">
                                 <input type="checkbox" id="ready-stok" name="ready" {{ $readyChecked ? 'checked' : '' }}>
                                 <label for="ready-stok">Ready stok</label>

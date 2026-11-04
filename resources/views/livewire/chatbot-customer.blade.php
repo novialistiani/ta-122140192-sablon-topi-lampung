@@ -49,9 +49,14 @@
                         </div>
                         <div class="message-time">{{ $message->created_at->format('H:i') }}</div>
                     </div>
-                    <div class="message-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
+                    <div class="message-avatar" style="overflow:hidden;">
+                        @php $av = auth()->user()?->avatar; @endphp
+                    @if($av)
+                     <img src="{{ str_starts_with($av, 'http') ? $av : asset('storage/' . $av) }}" alt="Anda" style="width:100%;height:100%;object-fit:cover;">
+                    @else
+                    <i class="fas fa-user"></i>
+                    @endif
+                </div>
                 </div>
             @elseif($message->sender_type === 'admin')
                 {{-- Admin Message - PENTING: harus ditampilkan dengan styling khusus --}}

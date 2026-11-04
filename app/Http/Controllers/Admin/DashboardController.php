@@ -28,7 +28,7 @@ class DashboardController
         $customPending = CustomDesignOrder::where('status', 'pending')->count();
         
         $stats = [
-            'total_sold' => $regularCompleted + $customCompleted,
+            'total_sold' => $this->countSoldItems(),
             'revenue' => $regularRevenue + $customRevenue,
             'customers' => User::count(),
             'pending_orders' => $regularPending + $customPending,
@@ -44,7 +44,7 @@ class DashboardController
         $currentMonthCustom = CustomDesignOrder::where('status', 'completed')
             ->whereBetween('completed_at', [$currentMonth, now()])
             ->count();
-        $currentMonthSold = $currentMonthRegular + $currentMonthCustom;
+        $currentMonthSold = $this->countSoldItems($currentMonth, now());
         
         $previousMonthRegular = Order::where('status', 'completed')
             ->whereBetween('completed_at', [$previousMonth, $previousMonth->copy()->endOfMonth()])
@@ -52,7 +52,7 @@ class DashboardController
         $previousMonthCustom = CustomDesignOrder::where('status', 'completed')
             ->whereBetween('completed_at', [$previousMonth, $previousMonth->copy()->endOfMonth()])
             ->count();
-        $previousMonthSold = $previousMonthRegular + $previousMonthCustom;
+        $previousMonthSold = $this->countSoldItems($previousMonth, $previousMonth->copy()->endOfMonth());
 
         $soldTrend = $previousMonthSold > 0 
             ? round((($currentMonthSold - $previousMonthSold) / $previousMonthSold) * 100, 1)
@@ -168,7 +168,7 @@ class DashboardController
         $variantCounts = [];
 
         // Ambil semua order, hitung berapa kali tiap variant_id muncul di items
-        $orders = Order::query()->select('items')->get();
+        $orders = Order::query()->where('status', 'completed')->select('items')->get();
         foreach ($orders as $order) {
             $items = is_array($order->items) ? $order->items : json_decode($order->items, true);
             if (!is_array($items)) continue;
@@ -176,7 +176,7 @@ class DashboardController
             foreach ($items as $item) {
                 $variantId = $item['variant_id'] ?? null;
                 if ($variantId === null) continue;
-                $variantCounts[$variantId] = ($variantCounts[$variantId] ?? 0) + 1;
+                $variantCounts[$variantId] = ($variantCounts[$variantId] ?? 0) + (int) ($item['quantity'] ?? 1);
             }
         }
 
@@ -223,7 +223,35 @@ class DashboardController
 
         return $result;
     }
+        /**
+     * Hitung jumlah unit produk yang terjual (bukan jumlah pesanan)
+     * dari pesanan berstatus completed, reguler + custom.
+     */
+    private function countSoldItems($from = null, $to = null): int
+    {
+        $total = 0;
 
+        $regular = Order::where('status', 'completed')
+            ->when($from && $to, fn ($q) => $q->whereBetween('completed_at', [$from, $to]))
+            ->get(['items']);
+
+        foreach ($regular as $order) {
+            $items = $order->items;
+            if (is_string($items)) $items = json_decode($items, true);
+            if (is_string($items)) $items = json_decode($items, true);
+            if (!is_array($items)) continue;
+
+            foreach ($items as $item) {
+                $total += (int) ($item['quantity'] ?? 0);
+            }
+        }
+
+        $total += (int) CustomDesignOrder::where('status', 'completed')
+            ->when($from && $to, fn ($q) => $q->whereBetween('completed_at', [$from, $to]))
+            ->sum('quantity');
+
+        return $total;
+    }
     /**
      * Get dashboard stats via API (for real-time updates)
      */
@@ -239,7 +267,7 @@ class DashboardController
         $customPending = CustomDesignOrder::where('status', 'pending')->count();
         
         $stats = [
-            'total_sold' => $regularCompleted + $customCompleted,
+            'total_sold' => $this->countSoldItems(),
             'revenue' => $regularRevenue + $customRevenue,
             'customers' => User::count(),
             'pending_orders' => $regularPending + $customPending,
@@ -320,7 +348,7 @@ class DashboardController
             ->get()
             ->map(function ($order) {
                 return [
-                    'id' => $order->order_number,
+                    'id' => $order->order_number, 'order_id' => $order->id,
                     'product' => $order->items[0]['name'] ?? 'N/A',
                     'customer' => $order->user->name ?? 'N/A',
                     'date' => $order->created_at->format('M d, Y'),
@@ -338,7 +366,7 @@ class DashboardController
             ->get()
             ->map(function ($order) {
                 return [
-                    'id' => 'CDO-' . str_pad($order->id, 5, '0', STR_PAD_LEFT),
+                    'id' => 'CDO-' . str_pad($order->id, 5, '0', STR_PAD_LEFT), 'order_id' => $order->id,
                     'product' => $order->product_name ?? 'Custom Design',
                     'customer' => $order->user->name ?? 'N/A',
                     'date' => $order->created_at->format('M d, Y'),

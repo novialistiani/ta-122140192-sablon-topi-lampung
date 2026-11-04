@@ -596,3 +596,174 @@
         padding-bottom: 16px;
     }
 }
+
+
+
+/* tinggi mengikuti pembungkus, bukan dihitung ulang */
+.chatbot-customer-wrapper {
+    height: 100% !important;
+    max-height: none !important;
+}
+
+/* header biru tua + garis kuning */
+.chatbot-header-bar {
+    background: linear-gradient(135deg, #001F3F 0%, #003366 100%);
+    border-bottom: 3px solid #facc15;
+    padding: 10px 16px;
+}
+.chatbot-header-avatar { background: transparent; width: 44px; height: 44px; }
+.chatbot-header-avatar img { object-fit: contain; }
+.chatbot-header-name { color: #ffffff; }
+.chatbot-header-status { color: rgba(255, 255, 255, 0.85); }
+
+/* area chat */
+.chatpage-messages { background: #f1f5f9; padding: 16px; }
+
+/* bubble bot: putih */
+.bot-message .message-bubble {
+    background: #ffffff;
+    color: #1f2937;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 31, 63, 0.08);
+}
+.bot-message .message-avatar { background: #001F3F; color: #facc15; }
+
+/* bubble user: biru tua */
+.user-message .message-bubble {
+    background: linear-gradient(135deg, #003366 0%, #001F3F 100%);
+    color: #ffffff;
+}
+.user-message .message-avatar { background: #facc15; color: #001F3F; }
+
+/* ukuran teks lebih nyaman dibaca */
+.message-text { font-size: 14px; line-height: 1.5; }
+.message-time { font-size: 11px; }
+
+/* kartu produk di bubble bot (bubble sekarang putih) */
+.product-recommendations { border-top: 1px solid #e2e8f0; }
+.product-card-mini {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #001F3F;
+}
+.product-card-mini:hover { background: #fffbeb; border-color: #facc15; }
+.product-name { color: #001F3F; }
+.product-price { color: #e53935; font-weight: 700; }
+.product-card-mini > i { color: #64748b; }
+
+/* kartu produk di atas bubble user */
+.product-context-preview-customer {
+    background: #001F3F;
+    border: 1px solid #003366;
+    color: #ffffff;
+}
+.product-context-preview-customer:hover { background: #003366; }
+
+/* quick reply kuning */
+.quick-reply-btn {
+    background: #fffbeb;
+    border: 1px solid #facc15;
+    color: #001F3F;
+    font-weight: 500;
+}
+.quick-reply-btn:hover { background: #facc15; color: #001F3F; border-color: #facc15; }
+
+/* input dan tombol kirim */
+.chatpage-input:focus {
+    border-color: #facc15;
+    box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25);
+}
+.chatpage-send { background: #facc15; color: #001F3F; }
+.chatpage-send:hover:not(:disabled) { background: #fbbf24; }
+.chatpage-send:disabled { background: #e2e8f0; color: #94a3b8; }
+
+/* ---------- HP dan tablet ---------- */
+@media (max-width: 768px) {
+    .chatbot-customer-wrapper { height: 100% !important; }
+
+    .chatbot-header-bar { padding: 8px 12px; }
+
+    .chatpage-messages { padding: 12px 10px; }
+
+    .message-content { max-width: 82%; min-width: 0; }
+
+    .message-text { font-size: 14px; }
+
+    .message-avatar { width: 30px; height: 30px; font-size: 13px; }
+
+    /* quick reply satu baris, bisa digeser */
+    .quick-replies {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding: 8px 10px;
+        -webkit-overflow-scrolling: touch;
+    }
+    .quick-reply-btn { flex: 0 0 auto; white-space: nowrap; font-size: 12px; }
+
+    /* input dan tombol kirim sebaris */
+    .chatpage-input-wrapper {
+        padding: 8px 10px;
+        padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    }
+    .chatpage-input-container { flex-direction: row; gap: 8px; }
+    .chatpage-input { min-width: 0; font-size: 16px; padding: 11px 14px; }
+    .chatpage-send { width: 42px; height: 42px; padding: 0; flex-shrink: 0; }
+}
+
+.chatpage-chat {
+    height: 100% !important;
+    min-height: 0 !important;
+    flex: 1 1 auto;
+}
+
+/* pembungkus Livewire (wire:poll) harus ikut tinggi penuh */
+.chatpage-chat > div {
+    height: 100%;
+    min-height: 0;
+}
+
+.chatbot-customer-wrapper {
+    height: 100% !important;
+    max-height: none !important;
+    min-height: 0;
+}
+
+.chatpage-messages {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+.message {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.chatpage-container,
+.chatpage-chat,
+.chatpage-chat > div,
+.chatbot-customer-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.chatpage-messages,
+.chatpage-input-wrapper,
+.chatpage-input-container,
+.quick-replies {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.chatpage-input-wrapper {
+    left: auto !important;
+    right: auto !important;
+}

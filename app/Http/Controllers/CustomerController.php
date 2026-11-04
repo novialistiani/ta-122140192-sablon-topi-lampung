@@ -424,7 +424,13 @@ class CustomerController extends Controller
         return redirect()->route('order-list')->with('error', 'Pesanan tidak ditemukan atau belum disetujui');
     }
 
-    $qris = \App\Models\PaymentSettings::first();
+    if (!in_array($order->payment_status, ['pending_verification', 'paid'])
+    && !empty($order->payment_deadline)
+    && \Carbon\Carbon::parse($order->payment_deadline)->isPast()) {
+    return redirect()->route('order-list')->with('error', 'Waktu pembayaran telah habis. Pesanan akan dibatalkan otomatis.');
+}
+
+$qris = \App\Models\PaymentSettings::first();
 
     return view('customer.pemesanan', compact('orderType', 'orderId', 'order', 'amount', 'qris'));
 }
@@ -893,7 +899,13 @@ public function submitPickupPayment(Request $request)
                 ->where('status', 'approved')
                 ->firstOrFail();
         }
-                // Cegah upload ulang selama menunggu verifikasi atau sudah lunas
+                // Tolak jika batas waktu pembayaran sudah lewat
+        if (!empty($order->payment_deadline) && \Carbon\Carbon::parse($order->payment_deadline)->isPast()) {
+            return redirect()->route('order-list')
+                ->with('error', 'Waktu pembayaran telah habis, bukti pembayaran tidak dapat dikirim.');
+        }
+
+        // Cegah upload ulang selama menunggu verifikasi atau sudah lunas
         if (in_array($order->payment_status, ['pending_verification', 'paid'])) {
             return redirect()->route('order-list')
                 ->with('error', 'Bukti pembayaran sudah dikirim dan sedang diverifikasi admin.');
@@ -1591,7 +1603,55 @@ $pricePerItem = $variant ? (float) $variant->price : (float) $product->price;
         
         return view('customer.order-detail', compact('order', 'type'));
     }
+        /**
+     * Tampilkan invoice pesanan (hanya untuk pesanan yang sudah dibayar)
+     */
+    public function orderInvoice($type, $id)
+    {
+        $user = auth()->user();
 
+        if ($type === 'custom') {
+            $order = \App\Models\CustomDesignOrder::where('user_id', $user->id)->findOrFail($id);
+        } else {
+            $order = \App\Models\Order::where('user_id', $user->id)->findOrFail($id);
+        }
+
+        if (($order->payment_status ?? null) !== 'paid') {
+            return redirect()
+                ->route('order-detail', ['type' => $type, 'id' => $id])
+                ->with('error', 'Invoice hanya tersedia setelah pembayaran dikonfirmasi admin.');
+        }
+
+        if ($type === 'custom') {
+            $lines = [[
+                'name' => $order->product_name,
+                'detail' => 'Custom Design - ' . ($order->cutting_type ?? '-'),
+                'quantity' => (int) ($order->quantity ?? 1),
+                'price' => (float) $order->product_price,
+                'subtotal' => (float) $order->total_price,
+            ]];
+            $total = (float) $order->total_price;
+        } else {
+            $lines = collect($order->items)->values()->map(function ($item) {
+                $detail = collect([$item['color'] ?? null, $item['size'] ?? null])
+                    ->filter()
+                    ->implode(' / ');
+
+                return [
+                    'name' => $item['name'] ?? '-',
+                    'detail' => $detail !== '' ? $detail : '-',
+                    'quantity' => (int) ($item['quantity'] ?? 1),
+                    'price' => (float) ($item['price'] ?? 0),
+                    'subtotal' => (float) ($item['price'] ?? 0) * (int) ($item['quantity'] ?? 1),
+                ];
+            })->all();
+            $total = (float) $order->total;
+        }
+
+        $invoiceNumber = 'INV-' . ($type === 'custom' ? 'C' : 'R') . str_pad($order->id, 5, '0', STR_PAD_LEFT);
+
+        return view('customer.invoice', compact('order', 'type', 'user', 'lines', 'total', 'invoiceNumber'));
+    }
     /**
      * Cancel an order
      */

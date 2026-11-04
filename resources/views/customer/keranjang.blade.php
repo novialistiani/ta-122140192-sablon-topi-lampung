@@ -33,7 +33,7 @@
                             $subtotal = $cartItems->sum(fn($item) => $item['price'] * $item['quantity']);
                         @endphp
 
-                        <div class="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <div class="mb-6 rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm">
                             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                 <div>
                                     <h2 class="text-lg font-semibold text-slate-900">Keranjangmu</h2>
@@ -53,15 +53,15 @@
                         </div>
 
                         <div id="cart-content" class="bg-white rounded-lg shadow-sm border border-slate-200" data-subtotal="{{ $subtotal }}">
-                            <div class="grid grid-cols-12 gap-4 p-4 border-b border-slate-200 bg-slate-50 text-sm font-semibold text-slate-700">
-                                <div class="col-span-1 flex items-center justify-center">
+                            <div class="hidden md:grid grid-cols-12 gap-4 p-4 border-b border-slate-200 bg-slate-50 text-sm font-semibold text-slate-700">
+                                <div class="col-span-2 md:col-span-1 flex items-center justify-center">
                                     <input type="checkbox" id="select-all-top" class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-400">
                                 </div>
                                 <div class="col-span-4 flex items-center">Semua Produk</div>
-                                <div class="col-span-2 text-center">Harga Satuan</div>
-                                <div class="col-span-2 text-center">Kuantitas</div>
-                                <div class="col-span-2 text-center">Total Harga</div>
-                                <div class="col-span-1 text-center">Aksi</div>
+                                <div class="col-span-6 md:col-span-2 text-left md:text-center">Harga Satuan</div>
+                                <div class="col-span-6 md:col-span-2 text-left md:text-center">Kuantitas</div>
+                                <div class="col-span-6 md:col-span-2 text-left md:text-center">Total Harga</div>
+                                <div class="col-span-6 md:col-span-1 text-right md:text-center">Aksi</div>
                             </div>
 
                             <div id="cart-items" class="divide-y divide-slate-200">
@@ -70,11 +70,11 @@
                                         $imageUrl = $item['image'] ? (filter_var($item['image'], FILTER_VALIDATE_URL) ? $item['image'] : asset('storage/' . $item['image'])) : 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27400%27%3E%3Crect fill=%27%23f0f0f0%27 width=%27400%27 height=%27400%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 font-size=%2724%27 fill=%27%23999%27 text-anchor=%27middle%27 dy=%27.3em%27%3ENo Image%3C/text%3E%3C/svg%3E';
                                         $lineTotal = $item['price'] * $item['quantity'];
                                     @endphp
-                                    <div class="cart-item grid grid-cols-12 gap-4 p-4 hover:bg-slate-50 transition items-center" data-key="{{ $item['key'] }}" data-price="{{ $item['price'] }}" data-quantity="{{ $item['quantity'] }}">
-                                        <div class="col-span-1 flex items-center justify-center">
+                                    <div class="cart-item grid grid-cols-12 gap-x-3 gap-y-3 p-3 md:gap-4 md:p-4 hover:bg-slate-50 transition items-center" data-key="{{ $item['key'] }}" data-price="{{ $item['price'] }}" data-quantity="{{ $item['quantity'] }}">
+                                        <div class="col-span-2 md:col-span-1 flex items-center justify-center">
                                             <input type="checkbox" class="item-checkbox h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-400" checked>
                                         </div>
-                                        <div class="col-span-4 flex items-center gap-4">
+                                        <div class="col-span-10 md:col-span-4 flex items-center gap-3 md:gap-4 min-w-0">
                                             <div class="w-16 h-16 bg-slate-100 rounded-lg overflow-hidden">
                                                 <img src="{{ $imageUrl }}" alt="{{ $item['name'] }}" class="h-full w-full object-cover">
                                             </div>
@@ -93,11 +93,11 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <div class="col-span-2 text-center">
+                                        <div class="col-span-6 md:col-span-2 text-left md:text-center">
                                             <span class="text-sm text-slate-900">{{ $formatCurrency($item['price']) }}</span>
                                         </div>
-                                        <div class="col-span-2 flex justify-center">
-                                            <form method="POST" action="{{ route('cart.update', $item['key']) }}" class="inline-flex items-center rounded-xl border border-slate-200 bg-white">
+                                        <div class="col-span-6 md:col-span-2 flex justify-end md:justify-center">
+                                            <form method="POST" action="{{ route('cart.update', $item['key']) }}" class="inline-flex max-w-full flex-wrap items-center rounded-xl border border-slate-200 bg-white">
                                                 @csrf
                                                 @method('PATCH')
                                                 <button type="button" class="quantity-btn px-2 py-1 text-slate-600 hover:bg-slate-50" data-action="decrease">−</button>
@@ -107,10 +107,10 @@
                                                 <button type="button" class="ml-2 hidden rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 transition cancel-quantity">Batal</button>
                                             </form>
                                         </div>
-                                        <div class="col-span-2 text-center">
+                                        <div class="col-span-6 md:col-span-2 text-left md:text-center">
                                             <span class="text-sm font-medium text-slate-900 line-total">{{ $formatCurrency($lineTotal) }}</span>
                                         </div>
-                                        <div class="col-span-1 text-center">
+                                        <div class="col-span-6 md:col-span-1 text-right md:text-center">
                                             <form method="POST" action="{{ route('cart.remove', $item['key']) }}" class="inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -122,8 +122,8 @@
                             </div>
 
                             <div class="p-4 border-t border-slate-200 bg-white">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-4">
+                                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                    <div class="flex flex-wrap items-center gap-3 md:gap-4">
                                         <input type="checkbox" id="select-all-bottom" class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-400">
                                         <label for="select-all-bottom" class="text-sm text-slate-700">
                                             Pilih semua <span id="item-count-text">({{ $totalItems }})</span>
@@ -132,7 +132,7 @@
                                             Hapus
                                         </button>
                                     </div>
-                                    <div class="flex items-center gap-8">
+                                    <div class="flex items-center justify-between gap-4 md:gap-8">
                                         <div class="text-right">
                                             <div class="text-xs text-slate-500 mb-1">
                                                 Total <span id="subtotal-label"></span>
@@ -143,7 +143,7 @@
                                         </div>
                                         <form method="POST" action="{{ route('checkout') }}" style="display: inline;">
                                             @csrf
-                                            <button id="checkout-btn" type="submit" class="px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-semibold rounded-lg transition flex items-center gap-2">
+                                            <button id="checkout-btn" type="submit" class="px-5 md:px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-semibold rounded-lg transition flex items-center gap-2">
                                                 Checkout <span id="checkout-count" class="bg-slate-900 text-white text-xs px-2 py-0.5 rounded">({{ $totalItems }})</span>
                                             </button>
                                         </form>
@@ -160,6 +160,30 @@
                 </div>
 
     <style>
+        /* Grid baris keranjang */
+        #cart-items .cart-item {
+            display: grid !important;
+            grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+            column-gap: 12px;
+            row-gap: 12px;
+            align-items: center;
+        }
+        #cart-items .cart-item > :nth-child(1) { grid-column: span 1 / span 1 !important; }
+        #cart-items .cart-item > :nth-child(2) { grid-column: span 4 / span 4 !important; min-width: 0; }
+        #cart-items .cart-item > :nth-child(3) { grid-column: span 2 / span 2 !important; text-align: center; }
+        #cart-items .cart-item > :nth-child(4) { grid-column: span 2 / span 2 !important; justify-content: center; }
+        #cart-items .cart-item > :nth-child(5) { grid-column: span 2 / span 2 !important; text-align: center; }
+        #cart-items .cart-item > :nth-child(6) { grid-column: span 1 / span 1 !important; text-align: center; }
+
+        @media (max-width: 767px) {
+            #cart-items .cart-item > :nth-child(1) { grid-column: span 2 / span 2 !important; }
+            #cart-items .cart-item > :nth-child(2) { grid-column: span 10 / span 10 !important; }
+            #cart-items .cart-item > :nth-child(3) { grid-column: span 6 / span 6 !important; text-align: left; }
+            #cart-items .cart-item > :nth-child(4) { grid-column: span 6 / span 6 !important; justify-content: flex-end; }
+            #cart-items .cart-item > :nth-child(5) { grid-column: span 6 / span 6 !important; text-align: left; }
+            #cart-items .cart-item > :nth-child(6) { grid-column: span 6 / span 6 !important; text-align: right; }
+        }
+
         /* Modal Styles */
         #address-modal {
             backdrop-filter: blur(4px);
@@ -215,3 +239,4 @@
 
     @stack('scripts')
 </x-customer-layout>
+

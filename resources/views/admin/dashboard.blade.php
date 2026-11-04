@@ -57,7 +57,7 @@
                             <span class="stat-badge-up">
                                 <i class="fas fa-arrow-up"></i> Terdaftar
                             </span>
-                            <span class="stat-label-small">Pelanggan yang terverifikasi</span>
+                            <span class="stat-label-small">Pelanggan Terdaftar</span>
                         </div>
                     </div>
                 </div>
@@ -70,9 +70,6 @@
             <div class="chart-card">
                 <div class="chart-header">
                     <h2 class="chart-title">Grafik Penjualan</h2>
-                    <button class="chart-menu-btn">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
                 </div>
                 <div class="chart-wrapper">
                     <canvas id="salesChart"></canvas>
@@ -83,9 +80,6 @@
             <div class="chart-card">
                 <div class="chart-header">
                     <h2 class="chart-title">Produk Terlaris</h2>
-                    <button class="chart-menu-btn">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
                 </div>
                 <div class="product-list">
                     @forelse($topProducts ?? [] as $product)
@@ -112,18 +106,14 @@
         <div class="table-card">
             <div class="table-header">
                 <h2 class="chart-title">Pesanan Terbaru</h2>
-                <button class="chart-menu-btn">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
+                
             </div>
 
             <div style="overflow-x: auto;">
                 <table class="orders-table">
                     <thead>
                         <tr>
-                            <th class="table-checkbox-cell">
-                                <input type="checkbox">
-                            </th>
+                            
                             <th class="table-th">Produk</th>
                             <th class="table-th">ID Pesanan</th>
                             <th class="table-th">Tanggal</th>

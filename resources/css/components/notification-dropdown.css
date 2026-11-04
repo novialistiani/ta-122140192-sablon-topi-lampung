@@ -266,12 +266,20 @@
 }
 
 /* Mobile Responsive */
-@media (max-width: 480px) {
+@media (max-width: 1023px) {
     .notification-dropdown {
-        width: calc(100vw - 32px);
-        left: 50%;
-        right: auto;
-        transform: translateX(-50%);
+        position: fixed;
+        top: 64px;
+        left: auto;
+        right: 8px;
+        width: min(380px, calc(100vw - 16px));
+        max-width: none;
+        transform: none;
+        animation: none;
+    }
+
+    .notification-dropdown__body {
+        max-height: 60vh;
     }
     
     .notification-dropdown__header h3 {

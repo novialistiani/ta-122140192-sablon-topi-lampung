@@ -68,7 +68,7 @@
                 @endif
 
                 <!-- QRIS -->
-                <section class="payment-section mb-6">
+                <section id="qris-section" class="payment-section mb-6">
                     <h2 class="section-title">Pembayaran via QRIS</h2>
                     <div class="p-4 bg-white rounded-lg border border-slate-200 text-center">
                         @if($qris && $qris->qris_image)
@@ -81,7 +81,7 @@
                 </section>
 
                 <!-- Form Upload Bukti Pembayaran + Tanggal Pengambilan -->
-                <form action="{{ route('pemesanan.submit-payment') }}" method="POST" enctype="multipart/form-data" class="payment-section">
+                <form action="{{ route('pemesanan.submit-payment') }}" method="POST" enctype="multipart/form-data" id="payment-form" class="payment-section">
                     @csrf
                     <input type="hidden" name="order_type" value="{{ $orderType }}">
                     <input type="hidden" name="order_id" value="{{ $orderId }}">
@@ -126,6 +126,10 @@
 
             if (distance <= 0) {
                 el.textContent = 'Waktu habis';
+                ['qris-section', 'payment-form'].forEach(function (id) {
+                    var x = document.getElementById(id);
+                    if (x) x.style.display = 'none';
+                });
                 clearInterval(countdownInterval);
                 return;
             }

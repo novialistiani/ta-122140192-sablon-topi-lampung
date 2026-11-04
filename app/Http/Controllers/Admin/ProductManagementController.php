@@ -14,6 +14,7 @@ use Intervention\Image\Drivers\Gd\Driver;
 
 class ProductManagementController extends Controller
 {
+        use \App\Traits\StockManagementTrait;
     /**
      * Display the product management page
      */
@@ -335,6 +336,11 @@ class ProductManagementController extends Controller
             }
 
             $product = Product::create($data);
+        try {
+            \App\Models\Admin::logActivity('created', 'Admin menambahkan produk: ' . $product->name, null, $product);
+        } catch (\Throwable $e) {
+            \Log::warning('Gagal mencatat log produk: ' . $e->getMessage());
+        }
 
             // Handle variants
             if ($request->filled('variants')) {
@@ -370,11 +376,17 @@ class ProductManagementController extends Controller
                             }
                         }
 
-                        ProductVariant::create($variant);
+                        $createdVariant = ProductVariant::create($variant);
+                        if ((int) $createdVariant->stock > 0) {
+                            $this->recordStockMovement($product, $createdVariant, (int) $createdVariant->stock, 0, (int) $createdVariant->stock, 'initial_stock', null, 'Stok awal varian');
+                        }
                     }
                 }
             }
-
+            // Produk tanpa varian: catat stok awal di level produk
+            if (!$product->variants()->exists() && (int) $product->stock > 0) {
+                $this->recordStockMovement($product, null, (int) $product->stock, 0, (int) $product->stock, 'initial_stock', null, 'Stok awal produk');
+            }
             // Load variants relationship
             $product->load('variants');
 
@@ -496,8 +508,36 @@ class ProductManagementController extends Controller
             }
 
             // Update product within transaction
-            \DB::transaction(function () use ($product, $data, $request) {
+             $oldProductStock = (int) $product->stock;
+
+            \DB::transaction(function () use ($product, $data, $request, $oldProductStock) {
+                $fmt = fn ($v) => is_numeric($v) ? number_format((float) $v, 0, ',', '.') : $v;
+                $labels = ['name' => 'nama', 'category' => 'kategori', 'price' => 'harga', 'stock' => 'stok'];
+                $before = $product->only(array_keys($labels));
                 $product->update($data);
+                $changeList = [];
+                foreach ($labels as $field => $label) {
+                    $old = $before[$field] ?? null;
+                    $new = $product->{$field};
+                    $same = (is_numeric($old) && is_numeric($new)) ? ((float) $old == (float) $new) : ((string) $old === (string) $new);
+                    if (!$same) {
+                        $changeList[] = $label . ' dari ' . $fmt($old) . ' menjadi ' . $fmt($new);
+                    }
+                }
+                $changeText = $changeList ? ' (' . implode('; ', $changeList) . ')' : '';
+                try {
+                    \App\Models\Admin::logActivity('updated', 'Admin mengubah produk: ' . $product->name . $changeText, null, $product);
+                } catch (\Throwable $e) {
+                    \Log::warning('Gagal mencatat log produk: ' . $e->getMessage());
+                }
+
+                // Produk tanpa varian: catat perubahan stok di level produk
+                if (!$request->filled('variants') && !$product->variants()->exists()) {
+                    $productStockChange = (int) $product->stock - $oldProductStock;
+                    if ($productStockChange !== 0) {
+                        $this->recordStockMovement($product, null, $productStockChange, $oldProductStock, (int) $product->stock, 'manual_adjustment', null, 'Perubahan stok produk oleh admin');
+                    }
+                }
 
                 // Handle custom design prices
                 if ($request->filled('custom_design_prices') && $data['custom_design_allowed']) {
@@ -534,6 +574,7 @@ class ProductManagementController extends Controller
 
                     $variants = json_decode($request->variants, true);
                     $processedKeys = [];
+                    $variantChanges = [];
 
                     if (is_array($variants)) {
                         foreach ($variants as $index => $variantData) {
@@ -565,18 +606,45 @@ class ProductManagementController extends Controller
                                     // Gak ada gambar baru, jangan timpa gambar lama
                                     unset($variantFields['image']);
                                 }
+                                 $stockBefore = (int) $existingVariant->stock;
+                                $priceBefore = (float) $existingVariant->price;
                                 $existingVariant->update($variantFields);
+                                $varLabel = $existingVariant->color . '/' . $existingVariant->size;
+                                if ((float) $existingVariant->price != $priceBefore) {
+                                    $variantChanges[] = 'varian ' . $varLabel . ' harga dari ' . number_format($priceBefore, 0, ',', '.') . ' menjadi ' . number_format((float) $existingVariant->price, 0, ',', '.');
+                                }
+                                if ((int) $existingVariant->stock !== $stockBefore) {
+                                    $variantChanges[] = 'varian ' . $varLabel . ' stok dari ' . $stockBefore . ' menjadi ' . (int) $existingVariant->stock;
+                                }
+                                $stockChange = (int) $existingVariant->stock - $stockBefore;
+                                if ($stockChange !== 0) {
+                                    $this->recordStockMovement($product, $existingVariant, $stockChange, $stockBefore, (int) $existingVariant->stock, 'manual_adjustment', null, 'Perubahan stok varian oleh admin');
+                                }
                             } else {
                                 // Kombinasi baru -> baru bikin row baru
                                 $variantFields['product_id'] = $product->id;
-                                ProductVariant::create($variantFields);
+                                $newVariant = ProductVariant::create($variantFields);
+                                if ((int) $newVariant->stock > 0) {
+                                    $this->recordStockMovement($product, $newVariant, (int) $newVariant->stock, 0, (int) $newVariant->stock, 'initial_stock', null, 'Stok awal varian baru');
+                                }
                             }
+                        }
+                    }
+
+                    if (!empty($variantChanges)) {
+                        try {
+                            \App\Models\Admin::logActivity('updated', 'Admin mengubah varian produk: ' . $product->name . ' (' . implode('; ', $variantChanges) . ')', null, $product);
+                        } catch (\Throwable $e) {
+                            \Log::warning('Gagal mencatat log varian: ' . $e->getMessage());
                         }
                     }
 
                     // Hapus variant yang benar-benar sudah tidak ada lagi di form
                     foreach ($oldVariants as $key => $oldVariant) {
                         if (!in_array($key, $processedKeys)) {
+                                                        if ((int) $oldVariant->stock !== 0) {
+                                $this->recordStockMovement($product, $oldVariant, -(int) $oldVariant->stock, (int) $oldVariant->stock, 0, 'manual_adjustment', null, 'Varian dihapus oleh admin');
+                            }
                             $oldVariant->delete();
                         }
                     }
@@ -604,6 +672,12 @@ class ProductManagementController extends Controller
         try {
             $product = Product::findOrFail($id);
             
+            try {
+                \App\Models\Admin::logActivity('deleted', 'Admin menghapus produk: ' . $product->name, null, $product);
+            } catch (\Throwable $e) {
+                \Log::warning('Gagal mencatat log produk: ' . $e->getMessage());
+            }
+
             // Delete associated images
             if ($product->images) {
                 foreach ($product->images as $image) {

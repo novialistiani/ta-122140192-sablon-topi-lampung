@@ -67,7 +67,7 @@
                 @endforelse
                 </div>
             </div>
-            <button class="view-all-btn">View All</button>
+            <button class="view-all-btn" onclick="window.location.href='{{ url('/all-products') }}'">View All</button>
         </div>
     </section>
 
@@ -93,7 +93,7 @@
                 </div>
             </div>
         </div>
-        <button class="view-all-btn top-selling-view-all">View All</button>
+        <button class="view-all-btn top-selling-view-all" onclick="window.location.href='{{ url('/all-products') }}'">View All</button>
     </section>
 
     

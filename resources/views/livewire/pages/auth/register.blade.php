@@ -57,6 +57,16 @@ $register = function () {
 ?>
 
 <div style="min-height: 100vh; background-color: #f5f5f5; display: flex; flex-direction: column;">
+    <style>
+        @media (max-width: 640px) {
+            .reg-card { padding: 24px 16px !important; }
+            .reg-grid-2 { grid-template-columns: 1fr !important; gap: 12px !important; }
+            .reg-card input[type="text"],
+            .reg-card input[type="tel"],
+            .reg-card input[type="email"],
+            .reg-card input[type="password"] { font-size: 16px !important; }
+        }
+    </style>
     <!-- Top Bar -->
     <div style="background-color: #1a2942; padding: 12px 40px; display: flex; justify-content: flex-end; align-items: center;">
         <a href="{{ route('admin.login') }}" style="color: #fff; text-decoration: none; display: flex; align-items: center; gap: 6px; font-size: 13px; border-left: 2px solid rgba(255, 255, 255, 0.3); padding-left: 16px;">
@@ -77,7 +87,7 @@ $register = function () {
         </div>
 
         <!-- Register Card -->
-        <div style="background-color: #fff; border-radius: 16px; padding: 40px 50px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); width: 100%; max-width: 700px;">
+        <div class="reg-card" style="background-color: #fff; border-radius: 16px; padding: 40px 50px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); width: 100%; max-width: 700px;">
             
             <!-- Error Notification -->
             @if (session('error'))
@@ -89,7 +99,7 @@ $register = function () {
 
             <form wire:submit="register" style="margin: 0;">
                 <!-- Name Row -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;">
+                <div class="reg-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;">
                     <div>
                         <input wire:model="name" type="text" placeholder="Nama Depan" required
                                style="width: 100%; padding: 12px 16px; border: 1px solid #d0d0d0; border-radius: 8px; font-size: 14px;">
@@ -150,7 +160,7 @@ $register = function () {
 
                 <!-- Terms -->
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <p style="font-size: 13px; color: #ffc107; line-height: 1.6;">
+                    <p style="font-size: 13px; color: #666; line-height: 1.6;">
                         Dengan menekan tombol Daftar, Anda setuju dengan Ketentuan,<br>
                         Kebijakan Privasi, serta Kebijakan Cookie yang berlaku di LGI STORE.
                     </p>
