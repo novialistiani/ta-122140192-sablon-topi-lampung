@@ -429,3 +429,304 @@
 .status-completed::before { 
     background-color: #8b5cf6; 
 }
+
+/* ===== ORDER MANAGEMENT: RESPONSIF HP & IPAD ===== */
+
+/* Tabel: lebar tetap, digeser horizontal di layar kecil */
+.orders-table { min-width: 880px; }
+.orders-table td { white-space: nowrap; }
+.product-col { min-width: 200px; }
+.table-responsive { -webkit-overflow-scrolling: touch; }
+
+/* Tablet & laptop kecil (iPad): filter boleh turun baris */
+@media (max-width: 1200px) {
+    .controls-section {
+        flex-wrap: wrap !important;
+        justify-content: flex-start !important;
+    }
+    .filter-select { flex: 1 1 calc(33% - 12px); min-width: 140px; }
+    .date-input { flex: 1 1 130px; width: auto; min-width: 0; }
+}
+
+/* HP & iPad portrait */
+@media (max-width: 768px) {
+    .controls-section { padding: 12px; gap: 10px; }
+    .filter-select { flex: 1 1 100%; width: 100%; }
+    .date-input { flex: 1 1 0; min-width: 0; width: auto; }
+    .controls-section .btn-icon { flex: 1 1 0; width: auto; }
+
+    .card-header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px 0;
+    }
+    .header-actions {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+    .header-actions .search-box { width: 100%; }
+    .header-actions .btn-success { width: 100%; }
+
+    .orders-table th,
+    .orders-table td { padding: 12px 10px; }
+
+    .action-btn { padding: 12px; }
+    .dropdown-item { padding: 12px 16px !important; }
+
+    .pagination-container {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px 0;
+        text-align: center;
+    }
+
+    /* modal muat di layar pendek */
+    .modal { overflow-y: auto; }
+    .modal .modal-content { margin: 8vh auto !important; width: 94%; }
+}
+
+/* ===== ORDER MANAGEMENT: TINDAKAN MENEMPEL + RAPATKAN JARAK ===== */
+@media (max-width: 1024px) {
+    .orders-table th.actions-col,
+    .orders-table td.actions-col {
+        position: sticky;
+        right: 0;
+        z-index: 2;
+        background: #f8f9fa; /* samakan dengan latar halaman */
+        box-shadow: -6px 0 8px -6px rgba(0, 0, 0, 0.18);
+    }
+    .orders-table tbody tr:hover td.actions-col {
+        background: var(--gray-100);
+    }
+}
+
+@media (max-width: 768px) {
+    .controls-section { margin-bottom: 12px; }
+    .card-header { padding-top: 0; }
+}
+.orders-table td.actions-col:has(.action-dropdown.active) {
+    z-index: 50 !important;
+}
+.orders-table td.actions-col .action-btn {
+    position: relative;
+    z-index: 1;
+    touch-action: manipulation;
+}
+
+/* ===== ORDER DETAIL: RESPONSIF HP & IPAD ===== */
+.order-detail-container .card-body,
+.order-detail-container .detail-card { overflow-x: auto; }
+
+@media (max-width: 992px) {
+    .order-detail-container { max-width: 100% !important; padding: 8px 0 !important; }
+
+    .order-grid,
+    .order-grid-compact {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    /* slider/preview tidak menempel dan tidak melebihi layar */
+    .order-grid > div,
+    .order-grid-compact > div { position: static !important; min-width: 0; }
+    .product-preview-slider { margin: 0 auto; max-width: 100%; height: 260px; }
+    .order-grid-compact > div > div[style*="max-width: 300px"] { max-width: 100% !important; }
+}
+
+@media (max-width: 768px) {
+    .order-detail-container .card-body { padding: 12px !important; }
+
+    /* semua tabel di dalam kartu detail bisa digeser, tidak memecah layout */
+    .order-detail-container .card-body table {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .order-detail-container .card-body table th,
+    .order-detail-container .card-body table td { white-space: nowrap; }
+
+    /* tabel informasi customer & ringkasan biaya tetap rapi */
+    .order-detail-container .card-body table td[style*="text-align: right"] { white-space: normal; }
+
+    /* timeline lebih ringkas */
+    .payment-timeline { gap: 1rem !important; }
+    .timeline-date div { white-space: normal !important; }
+
+    /* tombol aksi lebar penuh dan bertumpuk */
+    .order-detail-container div[style*="justify-content: flex-end"] {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .order-detail-container div[style*="justify-content: flex-end"] form,
+    .order-detail-container div[style*="justify-content: flex-end"] button,
+    .btn-action {
+        width: 100%;
+        justify-content: center;
+    }
+    .order-detail-container div[style*="justify-content: flex-end"] button,
+    .btn-action { padding: 12px 16px !important; }
+
+    /* tombol kembali */
+    .order-detail-container a[href*="order-list"] { width: 100%; justify-content: center; }
+
+    /* modal */
+    .modal { overflow-y: auto; }
+    .modal .modal-content { margin: 8vh auto !important; width: 94% !important; }
+    .modal-footer { flex-wrap: wrap; }
+
+    /* bukti pembayaran */
+    .detail-card img { max-width: 100% !important; height: auto; }
+}
+
+/* ===== ORDER DETAIL: TIMELINE HORIZONTAL DI SEMUA UKURAN ===== */
+.order-detail-container .payment-timeline {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    gap: 0 !important;
+}
+
+.order-detail-container .timeline-step {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    flex: 1 1 0 !important;
+    min-width: 0;
+    width: auto !important;
+    position: relative;
+}
+
+/* garis penghubung kembali tampil, dari tengah ikon ke ikon berikutnya */
+.order-detail-container .timeline-line {
+    display: block !important;
+    position: absolute !important;
+    top: 1.5rem !important;
+    left: 50% !important;
+    right: -50% !important;
+    width: auto !important;
+    height: 2px !important;
+    z-index: 0 !important;
+}
+.order-detail-container .timeline-step:last-child .timeline-line { display: none !important; }
+
+.order-detail-container .timeline-label { text-align: center !important; }
+.order-detail-container .timeline-date,
+.order-detail-container .timeline-date div { text-align: center !important; }
+
+/* ukuran dikecilkan supaya 4 tahap muat di HP */
+@media (max-width: 768px) {
+    .order-detail-container .timeline-icon {
+        width: 2.5rem !important;
+        height: 2.5rem !important;
+        font-size: 1rem !important;
+    }
+    .order-detail-container .timeline-line { top: 1.25rem !important; }
+    .order-detail-container .timeline-label { font-size: 0.7rem !important; }
+    .order-detail-container .timeline-date { font-size: 0.6rem !important; }
+    .order-detail-container .timeline-date div { white-space: normal !important; }
+}
+
+/* ===== ORDER DETAIL: TABEL ITEM TIDAK BERHIMPITAN ===== */
+@media (max-width: 768px) {
+    .order-detail-container .card-body table {
+        display: table !important;
+        min-width: 460px;
+    }
+    .order-detail-container .card-body table th,
+    .order-detail-container .card-body table td {
+        white-space: normal !important;
+        vertical-align: top;
+        padding-right: 12px !important;
+    }
+    .order-detail-container .card-body table td:first-child,
+    .order-detail-container .card-body table th:first-child { min-width: 140px; }
+    .order-detail-container .card-body table td:nth-child(2),
+    .order-detail-container .card-body table th:nth-child(2) { min-width: 130px; }
+    .order-detail-container .card-body table td:last-child,
+    .order-detail-container .card-body table th:last-child { min-width: 110px; text-align: right; }
+
+    /* bungkus tabel supaya bisa digeser */
+    .order-detail-container .card-body > .order-grid > div:first-child,
+    .order-detail-container .card-body > .order-grid-compact > div:first-child {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ===== ORDER DETAIL: TABEL SEPERTI DESKTOP, MUAT DI HP ===== */
+@media (max-width: 768px) {
+    .order-detail-container .card-body table {
+        display: table !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        table-layout: fixed;
+        overflow: visible !important;
+    }
+    .order-detail-container .card-body table thead { display: table-header-group !important; }
+    .order-detail-container .card-body table tbody { display: table-row-group !important; }
+    .order-detail-container .card-body table tr { display: table-row !important; }
+    .order-detail-container .card-body table th,
+    .order-detail-container .card-body table td {
+        display: table-cell !important;
+        white-space: normal !important;
+        word-break: break-word;
+        padding: 8px 4px !important;
+        vertical-align: top;
+        font-size: 12px !important;
+    }
+    .order-detail-container .card-body table p,
+    .order-detail-container .card-body table div { font-size: 12px !important; }
+
+    /* lebar kolom tabel 3 kolom (Produk, Detail, Harga) */
+    .order-detail-container .card-body table:has(thead th:nth-child(3)) th:nth-child(1) { width: 36%; }
+    .order-detail-container .card-body table:has(thead th:nth-child(3)) th:nth-child(2) { width: 32%; }
+    .order-detail-container .card-body table:has(thead th:nth-child(3)) th:nth-child(3) { width: 32%; }
+
+    /* gambar kecil di tabel */
+    .order-detail-container .card-body table td img {
+        width: 44px !important;
+        height: 44px !important;
+    }
+}
+
+/* ===== ORDER DETAIL: PREVIEW PRODUK LEBIH KECIL DI HP ===== */
+@media (max-width: 768px) {
+    .order-detail-container .product-preview-slider {
+        max-width: 180px !important;
+        height: 180px !important;
+        margin: 0 auto;
+    }
+    .order-detail-container .order-grid-compact > div > div[style*="max-width: 300px"] {
+        max-width: 180px !important;
+        height: 180px !important;
+    }
+    .order-detail-container .order-grid-compact > div > div[style*="padding: 20px"] img {
+        max-width: 160px !important;
+        max-height: 160px !important;
+    }
+}
+
+/* ===== RIWAYAT PESANAN: FILTER TANGGAL ===== */
+.date-range-filter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.date-range-filter .date-label { flex-shrink: 0; }
+
+@media (max-width: 768px) {
+    .date-range-filter {
+        flex: 1 1 100%;
+        flex-wrap: nowrap;
+    }
+    .date-range-filter .date-label { display: none; }
+    .date-range-filter .date-input { flex: 1 1 0; min-width: 0; width: auto; }
+    .controls-section .btn:not(.btn-icon) { flex: 1 1 0; justify-content: center; }
+}
+@media (max-width: 768px) {
+    .orders-table { min-width: 760px; }
+}

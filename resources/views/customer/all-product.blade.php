@@ -37,7 +37,7 @@
     <section class="catalog-content-section">
         <div class="catalog-inner-container">
             <div class="catalog-layout">
-                <aside class="sidebar">
+                <aside class="sidebar" onclick="if(event.target===this)document.body.classList.remove('filters-open')">
                     <button type="button" class="filter-toggle-btn" id="filter-toggle">
     <i class="fas fa-sliders-h"></i> Filter
 </button>
@@ -47,6 +47,7 @@
     });
 </script>
 <div class="filters-card filters-section">
+    <button type="button" class="filter-close-btn" onclick="document.body.classList.remove('filters-open')"><i class="fas fa-times"></i> Tutup</button>
                         <div class="filter-header">
                             <h5>Filters</h5>
                             <i class="fas fa-sliders-h"></i>
@@ -61,8 +62,8 @@
                                 <label for="ready-stok">Ready stok</label>
                             </div>
                             <div class="checkbox-item">
-                                <input type="checkbox" id="kustomisasi" name="custom" {{ $customChecked ? 'checked' : '' }}>
-                                <label for="kustomisasi">Kustomisasi</label>
+                                <input type="checkbox" id="Custom" name="custom" {{ $customChecked ? 'checked' : '' }}>
+                                <label for="Custom">Custom</label>
                             </div>
                         </div>
 
@@ -128,6 +129,38 @@
                 </aside>
 
                 <main class="products-main">
+
+                    <button type="button" class="filter-toggle-btn" id="filter-open-btn"
+        onclick="document.body.classList.add('filters-open')">
+    <i class="fas fa-sliders-h"></i> Filter
+</button>
+<script>
+(function () {
+    var mq = window.matchMedia('(max-width: 768px)');
+    function applyGrid() {
+        var g = document.getElementById('products-grid');
+        if (!g) return;
+        if (mq.matches) {
+            g.style.setProperty('display', 'grid', 'important');
+            g.style.setProperty('grid-template-columns', 'repeat(2, minmax(0, 1fr))', 'important');
+            g.style.setProperty('gap', '10px', 'important');
+        } else {
+            g.style.removeProperty('display');
+            g.style.removeProperty('grid-template-columns');
+            g.style.removeProperty('gap');
+        }
+    }
+    mq.addEventListener('change', applyGrid);
+    document.addEventListener('DOMContentLoaded', function () {
+        applyGrid();
+        var apply = document.querySelector('.apply-filter-btn');
+        if (apply) apply.addEventListener('click', function () {
+            document.body.classList.remove('filters-open');
+        });
+    });
+    applyGrid();
+})();
+</script>
                     <div class="products-header">
                         <div class="header-center">
                             <h2>Semua Produk</h2>
@@ -136,6 +169,13 @@
                         
                         <div class="header-right">
                             <label for="sort-select">Urut berdasarkan:</label>
+                            <div class="sort-chips">
+    @foreach(['most_popular' => 'Populer', 'newest' => 'Terbaru', 'price_low' => 'Termurah', 'price_high' => 'Termahal'] as $val => $label)
+        <a href="{{ request()->fullUrlWithQuery(['sort' => $val, 'page' => 1]) }}"
+           class="sort-chip {{ request('sort', 'most_popular') === $val ? 'active' : '' }}">{{ $label }}</a>
+    @endforeach
+</div>
+                            
                             <div class="select-wrapper">
                                 <select id="sort-select">
                                     <option value="most_popular" {{ request('sort') == 'most_popular' ? 'selected' : '' }}>Paling Populer</option>
@@ -303,7 +343,7 @@
                 const selectedFilters = {
                     promo: document.getElementById('promo-diskon')?.checked || false,
                     ready: document.getElementById('ready-stok')?.checked || false,
-                    custom: document.getElementById('kustomisasi')?.checked || false,
+                    custom: document.getElementById('Custom')?.checked || false,
                     categories: [],
                     min_price: document.getElementById('price-range-min')?.value || 0,
                     max_price: document.getElementById('price-range-max')?.value || 2500000,

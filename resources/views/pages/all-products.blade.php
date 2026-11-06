@@ -38,7 +38,7 @@
                                 </label>
                                 <label class="filter-checkbox">
                                     <input type="checkbox" name="custom" value="1">
-                                    <span>Kustomisasi</span>
+                                    <span>Custom</span>
                                 </label>
                             </div>
                         </div>

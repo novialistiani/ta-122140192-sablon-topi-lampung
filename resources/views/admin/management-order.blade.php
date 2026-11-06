@@ -27,7 +27,6 @@
         <select name="payment_status" class="filter-select" onchange="this.form.submit()">
     <option value="">Status Pembayaran</option>
     <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>✓ Dibayar</option>
-    <option value="va_active" {{ request('payment_status') == 'va_active' ? 'selected' : '' }}>⏳ VA Aktif</option>
     <option value="pending_verification" {{ request('payment_status') == 'pending_verification' ? 'selected' : '' }}>🔍 Perlu Verifikasi</option>
 </select>
         
@@ -136,29 +135,33 @@
                             </td>
                             <td><a href="{{ route('admin.order.detail', ['id' => $order->id]) }}?type={{ $currentOrderType }}" class="detail-link"><i class="fas fa-info-circle detail-icon"></i></a></td>
                             <td class="actions-col">
-                                <div class="action-dropdown">
-                                    <button class="action-btn"><i class="fas fa-ellipsis-v"></i></button>
-                                    <div class="dropdown-content">
-                                        @if($order->status === 'pending')
-                                            <form method="POST" action="{{ route('admin.order.approve', $order->id) }}?type={{ $currentOrderType }}" style="display: inline; margin: 0;" onsubmit="return confirm('Apakah Anda yakin ingin menyetujui pesanan ini?')">
-                                                @csrf
-                                                <button type="submit" class="dropdown-item" style="width: 100%;">Disetujui</button>
-                                            </form>
-                                            <button type="button" class="dropdown-item" onclick="showRejectModal({{ $order->id }}, '{{ $currentOrderType }}')">Ditolak</button>
-                                        @else
-                                            @if($order->payment_status === 'paid' && $order->status === 'approved')
-                                                <button type="button" onclick="changeStatus({{ $order->id }}, 'processing', '{{ $currentOrderType }}'); return false;" class="dropdown-item">Diproses</button>
-                                            @endif
-                                            @if($order->payment_status === 'paid' && $order->status === 'processing')
-                                                <button type="button" onclick="changeStatus({{ $order->id }}, 'completed', '{{ $currentOrderType }}'); return false;" class="dropdown-item">Selesai</button>
-                                            @endif
-                                           @if($order->status === 'approved')
-                                                <button type="button" onclick="changeStatus({{ $order->id }}, 'cancelled', '{{ $currentOrderType }}'); return false;" class="dropdown-item">Dibatalkan</button>
-                                            @endif
+                            @if(in_array($order->status, ['pending', 'approved', 'processing']))
+                            <div class="action-dropdown">
+                                <button class="action-btn"><i class="fas fa-ellipsis-v"></i></button>
+                                <div class="dropdown-content">
+                                    @if($order->status === 'pending')
+                                        <form method="POST" action="{{ route('admin.order.approve', $order->id) }}?type={{ $currentOrderType }}" style="display: inline; margin: 0;" onsubmit="return confirm('Apakah Anda yakin ingin menyetujui pesanan ini?')">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item" style="width: 100%;">Disetujui</button>
+                                        </form>
+                                        <button type="button" class="dropdown-item" onclick="showRejectModal({{ $order->id }}, '{{ $currentOrderType }}')">Ditolak</button>
+                                    @else
+                                        @if($order->payment_status === 'paid' && $order->status === 'approved')
+                                            <button type="button" onclick="changeStatus({{ $order->id }}, 'processing', '{{ $currentOrderType }}'); return false;" class="dropdown-item">Diproses</button>
                                         @endif
-                                    </div>
+                                        @if($order->payment_status === 'paid' && $order->status === 'processing')
+                                            <button type="button" onclick="changeStatus({{ $order->id }}, 'completed', '{{ $currentOrderType }}'); return false;" class="dropdown-item">Selesai</button>
+                                        @endif
+                                        @if($order->status === 'approved')
+                                            <button type="button" onclick="changeStatus({{ $order->id }}, 'cancelled', '{{ $currentOrderType }}'); return false;" class="dropdown-item">Dibatalkan</button>
+                                        @endif
+                                    @endif
                                 </div>
-                            </td>
+                            </div>
+                            @else
+                                <span style="color:#9ca3af;">-</span>
+                            @endif
+                        </td>
                         </tr>
                         @empty
                         <tr>
@@ -575,7 +578,25 @@
                     });
                 }
             });
+                // Posisikan dropdown aksi agar tidak terpotong tabel (HP/iPad)
+document.addEventListener('click', function (e) {
+    const btn = e.target.closest('.action-btn');
+    if (!btn) return;
+    const menu = btn.closest('.action-dropdown').querySelector('.dropdown-content');
+    const r = btn.getBoundingClientRect();
+    menu.style.position = 'fixed';
+    menu.style.top = (r.bottom + 4) + 'px';
+    menu.style.left = 'auto';
+    menu.style.right = (window.innerWidth - r.right) + 'px';
+}, true);
 
+// Tutup dropdown saat tabel digeser atau halaman di-scroll
+['scroll', 'resize'].forEach(function (ev) {
+    window.addEventListener(ev, function () {
+        document.querySelectorAll('.action-dropdown.active')
+            .forEach(function (d) { d.classList.remove('active'); });
+    }, true);
+});
             window.onclick = function(event) {
                 const rejectModal = document.getElementById('rejectModal');
                 const detailModal = document.getElementById('orderDetailModal');

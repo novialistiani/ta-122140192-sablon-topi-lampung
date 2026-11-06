@@ -272,7 +272,8 @@
     }
     
     .catalog-content-section .products-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
     }
 }
 /* ===== Price filter fix ===== */
@@ -370,4 +371,142 @@
   padding: 10px 4px !important;
   text-align: center;
   letter-spacing: -0.2px;
+}
+
+/* ===== FILTER + LAYOUT HP (BLOK FINAL) ===== */
+html body .filter-toggle-btn,
+html body .filter-close-btn { display: none !important; }
+
+@media (max-width: 768px) {
+    html, body { overflow-x: hidden !important; max-width: 100% !important; }
+
+    html body .catalog-content-section .catalog-inner-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 12px !important;
+        box-sizing: border-box;
+    }
+    html body .catalog-content-section .catalog-layout {
+        display: block !important;
+        width: 100% !important;
+    }
+    html body .catalog-content-section .products-main {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    /* tombol filter: satu baris penuh */
+    html body .filter-toggle-btn {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 12px 16px;
+        margin: 0 0 14px;
+        background: #001F3F;
+        color: #ffffff;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    /* judul dan urutan */
+    html body .products-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+    html body .header-right { width: 100%; }
+    html body .select-wrapper { flex: 1; min-width: 0; }
+    html body #sort-select { width: 100%; }
+
+    /* produk 2 kolom */
+    html body #products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+    }
+    html body #products-grid .product-card {
+        min-width: 0 !important;
+        max-width: 100% !important;
+    }
+
+    /* panel filter */
+    html body:not(.filters-open) .sidebar { display: none !important; }
+
+    html body.filters-open { overflow: hidden !important; }
+
+    html body.filters-open .sidebar {
+        display: block !important;
+        position: fixed !important;
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: 100% !important;
+        max-width: 100% !important;
+        z-index: 5000;
+        padding: 16px 12px;
+        background: rgba(0, 0, 0, 0.5);
+        overflow-y: auto;
+    }
+    html body.filters-open .sidebar .filters-card {
+        display: block !important;
+        max-width: 420px;
+        margin: 0 auto 24px;
+        padding: 16px;
+        background: #ffffff;
+        border-radius: 14px;
+    }
+    html body.filters-open .filter-close-btn {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        background: #f1f5f9;
+        border: none;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #001F3F;
+    }
+    html body.filters-open .filter-toggle-btn,
+    html body.filters-open .unified-chatbot-trigger { display: none !important; }
+}
+
+/* ===== URUTAN: TOMBOL PILIHAN DI HP/TABLET ===== */
+.sort-chips { display: none; }
+
+@media (max-width: 768px) {
+    html body .header-right label[for="sort-select"],
+    html body .header-right .select-wrapper { display: none !important; }
+
+    html body .sort-chips {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    html body .sort-chip {
+        flex: 0 0 auto;
+        padding: 8px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 999px;
+        background: #ffffff;
+        color: #374151;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    html body .sort-chip.active {
+        background: #001F3F;
+        border-color: #001F3F;
+        color: #ffffff;
+        font-weight: 600;
+    }
 }

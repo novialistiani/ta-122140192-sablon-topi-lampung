@@ -151,9 +151,11 @@
 </head>
 <body>
     <!-- Sidebar Toggle Button (Mobile) -->
-    <button class="sidebar-toggle" aria-label="Toggle Sidebar" aria-expanded="false">
-        <i class="fas fa-bars"></i>
-    </button>
+    <button class="sidebar-toggle" type="button" aria-label="Toggle Sidebar"
+        onclick="document.body.classList.toggle('admin-menu-open')">
+    <i class="fas fa-bars"></i>
+</button>
+<div class="admin-backdrop" onclick="document.body.classList.remove('admin-menu-open')"></div>
 
     <!-- TOP NAVBAR (Above everything) -->
     <div class="top-navbar">

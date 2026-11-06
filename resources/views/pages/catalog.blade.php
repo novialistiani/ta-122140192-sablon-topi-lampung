@@ -50,7 +50,7 @@
                                 </label>
                                 <label class="filter-checkbox">
                                     <input type="checkbox" name="custom" id="custom-filter" {{ $isCustom ? 'checked' : '' }}>
-                                    <span>Kustomisasi</span>
+                                    <span>Custom</span>
                                 </label>
                             </div>
                         </div>

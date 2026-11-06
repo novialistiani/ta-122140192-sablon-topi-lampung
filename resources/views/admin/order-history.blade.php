@@ -27,7 +27,7 @@
         <select name="payment_status" class="filter-select" onchange="this.form.submit()">
             <option value="">Status Pembayaran</option>
             <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>✓ Dibayar</option>
-            <option value="va_active" {{ request('payment_status') == 'va_active' ? 'selected' : '' }}>⏳ VA Aktif</option>
+            
         </select>
         
         <div class="date-range-filter">
@@ -43,7 +43,7 @@
             Filter
         </button>
         
-        <a href="{{ route('admin.order-list') }}" class="btn btn-secondary">
+        <a href="{{ route('admin.order-history') }}" class="btn btn-secondary">
             <i class="fas fa-redo"></i>
             Reset
         </a>
@@ -77,7 +77,7 @@
                             <th>STATUS</th>
                             <th>JUMLAH</th>
                             <th>Detail</th>
-                            <th class="actions-col">Tindakan</th>
+                           
                         </tr>
                     </thead>
                     <tbody>
@@ -119,8 +119,7 @@
                                 @if(isset($order->payment_status))
                                     @if($order->payment_status === 'paid')
                                         <br><span class="badge" style="background: #28a745; color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; margin-top: 4px;">✓ Dibayar</span>
-                                    @elseif($order->payment_status === 'va_active')
-                                        <br><span class="badge" style="background: #ffc107; color: #000; padding: 2px 8px; border-radius: 12px; font-size: 10px; margin-top: 4px;">⏳ VA Aktif</span>
+                                    
                                     @endif
                                 @endif
                             </td>
@@ -131,29 +130,11 @@
                                     Rp.{{ number_format((float) $order->total, 0, ',', '.') }}
                                 @endif
                             </td>
-                            <td><a href="{{ route('admin.order.detail', ['id' => $order->id]) }}?type={{ $currentOrderType }}" class="detail-link"><i class="fas fa-info-circle detail-icon"></i></a></td>
-                            <td class="actions-col">
-                                <div class="action-dropdown">
-                                    <button class="action-btn"><i class="fas fa-ellipsis-v"></i></button>
-                                    <div class="dropdown-content">
-                                        @if($order->status === 'pending')
-                                            <form method="POST" action="{{ route('admin.order.approve', ['id' => $order->id, 'type' => $currentOrderType]) }}" style="display: inline;">
-                                                @csrf
-                                                <button type="submit" class="dropdown-item" onclick="return confirm('Apakah Anda yakin ingin menyetujui pesanan ini?')">Disetujui</button>
-                                            </form>
-                                            <a href="#" onclick="showRejectModal({{ $order->id }}, '{{ $currentOrderType }}')" class="dropdown-item">Ditolak</a>
-                                        @else
-                                            <a href="#" onclick="changeStatus({{ $order->id }}, 'processing', '{{ $currentOrderType }}')" class="dropdown-item">Diproses</a>
-                                            <a href="#" onclick="changeStatus({{ $order->id }}, 'completed', '{{ $currentOrderType }}')" class="dropdown-item">Selesai</a>
-                                            <a href="#" onclick="changeStatus({{ $order->id }}, 'cancelled', '{{ $currentOrderType }}')" class="dropdown-item">Dibatalkan</a>
-                                        @endif
-                                    </div>
-                                </div>
-                            </td>
+                            <td><a href="{{ route('admin.order.detail', ['id' => $order->id]) }}?type={{ $currentOrderType }}" class="detail-link"><i class="fas fa-info-circle detail-icon"></i></a></td>  
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="9" style="text-align:center;padding:40px">
+                            <td colspan="8" style="text-align:center;padding:40px">
                                 <p style="color:#999">Belum ada pesanan</p>
                             </td>
                         </tr>
@@ -437,6 +418,37 @@
             }
 
             // Close modal when clicking outside
+            // Dropdown aksi: buka dengan klik, posisikan agar tidak terpotong tabel
+                document.addEventListener('click', function (e) {
+                    const btn = e.target.closest('.action-btn');
+                    if (btn) {
+                        e.stopPropagation();
+                        const dd = btn.closest('.action-dropdown');
+                        document.querySelectorAll('.action-dropdown.active').forEach(function (d) {
+                            if (d !== dd) d.classList.remove('active');
+                        });
+                        dd.classList.toggle('active');
+                        const menu = dd.querySelector('.dropdown-content');
+                        const r = btn.getBoundingClientRect();
+                        menu.style.position = 'fixed';
+                        menu.style.top = (r.bottom + 4) + 'px';
+                        menu.style.left = 'auto';
+                        menu.style.right = (window.innerWidth - r.right) + 'px';
+                        return;
+                    }
+                    if (!e.target.closest('.dropdown-content')) {
+                        document.querySelectorAll('.action-dropdown.active').forEach(function (d) {
+                            d.classList.remove('active');
+                        });
+                    }
+                }, true);
+
+                ['scroll', 'resize'].forEach(function (ev) {
+                    window.addEventListener(ev, function () {
+                        document.querySelectorAll('.action-dropdown.active')
+                            .forEach(function (d) { d.classList.remove('active'); });
+                    }, true);
+                });
             window.onclick = function(event) {
                 const rejectModal = document.getElementById('rejectModal');
                 const detailModal = document.getElementById('orderDetailModal');
