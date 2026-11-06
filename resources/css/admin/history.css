@@ -203,3 +203,129 @@
     padding-left: 12px;
     white-space: nowrap;
 }
+
+/* ===== HISTORY: RESPONSIF HP & IPAD ===== */
+.filter-dropdown.open .filter-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+@media (hover: none) {
+    .filter-dropdown:hover .filter-dropdown-menu {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-8px);
+    }
+    .filter-dropdown.open .filter-dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+}
+
+.table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+@media (max-width: 768px) {
+    .history-toolbar { flex-direction: column; align-items: stretch; gap: 10px; }
+    .history-search { margin-left: 0; flex-direction: column; align-items: stretch; width: 100%; }
+    .search-input-wrapper { width: 100%; }
+    .search-input-wrapper input { width: 100%; }
+    .range-select { width: 100%; }
+
+    .filter-dropdown:last-child .filter-dropdown-menu { left: auto; right: 0; }
+
+    .card-header { gap: 8px; }
+    .btn-export { padding: 8px 12px; }
+
+    .history-page-wrapper .data-table { table-layout: auto; width: 100%; }
+    .history-page-wrapper .data-table th,
+    .history-page-wrapper .data-table td,
+    .history-page-wrapper .data-table .table-cell,
+    .history-page-wrapper .data-table .table-header-cell {
+        white-space: normal !important;
+        word-break: break-word;
+        min-width: 0 !important;
+        padding: 8px 3px !important;
+        font-size: 10.5px !important;
+        vertical-align: top;
+        letter-spacing: 0 !important;
+    }
+    .history-page-wrapper .data-table .badge { padding: 2px 6px; font-size: 10px; }
+    .history-page-wrapper .data-table .btn-small-secondary { padding: 4px 6px; font-size: 10.5px; }
+
+    .history-pagination-footer { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+
+/* ===== HISTORY: TABEL BISA DIGESER, SEMUA KOLOM TAMPIL ===== */
+@media (max-width: 768px) {
+    .history-page-wrapper .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .history-page-wrapper .table-wrapper .data-table {
+        table-layout: auto !important;
+        width: auto !important;
+        min-width: 820px;
+    }
+
+    .history-page-wrapper .table-wrapper .data-table th,
+    .history-page-wrapper .table-wrapper .data-table td,
+    .history-page-wrapper .table-wrapper .data-table .table-cell,
+    .history-page-wrapper .table-wrapper .data-table .table-header-cell {
+        display: table-cell !important;
+        width: auto !important;
+        min-width: 0 !important;
+        white-space: nowrap !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+        padding: 10px 12px !important;
+        font-size: 12px !important;
+        vertical-align: top;
+    }
+
+    /* kolom Detail boleh turun baris supaya tidak terlalu lebar */
+    .history-page-wrapper .table-wrapper .data-table th:nth-child(5),
+    .history-page-wrapper .table-wrapper .data-table td:nth-child(5) {
+        white-space: normal !important;
+        min-width: 260px !important;
+    }
+
+    .history-page-wrapper .table-wrapper .data-table .btn-small-secondary {
+        white-space: nowrap;
+    }
+}
+
+/* ===== HISTORY DETAIL: RESPONSIF HP & IPAD ===== */
+@media (max-width: 768px) {
+    .detail-page .detail-header {
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+    .detail-page .detail-title { font-size: 1.05rem; }
+
+    .detail-page .detail-grid { gap: 16px; }
+
+    .detail-page .detail-card-body { padding: 14px; }
+
+    /* label di atas, nilai di bawah */
+    .detail-page .info-row {
+        flex-direction: column;
+        gap: 2px;
+        padding: 10px 0;
+    }
+    .detail-page .info-label { width: auto; font-size: 0.75rem; }
+    .detail-page .info-value { overflow-wrap: anywhere; }
+
+    /* Data Lama & Data Baru bertumpuk */
+    .detail-page div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+    .detail-page .properties-json {
+        font-size: 0.72rem;
+        max-height: 220px;
+    }
+
+    .detail-page .related-desc { overflow-wrap: anywhere; }
+}

@@ -144,4 +144,21 @@
             </div>
         </div>
     </div>
+            <script>
+            document.querySelectorAll('.filter-dropdown > button').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    var parent = btn.parentElement;
+                    document.querySelectorAll('.filter-dropdown.open').forEach(function (d) {
+                        if (d !== parent) d.classList.remove('open');
+                    });
+                    parent.classList.toggle('open');
+                });
+            });
+            document.addEventListener('click', function () {
+                document.querySelectorAll('.filter-dropdown.open').forEach(function (d) {
+                    d.classList.remove('open');
+                });
+            });
+        </script>
 </x-admin-layout>
