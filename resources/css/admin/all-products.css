@@ -797,3 +797,104 @@
         padding: 8px 10px;
     }
 }
+
+/* ===== RESPONSIF: DESKTOP, IPAD, HP ===== */
+
+/* Tombol ikon di kartu: ukuran konsisten */
+.product-overlay .btn-icon,
+.list-actions .btn-icon {
+    box-sizing: border-box;
+    padding: 0;
+}
+
+/* iPad dan layar menengah: filter tidak meluber */
+@media (max-width: 1024px) {
+    .filters-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .search-box { max-width: 100%; }
+}
+
+/* Desktop sedang: 4 kolom supaya kartu tidak sempit */
+@media (min-width: 1200px) and (max-width: 1439px) {
+    .products-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Layar sentuh: tombol aksi selalu terlihat */
+@media (hover: none) {
+    .product-overlay {
+        opacity: 1;
+        background: transparent;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-end;
+        gap: 6px;
+        pointer-events: none;
+    }
+    .product-overlay .btn-icon {
+        pointer-events: auto;
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    }
+    .product-card:hover { transform: none; }
+    .product-card:hover .main-image { transform: none; }
+}
+
+/* HP dan iPad portrait */
+@media (max-width: 768px) {
+    /* filter: Kategori dan Status berdampingan, Urutkan satu baris penuh */
+    .filters-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .filter-group:last-child { grid-column: 1 / -1; }
+    .filter-select { height: 42px; font-size: 16px; }
+    .search-box input { font-size: 16px; }
+
+    /* header produk */
+    .products-header { align-items: stretch; }
+    .header-actions { width: 100%; justify-content: space-between; }
+    .header-actions .btn { flex: 1; justify-content: center; }
+
+    /* grid kartu: 2 kolom, kartu lebih ringkas */
+    .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 8px; }
+    .product-card { min-height: 0; max-height: none; }
+    .product-image-container { aspect-ratio: 1 / 1; max-height: none; height: auto; }
+    .product-info { padding: 8px; gap: 4px; }
+    .product-name { font-size: 0.85rem; }
+    .product-category { font-size: 0.75rem; }
+    .product-price { flex-wrap: wrap; gap: 4px; margin: 0; }
+    .current-price { font-size: 0.9rem; }
+    .original-price { font-size: 0.72rem; }
+    .product-stock { font-size: 0.78rem; }
+    .product-badges { top: 6px; left: 6px; gap: 4px; }
+    .badge { padding: 2px 7px; font-size: 9px; }
+    .custom-badge { padding: 2px 6px; font-size: 9px; }
+
+    /* tampilan list tetap berbaris: gambar di kiri, isi di kanan */
+    .product-list-item { flex-direction: row; align-items: flex-start; padding: 12px; gap: 0; }
+    .list-image { width: 64px; height: 64px; margin-right: 12px; }
+    .list-content { flex: 1; min-width: 0; gap: 8px; }
+    .list-main .product-name { white-space: normal; font-size: 14px; }
+    .list-main .product-category { font-size: 12px; margin-bottom: 4px; }
+    .list-main .current-price { font-size: 14px; }
+    .list-details { flex-direction: row; flex-wrap: wrap; gap: 6px 14px; min-width: 0; }
+    .detail-item { font-size: 13px; }
+    .list-actions { margin-left: 0; justify-content: flex-start; }
+
+    /* pagination tidak meluber */
+    .pagination-container { flex-direction: column; gap: 8px; padding: 10px 12px; }
+    .pagination { flex-wrap: wrap; justify-content: center; gap: 6px; }
+    .pagination-btn { padding: 6px 10px; min-height: 36px; }
+    .pagination-info { margin: 0; text-align: center; }
+
+    /* notifikasi selebar layar */
+    body .notification { left: 12px; right: 12px; top: 12px; max-width: none; }
+}
+
+/* iPad portrait agak lebar: 3 kolom */
+@media (min-width: 541px) and (max-width: 768px) {
+    .products-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Layar sangat kecil: 1 kolom */
+@media (max-width: 340px) {
+    .products-grid { grid-template-columns: 1fr; }
+}

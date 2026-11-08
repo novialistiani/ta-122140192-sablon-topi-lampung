@@ -69,7 +69,7 @@ class AllProductsManager {
 
         // Product actions (will be bound dynamically)
         document.addEventListener('click', (e) => {
-            if (e.target.closest('.view-btn')) {
+            if (e.target.closest('.view-btn:not([data-view])')) {
                 const productId = e.target.closest('[data-id]').dataset.id;
                 this.viewProduct(productId);
             } else if (e.target.closest('.edit-btn')) {
@@ -103,6 +103,7 @@ class AllProductsManager {
             
             if (data.success) {
                 this.products = data.data;
+                this.lastPage = data.pagination.last_page;
                 // Debug: Log first product to check variant_images
                 if (this.products.length > 0) {
                     console.log('Sample product data:', this.products[0]);
@@ -466,7 +467,7 @@ class AllProductsManager {
     }
 
     goToPage(page) {
-        if (page < 1 || page > Math.ceil(this.products.length / this.perPage)) return;
+        if (page < 1 || (this.lastPage && page > this.lastPage)) return;
         
         this.currentPage = page;
         this.loadProducts();
