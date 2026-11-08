@@ -65,6 +65,42 @@
                 .action-cell { gap: 8px; }
                 .save-btn { padding: 8px 12px; }
             }
+            .save-btn { white-space: nowrap; }
+
+            @media (max-width: 480px) {
+                .add-section-form > div { flex: 1 1 100% !important; min-width: 0 !important; }
+                .add-section-form input { width: 100% !important; box-sizing: border-box; }
+                .add-section-form button { width: 100%; min-height: 44px; }
+            }
+
+            @media (max-width: 480px) {
+                .price-table tr {
+                    grid-template-columns: minmax(0, 1fr) auto;
+                    grid-template-areas:
+                        "kode status"
+                        "nama nama"
+                        "harga aksi";
+                    gap: 8px 10px;
+                    align-items: center;
+                }
+                .price-table td { min-width: 0; }
+                .price-table td:nth-child(1) { grid-area: kode; justify-self: start; }
+                .price-table td:nth-child(2) { grid-area: nama; }
+                .price-table td:nth-child(3) { grid-area: harga; }
+                .price-table td:nth-child(4) { grid-area: status; justify-self: end; }
+                .price-table td:nth-child(5) { grid-area: aksi; justify-self: end; }
+
+                .code-badge {
+                    white-space: normal;
+                    word-break: break-word;
+                    line-height: 1.25;
+                    font-size: 13px;
+                    padding: 4px 10px;
+                }
+                .price-input { width: 100%; min-width: 0; box-sizing: border-box; }
+                .action-cell { flex-wrap: nowrap; }
+                .save-btn { padding: 8px 10px; font-size: 13px; }
+            }
         </style>
     @endpush
 
@@ -100,7 +136,7 @@
                 <div style="padding: 10px 14px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin-bottom: 12px;">{{ $errors->first() }}</div>
             @endif
 
-            <form method="POST" action="{{ route('admin.custom-design-prices.store') }}" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 16px; padding: 14px; background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 10px;">
+            <form class="add-section-form" method="POST" action="{{ route('admin.custom-design-prices.store') }}" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 16px; padding: 14px; background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 10px;">
                 @csrf
                 <div>
                     <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Kode (1 huruf)</label>

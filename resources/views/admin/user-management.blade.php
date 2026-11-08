@@ -181,7 +181,7 @@
             <!-- Pagination -->
             <div class="pagination-container">
                 <div class="pagination-info">
-                    Showing <span class="pagination-highlight">1–2</span> of <span class="pagination-highlight">10</span>
+                    Showing <span class="pagination-highlight">{{ $admins->count() ? 1 : 0 }}–{{ $admins->count() }}</span> of <span class="pagination-highlight">{{ $admins->count() }}</span>
                 </div>
                 <div class="pagination-controls">
                     <button class="pagination-btn pagination-btn-disabled" disabled>
@@ -220,7 +220,7 @@
                             <line x1="12" y1="8" x2="12" y2="12"></line>
                             <line x1="12" y1="16" x2="12.01" y2="16"></line>
                         </svg>
-                        <span>Customers register themselves. View-only mode.</span>
+                        <span>@if($currentAdmin->isSuperAdmin())Customers register themselves.@else Customers register themselves. View-only mode.@endif</span>
                     </div>
                 </div>
             </div>
@@ -278,6 +278,8 @@
                             <td class="table-cell">
                                 <div class="action-buttons">
                                     <!-- Customer cannot be edited by admin -->
+                                    @if($currentAdmin->isSuperAdmin())
+
                                     <button 
                                         onclick="deleteUser('customer', {{ $user->id }})"
                                         class="action-btn action-btn-delete"
@@ -288,20 +290,19 @@
                                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                                         </svg>
                                     </button>
+                                    @else
+                                    <span style="color: #9CA3AF; font-size: 12px; font-style: italic;">No access</span>
+                                    @endif
                                 </div>
                             </td>
                             <td class="table-cell">
-                                <button 
-                                    onclick="viewHistory('customer', {{ $user->id }})"
-                                    class="btn-history"
-                                    title="View History"
-                                >
+                                <a href="{{ route('admin.customer-detail', $user->id) }}#riwayat-pesanan" class="btn-history" title="Riwayat Pesanan" style="text-decoration: none;">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <circle cx="12" cy="12" r="10"></circle>
                                         <polyline points="12 6 12 12 16 14"></polyline>
                                     </svg>
-                                    <span>History</span>
-                                </button>
+                                    <span>Pesanan</span>
+                                </a>
                             </td>
                         </tr>
                         @empty
@@ -322,7 +323,7 @@
             <!-- Pagination -->
             <div class="pagination-container">
                 <div class="pagination-info">
-                    Showing <span class="pagination-highlight">1–1</span> of <span class="pagination-highlight">5</span>
+                    Showing <span class="pagination-highlight">{{ $users->count() ? 1 : 0 }}–{{ $users->count() }}</span> of <span class="pagination-highlight">{{ $users->count() }}</span>
                 </div>
                 <div class="pagination-controls">
                     <button class="pagination-btn pagination-btn-disabled" disabled>

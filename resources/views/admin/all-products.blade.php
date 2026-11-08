@@ -66,10 +66,7 @@
                         <i class="fas fa-list"></i>
                     </button>
                 </div>
-                <button class="btn btn-primary" id="add-product-btn">
-                    <i class="fas fa-plus"></i>
-                    Tambah Produk
-                </button>
+                
             </div>
         </div>
 

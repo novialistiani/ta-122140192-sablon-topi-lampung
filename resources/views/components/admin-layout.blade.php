@@ -296,6 +296,7 @@
                         <span>Laporan Stok</span>
                     </a>
                 </li>
+@if(auth('admin')->user()->isSuperAdmin())
                 <li>
                     <a href="{{ route('admin.finance.index') }}" class="sidebar__link {{ request()->routeIs('admin.finance.*') ? 'active' : '' }}">
                         <i class="fas fa-wallet"></i>
@@ -308,6 +309,7 @@
                     <span>Pengaturan QRIS</span>
                  </a>
                 </li>
+@endif
                 <li>
                     <a href="{{ route('admin.all-products') }}" class="sidebar__link {{ request()->routeIs('admin.all-products*') ? 'active' : '' }}">
                         <i class="fas fa-boxes"></i>

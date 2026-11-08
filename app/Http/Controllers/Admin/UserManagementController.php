@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\User;
+use App\Models\Order;
+use App\Models\CustomDesignOrder;
 use App\Exports\UsersExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -32,8 +34,31 @@ class UserManagementController extends Controller
     {
         $customer = User::findOrFail($id);
         $currentAdmin = auth('admin')->user();
-        
-        return view('admin.customer-detail', compact('customer', 'currentAdmin'));
+
+        // Riwayat pesanan pelanggan (pesanan standar + pesanan kustom)
+        $regularOrders = Order::where('user_id', $customer->id)->get()->map(function ($o) {
+            return (object) [
+                'type' => 'Standar',
+                'number' => $o->order_number,
+                'total' => $o->total,
+                'status' => $o->status,
+                'payment_status' => $o->payment_status,
+                'created_at' => $o->created_at,
+            ];
+        });
+        $customOrders = CustomDesignOrder::where('user_id', $customer->id)->get()->map(function ($o) {
+            return (object) [
+                'type' => 'Kustom',
+                'number' => 'CD-' . $o->id,
+                'total' => $o->total_price,
+                'status' => $o->status,
+                'payment_status' => $o->payment_status,
+                'created_at' => $o->created_at,
+            ];
+        });
+        $orders = $regularOrders->concat($customOrders)->sortByDesc('created_at')->values();
+
+        return view('admin.customer-detail', compact('customer', 'currentAdmin', 'orders'));
     }
 
     /**
@@ -127,6 +152,13 @@ class UserManagementController extends Controller
      */
     public function storeAdmin(Request $request)
     {
+        if (!auth('admin')->user()->isSuperAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only Super Admin can create admin accounts.'
+            ], 403);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:admins,email',
@@ -158,7 +190,16 @@ class UserManagementController extends Controller
      */
     public function getAdmin($id)
     {
+        $currentAdmin = auth('admin')->user();
         $admin = Admin::findOrFail($id);
+
+        // Admin biasa hanya boleh melihat data akunnya sendiri
+        if (!$currentAdmin->isSuperAdmin() && $currentAdmin->id !== $admin->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to view this admin.'
+            ], 403);
+        }
 
         return response()->json([
             'success' => true,
@@ -240,7 +281,24 @@ class UserManagementController extends Controller
      */
     public function destroyAdmin($id)
     {
+        $currentAdmin = auth('admin')->user();
+
+        if (!$currentAdmin->isSuperAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only Super Admin can delete admin accounts.'
+            ], 403);
+        }
+
         $admin = Admin::findOrFail($id);
+
+        // Prevent deleting own account
+        if ($currentAdmin->id === $admin->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You cannot delete your own account.'
+            ], 403);
+        }
 
         // Prevent deleting the first admin (super admin)
         if ($admin->id === 1) {
@@ -290,6 +348,13 @@ class UserManagementController extends Controller
      */
     public function destroyCustomer($id)
     {
+        if (!auth('admin')->user()->isSuperAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only Super Admin can delete customer accounts.'
+            ], 403);
+        }
+
         $user = User::findOrFail($id);
         
         // Log activity before deleting
@@ -308,6 +373,8 @@ class UserManagementController extends Controller
      */
     public function exportAdmins()
     {
+        abort_unless(auth('admin')->user()->isSuperAdmin(), 403);
+
         $filename = 'admins-' . date('Y-m-d-His') . '.xlsx';
         return Excel::download(new UsersExport('admin'), $filename);
     }

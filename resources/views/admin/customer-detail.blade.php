@@ -101,6 +101,39 @@
                     </div>
                 </div>
 
+                <!-- Riwayat Pesanan -->
+                <h2 class="section-title" id="riwayat-pesanan">Riwayat Pesanan</h2>
+                @if($orders->isEmpty())
+                    <p style="color: #6B7280; margin-bottom: 24px;">Pelanggan ini belum memiliki pesanan.</p>
+                @else
+                    <div style="overflow-x: auto; margin-bottom: 24px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                            <thead>
+                                <tr style="background: #F3F4F6; text-align: left;">
+                                    <th style="padding: 10px;">Tanggal</th>
+                                    <th style="padding: 10px;">No. Pesanan</th>
+                                    <th style="padding: 10px;">Jenis</th>
+                                    <th style="padding: 10px;">Total</th>
+                                    <th style="padding: 10px;">Status</th>
+                                    <th style="padding: 10px;">Pembayaran</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($orders as $order)
+                                <tr style="border-bottom: 1px solid #E5E7EB;">
+                                    <td style="padding: 10px;">{{ $order->created_at->format('d M Y, H:i') }}</td>
+                                    <td style="padding: 10px;">{{ $order->number }}</td>
+                                    <td style="padding: 10px;">{{ $order->type }}</td>
+                                    <td style="padding: 10px;">Rp {{ number_format($order->total ?? 0, 0, ',', '.') }}</td>
+                                    <td style="padding: 10px;">{{ ucfirst(str_replace('_', ' ', $order->status ?? '-')) }}</td>
+                                    <td style="padding: 10px;">{{ ucfirst(str_replace('_', ' ', $order->payment_status ?? '-')) }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+
                 <!-- Export Buttons -->
                 <h2 class="section-title">Export Customer Data</h2>
                 <div class="export-buttons-grid">
@@ -128,21 +161,16 @@
 
                 <!-- Action Buttons -->
                 <div class="action-buttons-detail">
-                    <button onclick="viewHistory('customer', {{ $customer->id }})" class="btn-action btn-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <polyline points="12 6 12 12 16 14"></polyline>
-                        </svg>
-                        View Activity History
-                    </button>
 
-                    <button onclick="deleteUser('customer', {{ $customer->id }})" class="btn-action btn-danger">
+                    @if($currentAdmin->isSuperAdmin())
+<button onclick="deleteUser('customer', {{ $customer->id }})" class="btn-action btn-danger">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                         </svg>
                         Delete Customer
                     </button>
+@endif
                 </div>
             </div>
         </div>

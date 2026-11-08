@@ -498,12 +498,12 @@ Route::prefix('admin')->group(function () {
         Route::get('/management-users/customer/{id}', [UserManagementController::class, 'showCustomerDetail'])->name('admin.customer-detail');
         Route::get('/management-users/customer/{id}/export-pdf', [UserManagementController::class, 'exportCustomerPDF'])->name('admin.customer-export-pdf');
         Route::get('/management-users/customer/{id}/export-excel', [UserManagementController::class, 'exportCustomerExcel'])->name('admin.customer-export-excel');
-        Route::get('/management-users/export-admins', [UserManagementController::class, 'exportAdmins'])->name('admin.management-users.export-admins');
+        Route::get('/management-users/export-admins', [UserManagementController::class, 'exportAdmins'])->name('admin.management-users.export-admins')->middleware('role:super_admin');
         Route::get('/management-users/export-customers', [UserManagementController::class, 'exportCustomers'])->name('admin.management-users.export-customers');
         
         // Finance & Wallet
-        Route::get('/finance', [App\Http\Controllers\Admin\FinanceController::class, 'index'])->name('admin.finance.index');
-        Route::get('/finance/export', [App\Http\Controllers\Admin\FinanceController::class, 'export'])->name('admin.finance.export');
+        Route::get('/finance', [App\Http\Controllers\Admin\FinanceController::class, 'index'])->name('admin.finance.index')->middleware('role:super_admin');
+        Route::get('/finance/export', [App\Http\Controllers\Admin\FinanceController::class, 'export'])->name('admin.finance.export')->middleware('role:super_admin');
         
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('admin.activity-logs');
         Route::get('/activity-logs/export', [ActivityLogController::class, 'export'])->name('admin.activity-logs.export');
@@ -528,8 +528,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/all-products/detail/{id}', [ProductManagementController::class, 'productDetail'])->name('admin.all-products.detail');
         
         // Payment Settings (QRIS)
-        Route::get('/payment-settings', [App\Http\Controllers\Admin\PaymentSettingsController::class, 'index'])->name('admin.payment-settings');
-        Route::post('/payment-settings/qris', [App\Http\Controllers\Admin\PaymentSettingsController::class, 'updateQris'])->name('admin.payment-settings.update-qris');
+        Route::get('/payment-settings', [App\Http\Controllers\Admin\PaymentSettingsController::class, 'index'])->name('admin.payment-settings')->middleware('role:super_admin');
+        Route::post('/payment-settings/qris', [App\Http\Controllers\Admin\PaymentSettingsController::class, 'updateQris'])->name('admin.payment-settings.update-qris')->middleware('role:super_admin');
        
         // Chatbot Admin Management
             Route::prefix('chatbot')->name('chatbot.')->group(function () {
@@ -570,17 +570,17 @@ Route::prefix('admin')->group(function () {
         
         // API routes for user management
         Route::prefix('api')->name('api.')->group(function () {
-            Route::get('/admins', [UserManagementController::class, 'getAdmins'])->name('admins.index');
-            Route::post('/admins', [UserManagementController::class, 'storeAdmin'])->name('admins.store');
+            Route::get('/admins', [UserManagementController::class, 'getAdmins'])->name('admins.index')->middleware('role:super_admin');
+            Route::post('/admins', [UserManagementController::class, 'storeAdmin'])->name('admins.store')->middleware('role:super_admin');
             Route::get('/admins/{id}', [UserManagementController::class, 'getAdmin'])->name('admins.show');
             Route::put('/admins/{id}', [UserManagementController::class, 'updateAdmin'])->name('admins.update');
-            Route::delete('/admins/{id}', [UserManagementController::class, 'destroyAdmin'])->name('admins.destroy');
+            Route::delete('/admins/{id}', [UserManagementController::class, 'destroyAdmin'])->name('admins.destroy')->middleware('role:super_admin');
             
             Route::get('/customers', [UserManagementController::class, 'getCustomers'])->name('customers.index');
             Route::post('/customers', [UserManagementController::class, 'storeCustomer'])->name('customers.store');
             Route::get('/customers/{id}', [UserManagementController::class, 'getCustomer'])->name('customers.show');
             Route::put('/customers/{id}', [UserManagementController::class, 'updateCustomer'])->name('customers.update');
-            Route::delete('/customers/{id}', [UserManagementController::class, 'destroyCustomer'])->name('customers.destroy');
+            Route::delete('/customers/{id}', [UserManagementController::class, 'destroyCustomer'])->name('customers.destroy')->middleware('role:super_admin');
             
             // Product Management API
             Route::get('/products', [ProductManagementController::class, 'getProducts'])->name('products.index');
@@ -609,8 +609,8 @@ Route::prefix('admin')->group(function () {
             Route::post('/custom-design-prices/{id}/toggle', [CustomDesignPriceController::class, 'toggleStatus'])->name('custom-design-prices.toggle');
             
             // Testing & Debugging API
-            Route::get('/test/db-integration', [\App\Http\Controllers\Admin\TestController::class, 'testDbIntegration'])->name('test.db-integration');
-            Route::get('/test/db-status', [\App\Http\Controllers\Admin\TestController::class, 'dbStatus'])->name('test.db-status');
+            Route::get('/test/db-integration', [\App\Http\Controllers\Admin\TestController::class, 'testDbIntegration'])->name('test.db-integration')->middleware('role:super_admin');
+            Route::get('/test/db-status', [\App\Http\Controllers\Admin\TestController::class, 'dbStatus'])->name('test.db-status')->middleware('role:super_admin');
         });
         
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
