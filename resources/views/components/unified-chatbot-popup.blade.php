@@ -893,6 +893,41 @@
 .unified-chatbot-popup .chat-product-price {
     margin-bottom: 2px;
 }
+
+/* ===== Rapikan kartu produk: samakan dengan /chatpage ===== */
+.unified-chatbot-popup .unified-message-bubble {
+    white-space: normal;
+}
+.unified-chatbot-popup .unified-message-bubble p {
+    white-space: pre-line;
+}
+
+.unified-chatbot-popup .chat-product-cards-grid {
+    margin-top: 8px;
+    gap: 6px;
+}
+
+.unified-chatbot-popup .chat-product-mini-card {
+    padding: 6px 10px;
+    gap: 6px;
+    border-radius: 8px;
+}
+
+.unified-chatbot-popup .chat-product-mini-name {
+    font-size: 12px;
+    line-height: 1.25;
+    margin-bottom: 1px;
+}
+
+.unified-chatbot-popup .chat-product-mini-price {
+    font-size: 12px;
+    line-height: 1.25;
+}
+
+.unified-chatbot-popup .chat-product-mini-card::after {
+    font-size: 14px;
+    color: #475569;
+}
 </style>
 
 <script>

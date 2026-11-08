@@ -419,3 +419,27 @@
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+
+/* ===== ANALYTICS: RESPONSIF HP & IPAD ===== */
+@media (max-width: 1024px) {
+    .analytics-content .charts-row { grid-template-columns: 1fr !important; }
+    .analytics-content .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+@media (max-width: 768px) {
+    .analytics-content .analytics-filter { padding: 12px !important; gap: 8px !important; }
+    .analytics-content .analytics-filter label,
+    .analytics-content .analytics-filter > span { width: 100%; }
+    .analytics-content .analytics-filter input[type="date"] { flex: 1 1 100%; width: 100%; box-sizing: border-box; }
+    .analytics-content .analytics-filter button { flex: 1 1 calc(50% - 8px); padding: 10px 12px !important; }
+    .analytics-content #exportBtn { flex: 1 1 100%; }
+
+    .analytics-content .chart-container { padding: 14px; }
+    .analytics-content .chart-wrapper { min-height: 240px; }
+    .analytics-content .customer-table { min-width: 560px; }
+}
+
+@media (max-width: 480px) {
+    .analytics-content .stats-grid { grid-template-columns: 1fr !important; }
+}

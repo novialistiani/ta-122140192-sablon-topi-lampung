@@ -29,7 +29,7 @@
 
             <div class="conversation-list" id="conversationList">
                 @forelse($conversations as $conversation)
-                    <div class="conversation-item" onclick="selectConversation({{ $conversation->id }})" 
+                    <div class="conversation-item" onclick="selectConversation({{ $conversation->id }}); document.querySelector('.chatbot-container').classList.add('chat-open');" 
                         style="position: relative; {{ ($conversation->needs_admin_response && !$conversation->taken_over_by_admin) ? 'border-left: 4px solid #dc3545; background-color: #fff5f5;' : '' }}">
                         <div class="conversation-avatar">
                             {{ strtoupper(substr($conversation->user->name, 0, 1)) }}
@@ -62,7 +62,9 @@
                 @endforelse
             </div>
         </div>
-
+        <button type="button" class="chat-back-fab" onclick="document.querySelector('.chatbot-container').classList.remove('chat-open')">
+                <i class="fas fa-arrow-left"></i> Daftar
+        </button>
         <!-- Main Chat Area -->
         <div class="chat-main" id="chatMain">
             <div class="empty-state">

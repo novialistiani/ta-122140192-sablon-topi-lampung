@@ -509,14 +509,19 @@ class ChatbotApiController extends Controller
             $products = Product::where('is_active', true)
                 ->where('stock', '>', 0)
                 ->orderBy('price', 'asc')
+                ->with('variants')
                 ->take(5)
                 ->get(['id', 'name', 'slug', 'price', 'image', 'stock']);
             
             if ($products->count() > 0) {
                 $productData = $products->map(function($p) {
                     $imageUrl = $p->image;
-                    if ($imageUrl && !str_starts_with($imageUrl, 'http')) {
-                        $imageUrl = asset('storage/' . $imageUrl);
+                    if (!$imageUrl) {
+                        $variantWithImage = $p->variants->first(fn($v) => !empty($v->image));
+                        $imageUrl = $variantWithImage ? $variantWithImage->image : null;
+                    }
+                    if ($imageUrl && !filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+                        $imageUrl = route('images.serve', ['path' => $imageUrl]);
                     }
                     return [
                         'id' => $p->id,
@@ -557,6 +562,51 @@ class ChatbotApiController extends Controller
             return "🎨 Custom Design:\n\nYa! Kami menerima custom design. Saat ini ada {$customCount} produk yang mendukung custom design.\n\nCara order custom:\n1. Pilih produk yang mendukung custom design\n2. Upload desain Anda melalui halaman Custom Design\n3. Tim kami akan me-review pengajuan desain Anda";
         }
         
+        // Cocokkan nama kategori (topi, kaos, jersey, dst.) langsung dari database
+        $allCategories = Product::where('is_active', true)
+            ->whereNotNull('category')
+            ->distinct()
+            ->pluck('category');
+
+        foreach ($allCategories as $cat) {
+            if (str_contains($msg, strtolower($cat))) {
+                $catProducts = Product::where('is_active', true)
+                    ->where('category', $cat)
+                    ->with('variants')
+                    ->take(5)
+                    ->get(['id', 'name', 'slug', 'price', 'image', 'stock']);
+
+                if ($catProducts->count() > 0) {
+                    $catData = $catProducts->map(function ($p) {
+                        $imageUrl = $p->image;
+                        if (!$imageUrl) {
+                            $variantWithImage = $p->variants->first(fn($v) => !empty($v->image));
+                            $imageUrl = $variantWithImage ? $variantWithImage->image : null;
+                        }
+                        if ($imageUrl && !filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+                            $imageUrl = route('images.serve', ['path' => $imageUrl]);
+                        }
+                        return [
+                            'id' => $p->id,
+                            'name' => $p->name,
+                            'slug' => $p->slug,
+                            'price' => $p->price,
+                            'formatted_price' => number_format($p->price, 0, ',', '.'),
+                            'image' => $imageUrl ?: '/images/no-image.png',
+                            'stock' => $p->stock,
+                        ];
+                    })->toArray();
+
+                    return [
+                        'message' => "Berikut produk kategori " . ucfirst($cat) . ":\n\nKlik produk untuk melihat detail lengkap.",
+                        'products' => $catData,
+                    ];
+                }
+
+                return "Maaf, saat ini belum ada produk " . ucfirst($cat) . " yang tersedia.";
+            }
+        }
+
         if (str_contains($msg, 'kategori') || str_contains($msg, 'produk') || str_contains($msg, 'jual')) {
             $categories = Product::select('category')
                 ->distinct()

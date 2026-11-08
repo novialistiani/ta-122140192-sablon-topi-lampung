@@ -1,171 +1,69 @@
 <x-admin-layout title="Kelola Harga Custom Design">
     @push('styles')
         <style>
-            .price-management-container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 24px;
+            .price-management-container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+            .section-card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+            .section-title { font-size: 20px; font-weight: 600; color: #0a1d37; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #fbbf24; }
+            .price-table { width: 100%; border-collapse: collapse; }
+            .price-table thead { background: #f9fafb; }
+            .price-table th { padding: 12px; text-align: left; font-weight: 600; color: #374151; border-bottom: 2px solid #e5e7eb; }
+            .price-table td { padding: 12px; border-bottom: 1px solid #e5e7eb; }
+            .price-table tbody tr:hover { background: #f9fafb; }
+            .code-badge { display: inline-block; background: #0a1d37; color: white; padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+            .price-input { width: 150px; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; }
+            .price-input:focus { outline: none; border-color: #fbbf24; box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1); }
+            .save-btn { background: #fbbf24; color: #0a1d37; padding: 8px 16px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 14px; }
+            .save-btn:hover { background: #f59e0b; transform: translateY(-1px); }
+            .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+            .toggle-switch { position: relative; width: 48px; height: 24px; background: #d1d5db; border-radius: 12px; cursor: pointer; transition: background 0.3s; flex-shrink: 0; }
+            .toggle-switch.active { background: #10b981; }
+            .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: transform 0.3s; }
+            .toggle-switch.active::after { transform: translateX(24px); }
+            .status-badge { display: inline-block; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+            .status-active { background: #d1fae5; color: #065f46; }
+            .status-inactive { background: #fee2e2; color: #991b1b; }
+            .alert { padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+            .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #86efac; }
+            .empty-state { text-align: center; padding: 48px 24px; color: #6b7280; }
+            .empty-state-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+            .action-cell { display: flex; align-items: center; gap: 10px; }
+
+            @media (max-width: 768px) {
+                .price-management-container { padding: 8px; }
+                .section-card { padding: 14px; }
+                .section-title { font-size: 17px; }
+                .price-table th, .price-table td { padding: 10px 6px; font-size: 13px; width: auto !important; }
+                .price-input { width: 110px; }
             }
 
-            .section-card {
-                background: white;
-                border-radius: 12px;
-                padding: 24px;
-                margin-bottom: 24px;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            }
+            @media (max-width: 480px) {
+                .price-table, .price-table tbody { display: block; width: 100%; }
+                .price-table thead { display: none; }
 
-            .section-title {
-                font-size: 20px;
-                font-weight: 600;
-                color: #0a1d37;
-                margin-bottom: 20px;
-                padding-bottom: 12px;
-                border-bottom: 2px solid #fbbf24;
-            }
+                .price-table tr {
+                    display: grid;
+                    grid-template-columns: auto 1fr auto;
+                    grid-template-areas:
+                        "kode nama status"
+                        "harga harga aksi";
+                    gap: 10px 12px;
+                    align-items: center;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 12px;
+                    padding: 12px;
+                    margin-bottom: 10px;
+                    background: #fff;
+                }
+                .price-table td { display: block; padding: 0; border: none; width: auto; }
+                .price-table td:nth-child(1) { grid-area: kode; }
+                .price-table td:nth-child(2) { grid-area: nama; font-size: 13px; line-height: 1.35; }
+                .price-table td:nth-child(3) { grid-area: harga; }
+                .price-table td:nth-child(4) { grid-area: status; justify-self: end; }
+                .price-table td:nth-child(5) { grid-area: aksi; justify-self: end; }
 
-            .price-table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-
-            .price-table thead {
-                background: #f9fafb;
-            }
-
-            .price-table th {
-                padding: 12px;
-                text-align: left;
-                font-weight: 600;
-                color: #374151;
-                border-bottom: 2px solid #e5e7eb;
-            }
-
-            .price-table td {
-                padding: 12px;
-                border-bottom: 1px solid #e5e7eb;
-            }
-
-            .price-table tbody tr:hover {
-                background: #f9fafb;
-            }
-
-            .code-badge {
-                display: inline-block;
-                background: #0a1d37;
-                color: white;
-                padding: 4px 12px;
-                border-radius: 6px;
-                font-weight: 600;
-                font-size: 14px;
-            }
-
-            .price-input {
-                width: 150px;
-                padding: 8px 12px;
-                border: 1px solid #d1d5db;
-                border-radius: 6px;
-                font-size: 14px;
-            }
-
-            .price-input:focus {
-                outline: none;
-                border-color: #fbbf24;
-                box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
-            }
-
-            .save-btn {
-                background: #fbbf24;
-                color: #0a1d37;
-                padding: 8px 16px;
-                border-radius: 6px;
-                border: none;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.2s;
-                font-size: 14px;
-            }
-
-            .save-btn:hover {
-                background: #f59e0b;
-                transform: translateY(-1px);
-            }
-
-            .save-btn:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
-
-            .toggle-switch {
-                position: relative;
-                width: 48px;
-                height: 24px;
-                background: #d1d5db;
-                border-radius: 12px;
-                cursor: pointer;
-                transition: background 0.3s;
-            }
-
-            .toggle-switch.active {
-                background: #10b981;
-            }
-
-            .toggle-switch::after {
-                content: '';
-                position: absolute;
-                top: 2px;
-                left: 2px;
-                width: 20px;
-                height: 20px;
-                background: white;
-                border-radius: 50%;
-                transition: transform 0.3s;
-            }
-
-            .toggle-switch.active::after {
-                transform: translateX(24px);
-            }
-
-            .status-badge {
-                display: inline-block;
-                padding: 4px 12px;
-                border-radius: 6px;
-                font-size: 12px;
-                font-weight: 600;
-            }
-
-            .status-active {
-                background: #d1fae5;
-                color: #065f46;
-            }
-
-            .status-inactive {
-                background: #fee2e2;
-                color: #991b1b;
-            }
-
-            .alert {
-                padding: 16px;
-                border-radius: 8px;
-                margin-bottom: 24px;
-            }
-
-            .alert-success {
-                background: #d1fae5;
-                color: #065f46;
-                border: 1px solid #86efac;
-            }
-
-            .empty-state {
-                text-align: center;
-                padding: 48px 24px;
-                color: #6b7280;
-            }
-
-            .empty-state-icon {
-                font-size: 48px;
-                margin-bottom: 16px;
-                opacity: 0.5;
+                .price-input { width: 100%; text-align: left; }
+                .action-cell { gap: 8px; }
+                .save-btn { padding: 8px 12px; }
             }
         </style>
     @endpush
@@ -197,7 +95,7 @@
             <h2 class="section-title">
                 <i class="fas fa-upload"></i> Harga Upload Bagian
             </h2>
-                       
+
             @if($errors->any())
                 <div style="padding: 10px 14px; background: #fee2e2; color: #991b1b; border-radius: 8px; margin-bottom: 12px;">{{ $errors->first() }}</div>
             @endif
@@ -237,33 +135,23 @@
                     <tbody>
                         @foreach($uploadSections as $section)
                             <tr>
-                                <td><span class="code-badge">{{ $section->code }}</span></td>
-                                <td>{{ $section->name }}</td>
-                                <td>
-                                    <input 
-                                        type="number" 
-                                        class="price-input" 
-                                        value="{{ $section->price }}" 
-                                        data-id="{{ $section->id }}"
-                                        data-original="{{ $section->price }}"
-                                        min="0"
-                                        step="1000"
-                                    >
+                                <td data-label="Kode"><span class="code-badge">{{ $section->code }}</span></td>
+                                <td data-label="Nama Bagian">{{ $section->name }}</td>
+                                <td data-label="Harga (Rp)">
+                                    <input type="number" class="price-input" value="{{ (int) $section->price }}" data-id="{{ $section->id }}" data-original="{{ (int) $section->price }}" min="0" step="1000">
                                 </td>
-                                <td>
+                                <td data-label="Status">
                                     <span class="status-badge {{ $section->is_active ? 'status-active' : 'status-inactive' }}">
                                         {{ $section->is_active ? 'Aktif' : 'Nonaktif' }}
                                     </span>
                                 </td>
-                                <td>
-                                    <button class="save-btn" onclick="updatePrice({{ $section->id }})">
-                                        <i class="fas fa-save"></i> Simpan
-                                    </button>
-                                    <div 
-                                        class="toggle-switch {{ $section->is_active ? 'active' : '' }}" 
-                                        onclick="toggleStatus({{ $section->id }})"
-                                        style="display: inline-block; margin-left: 8px;"
-                                    ></div>
+                                <td data-label="Aksi">
+                                    <div class="action-cell">
+                                        <button class="save-btn" onclick="updatePrice({{ $section->id }})">
+                                            <i class="fas fa-save"></i> Simpan
+                                        </button>
+                                        <div class="toggle-switch {{ $section->is_active ? 'active' : '' }}" onclick="toggleStatus({{ $section->id }})"></div>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -277,7 +165,7 @@
             <h2 class="section-title">
                 <i class="fas fa-cut"></i> Harga Jenis Cutting
             </h2>
-            
+
             @if($cuttingTypes->isEmpty())
                 <div class="empty-state">
                     <div class="empty-state-icon">📦</div>
@@ -297,33 +185,23 @@
                     <tbody>
                         @foreach($cuttingTypes as $cutting)
                             <tr>
-                                <td><span class="code-badge">{{ strtoupper(str_replace('-', ' ', $cutting->code)) }}</span></td>
-                                <td>{{ $cutting->name }}</td>
-                                <td>
-                                    <input 
-                                        type="number" 
-                                        class="price-input" 
-                                        value="{{ $cutting->price }}" 
-                                        data-id="{{ $cutting->id }}"
-                                        data-original="{{ $cutting->price }}"
-                                        min="0"
-                                        step="1000"
-                                    >
+                                <td data-label="Kode"><span class="code-badge">{{ strtoupper(str_replace('-', ' ', $cutting->code)) }}</span></td>
+                                <td data-label="Jenis Cutting">{{ $cutting->name }}</td>
+                                <td data-label="Harga (Rp)">
+                                    <input type="number" class="price-input" value="{{ (int) $cutting->price }}" data-id="{{ $cutting->id }}" data-original="{{ (int) $cutting->price }}" min="0" step="1000">
                                 </td>
-                                <td>
+                                <td data-label="Status">
                                     <span class="status-badge {{ $cutting->is_active ? 'status-active' : 'status-inactive' }}">
                                         {{ $cutting->is_active ? 'Aktif' : 'Nonaktif' }}
                                     </span>
                                 </td>
-                                <td>
-                                    <button class="save-btn" onclick="updatePrice({{ $cutting->id }})">
-                                        <i class="fas fa-save"></i> Simpan
-                                    </button>
-                                    <div 
-                                        class="toggle-switch {{ $cutting->is_active ? 'active' : '' }}" 
-                                        onclick="toggleStatus({{ $cutting->id }})"
-                                        style="display: inline-block; margin-left: 8px;"
-                                    ></div>
+                                <td data-label="Aksi">
+                                    <div class="action-cell">
+                                        <button class="save-btn" onclick="updatePrice({{ $cutting->id }})">
+                                            <i class="fas fa-save"></i> Simpan
+                                        </button>
+                                        <div class="toggle-switch {{ $cutting->is_active ? 'active' : '' }}" onclick="toggleStatus({{ $cutting->id }})"></div>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -339,10 +217,10 @@
                 const input = document.querySelector(`input[data-id="${id}"]`);
                 const price = input.value;
                 const button = event.target.closest('button');
-                
+
                 button.disabled = true;
                 button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
-                
+
                 try {
                     const response = await fetch(`/admin/api/custom-design-prices/${id}/price`, {
                         method: 'PUT',
@@ -352,9 +230,9 @@
                         },
                         body: JSON.stringify({ price })
                     });
-                    
+
                     const data = await response.json();
-                    
+
                     if (data.success) {
                         input.dataset.original = price;
                         button.innerHTML = '<i class="fas fa-check"></i> Tersimpan';
@@ -374,10 +252,10 @@
                     button.innerHTML = '<i class="fas fa-save"></i> Simpan';
                 }
             }
-            
+
             async function toggleStatus(id) {
                 const toggle = event.target;
-                
+
                 try {
                     const response = await fetch(`/admin/api/custom-design-prices/${id}/toggle`, {
                         method: 'POST',
@@ -386,9 +264,9 @@
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                         }
                     });
-                    
+
                     const data = await response.json();
-                    
+
                     if (data.success) {
                         toggle.classList.toggle('active');
                         const statusBadge = toggle.closest('tr').querySelector('.status-badge');

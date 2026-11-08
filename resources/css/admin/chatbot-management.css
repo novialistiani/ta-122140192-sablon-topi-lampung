@@ -838,3 +838,133 @@ a.product-context-preview:hover .product-context-link {
         display: none;
     }
 }
+
+
+/* ===== CHATBOT HP: PAKSA DAFTAR PENUH, CHAT TERSEMBUNYI ===== */
+@media (max-width: 768px) {
+    .page-content .chatbot-container { padding: 0 !important; gap: 0 !important; flex-direction: column !important; }
+
+    .page-content .chatbot-container .conversation-sidebar {
+        display: flex !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        flex: 1 1 auto !important;
+        border-radius: 0 !important;
+    }
+    .page-content .chatbot-container .chat-main {
+        display: none !important;
+        flex: 1 1 auto !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        border-radius: 0 !important;
+    }
+
+    .page-content .chatbot-container.chat-open .conversation-sidebar { display: none !important; }
+    .page-content .chatbot-container.chat-open .chat-main { display: flex !important; }
+}
+
+@media (max-width: 768px) {
+    .page-content .chatbot-container { min-height: 0 !important; }
+    .page-content .chatbot-container .conversation-list {
+        overflow-y: auto !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    .page-content .chatbot-container .conversation-item { position: relative; z-index: 1; }
+}
+
+.chat-back-fab { display: none; }
+
+@media (max-width: 768px) {
+    .page-content .chatbot-container.chat-open .chat-back-fab {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        position: absolute;
+        top: 8px;
+        right: 10px;
+        z-index: 20;
+        padding: 6px 12px;
+        border: 1px solid #dee2e6;
+        border-radius: 16px;
+        background: #fff;
+        font-size: 12px;
+        cursor: pointer;
+    }
+    .page-content .chatbot-container { position: relative; }
+}
+
+/* ===== CHATBOT HP: TINGGI TETAP + CHAT BISA DI-SCROLL ===== */
+@media (max-width: 768px) {
+    .page-content .chatbot-container {
+        height: calc(100vh - 150px) !important;
+        height: calc(100dvh - 150px) !important;
+        flex: none !important;
+        overflow: hidden !important;
+    }
+
+    .page-content .chatbot-container .chat-main {
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .page-content .chatbot-container .chat-messages {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .page-content .chatbot-container .chat-header,
+    .page-content .chatbot-container .chat-input-area { flex-shrink: 0 !important; }
+
+    /* tulisan kosong disembunyikan di HP */
+    .page-content .chatbot-container .chat-main .empty-state { display: none !important; }
+
+    /* tombol Daftar tidak menimpa header chat */
+    .page-content .chatbot-container.chat-open .chat-header { padding-right: 90px; }
+}
+
+@media (max-width: 768px) {
+    .page-content .chatbot-container .message { animation: none !important; }
+    .page-content .chatbot-container .chat-main { transition: none !important; }
+}
+
+.bot-product-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.bot-product-card {
+    display: flex; gap: 10px; align-items: center;
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 8px;
+}
+.bot-product-card img {
+    width: 56px; height: 56px; object-fit: cover; border-radius: 8px;
+    background: #f3f4f6; flex-shrink: 0;
+}
+.bot-product-info { min-width: 0; }
+.bot-product-name { font-size: 13px; font-weight: 600; color: #111827; overflow-wrap: anywhere; }
+.bot-product-price { font-size: 13px; color: #b45309; font-weight: 600; }
+.bot-product-stock { font-size: 11px; color: #059669; }
+.bot-product-stock.out { color: #dc2626; }
+
+.bpc-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.bpc-card {
+    display: flex; gap: 10px; align-items: center;
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
+    padding: 8px; text-decoration: none; color: inherit;
+}
+.bpc-card img {
+    width: 56px; height: 56px; object-fit: cover; border-radius: 8px;
+    background: #f3f4f6; flex-shrink: 0;
+}
+.bpc-info { min-width: 0; }
+.bpc-name { font-size: 13px; font-weight: 600; color: #111827; overflow-wrap: anywhere; }
+.bpc-price { font-size: 13px; color: #b45309; font-weight: 600; }
+.bpc-stock { font-size: 11px; color: #059669; }
+.bpc-stock.out { color: #dc2626; }
+
+.bpc-card { justify-content: space-between; }
+.bpc-icon { color: #6b7280; font-size: 12px; flex-shrink: 0; }

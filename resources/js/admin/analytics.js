@@ -425,7 +425,7 @@ function loadCustomerAnalytics() {
                         <tr>
                             <td><strong>#${idx + 1}</strong></td>
                             <td><strong>${c.customer}</strong></td>
-                            <td>${c.recency} days</td>
+                            <td>${Math.round(Number(c.recency))} days</td>
                             <td>${c.frequency}x</td>
                             <td><strong>Rp ${Number(c.monetary).toLocaleString('id-ID', {maxFractionDigits: 0})}</strong></td>
                             <td><span style="padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; color: white; background: ${color};">${c.segment}</span></td>

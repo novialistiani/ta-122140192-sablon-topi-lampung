@@ -676,3 +676,86 @@ margin-bottom: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     border-color: #3b82f6;
 }
+
+
+/* ===== USER MANAGEMENT: RESPONSIF HP & IPAD ===== */
+.user-management-wrapper .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.user-management-wrapper .data-table { min-width: 760px; }
+.user-management-wrapper .data-table th,
+.user-management-wrapper .data-table td { white-space: nowrap; }
+
+@media (max-width: 768px) {
+    /* tab Admin / Customer selebar layar */
+    .user-management-wrapper .tab-segmented-container { width: 100%; }
+    .user-management-wrapper .tab-segment { flex: 1; justify-content: center; }
+
+    /* judul + tombol Export / Add Admin bertumpuk */
+    .user-management-wrapper .table-card-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    .user-management-wrapper .table-card-header > div[style*="display: flex"] {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    .user-management-wrapper .table-card-header .btn-add-primary {
+        flex: 1 1 100%;
+        justify-content: center;
+    }
+
+    .user-management-wrapper .data-table th,
+    .user-management-wrapper .data-table td { padding: 10px 8px; }
+
+    /* pagination */
+    .user-management-wrapper .pagination-container {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    /* modal Add / Edit muat di layar pendek */
+    .modal-overlay .modal-container {
+        width: 94% !important;
+        max-width: 94% !important;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    .modal-overlay .modal-footer { flex-wrap: wrap; gap: 8px; }
+    .modal-overlay .modal-footer button { flex: 1 1 100%; justify-content: center; }
+    #customerDetailModal .modal-content { width: 94% !important; margin: 6vh auto !important; }
+}
+
+/* ===== USER MANAGEMENT: TABEL MUAT DI IPAD ===== */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .user-management-wrapper .data-table { min-width: 0; width: 100%; }
+
+    .user-management-wrapper .data-table th,
+    .user-management-wrapper .data-table td {
+        padding: 8px 6px;
+        font-size: 12px;
+    }
+
+    /* email dan nama boleh turun baris */
+    .user-management-wrapper .data-table .user-email,
+    .user-management-wrapper .data-table .user-name {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+    .user-management-wrapper .data-table td:nth-child(2),
+    .user-management-wrapper .data-table td:nth-child(3) { white-space: normal; }
+}
+
+@media (max-width: 768px) {
+    .modal-overlay .modal-footer .btn-cancel,
+    .modal-overlay .modal-footer .btn-primary {
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+}

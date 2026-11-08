@@ -54,6 +54,16 @@
         .btn-success:hover {
             background: #059669;
         }
+        @media (max-width: 768px) {
+    .filter-card { padding: 1rem; margin-bottom: 1rem; }
+    .filter-form { gap: 0.75rem; }
+    .form-group { min-width: 100%; }
+    .filter-form .btn { flex: 1 1 100%; text-align: center; display: block; box-sizing: border-box; }
+
+    .chart-wrapper { min-height: 240px; }
+    .chart-card table th,
+    .chart-card table td { padding: 10px 12px !important; }
+}
     </style>
     @endpush
 

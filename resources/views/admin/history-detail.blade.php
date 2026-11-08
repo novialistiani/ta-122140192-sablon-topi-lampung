@@ -168,13 +168,16 @@
                                 </div>
                                 <div class="subject-meta">
                                     @if($log->subject_type === 'App\\Models\\Product')
-                                        Kategori: {{ $subject->category->name ?? '-' }}<br>
-                                        Status: {{ $subject->status ?? '-' }}
+                                        Kategori: {{ ucfirst($subject->category ?? '-') }}<br>
+                                        Status: {{ ($subject->is_active ?? false) ? 'Aktif' : 'Nonaktif' }}
                                     @elseif($log->subject_type === 'App\\Models\\CustomDesignOrder')
                                         Status: {{ $subject->status ?? '-' }}<br>
                                         Total: Rp {{ number_format($subject->total_price ?? 0, 0, ',', '.') }}
                                     @elseif($log->subject_type === 'App\\Models\\User')
                                         Email: {{ $subject->email ?? '-' }}
+                                 @elseif($log->subject_type === 'App\\Models\\Order')
+                                            Status: {{ ucfirst($subject->status ?? '-') }}<br>
+                                            Total: Rp {{ number_format($subject->total ?? 0, 0, ',', '.') }}
                                     @endif
                                 </div>
                             </div>

@@ -1,30 +1,105 @@
 <x-admin-layout title="Laporan Stok">
     @push('styles')
         <style>
-            .sr-card-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
-            .sr-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px 20px; }
-            .sr-card small { color: #6b7280; display: block; margin-bottom: 6px; }
-            .sr-card strong { font-size: 26px; color: #0a1d37; }
-            .sr-panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; }
-            .sr-panel h3 { margin: 0 0 12px; font-size: 16px; color: #111827; }
-            .sr-filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 20px; }
-            .sr-filters input, .sr-filters select { padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #fff; }
-            .sr-btn { padding: 8px 16px; border: 0; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; text-decoration: none; display: inline-block; }
-            .sr-btn-primary { background: #0a1d37; color: #fff; }
-            .sr-btn-secondary { background: #e5e7eb; color: #1f2937; }
-            .sr-btn-success { background: #16a34a; color: #fff; margin-left: auto; }
-            .sr-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-            .sr-table th { text-align: left; padding: 10px; background: #f3f4f6; color: #374151; border-bottom: 1px solid #e5e7eb; }
-            .sr-table td { padding: 10px; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
-            .sr-in { color: #15803d; font-weight: 700; }
-            .sr-out { color: #b91c1c; font-weight: 700; }
-            .sr-table .sr-right { text-align: right; }
-            .sr-muted { color: #6b7280; font-size: 12px; }
-            .sr-pager { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 14px; }
-            .sr-pager a, .sr-pager .disabled { padding: 6px 14px; border-radius: 6px; border: 1px solid #d1d5db; text-decoration: none; color: #1f2937; }
-            .sr-pager .disabled { color: #9ca3af; background: #f9fafb; }
+    .sr-card-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+    .sr-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px 20px; }
+    .sr-card small { color: #6b7280; display: block; margin-bottom: 6px; }
+    .sr-card strong { font-size: 26px; color: #0a1d37; }
+    .sr-panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; overflow-x: auto; }
+    .sr-panel h3 { margin: 0 0 12px; font-size: 16px; color: #111827; }
+    .sr-filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 20px; }
+    .sr-filters input, .sr-filters select { padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #fff; }
+    .sr-btn { padding: 8px 16px; border: 0; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; text-decoration: none; display: inline-block; }
+    .sr-btn-primary { background: #0a1d37; color: #fff; }
+    .sr-btn-secondary { background: #e5e7eb; color: #1f2937; }
+    .sr-btn-success { background: #16a34a; color: #fff; margin-left: auto; }
+    .sr-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .sr-table-history { min-width: 560px; }
+    .sr-table th { text-align: left; padding: 10px; background: #f3f4f6; color: #374151; border-bottom: 1px solid #e5e7eb; }
+    .sr-table td { padding: 10px; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
+    .sr-in { color: #15803d; font-weight: 700; }
+    .sr-out { color: #b91c1c; font-weight: 700; }
+    .sr-table .sr-right { text-align: right; }
+    .sr-muted { color: #6b7280; font-size: 12px; }
+    .sr-pager { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 14px; }
+    .sr-pager a, .sr-pager .disabled { padding: 6px 14px; border-radius: 6px; border: 1px solid #d1d5db; text-decoration: none; color: #1f2937; }
+    .sr-pager .disabled { color: #9ca3af; background: #f9fafb; }
+
+    @media (max-width: 992px) {
+        .sr-card strong { font-size: 22px; }
+    }
+
+    @media (max-width: 768px) {
+        .sr-card-row { grid-template-columns: 1fr; }
+        .sr-filters { flex-direction: column; align-items: stretch; }
+        .sr-filters input,
+        .sr-filters select,
+        .sr-filters .sr-btn { width: 100%; text-align: center; }
+        .sr-filters > span { display: none; }
+        .sr-btn-success { margin-left: 0; }
+        .sr-panel { padding: 12px; }
+        .sr-table th, .sr-table td { padding: 8px 6px; }
+        .sr-table-history th, .sr-table-history td { white-space: nowrap; }
+        .sr-table-summary th, .sr-table-summary td { font-size: 12px; padding: 8px 4px; }
+        .sr-pager { flex-direction: column; gap: 10px; text-align: center; }
+    }
+            /* Ringkasan per Produk: selalu selebar kotaknya */
+        .sr-table-summary { width: 100% !important; min-width: 0 !important; table-layout: auto; }
+
+        /* Riwayat Pergerakan: tabel digeser ke samping, kolom tidak terpotong */
+        .sr-table-history { width: 100%; min-width: 760px; }
+        .sr-table-history th,
+        .sr-table-history td { white-space: nowrap; }
+        .sr-table-history th:nth-child(1),
+        .sr-table-history td:nth-child(1) { min-width: 120px; }
+        .sr-table-history th:nth-child(2),
+        .sr-table-history td:nth-child(2) { min-width: 180px; }
+        .sr-table-history th:nth-child(5),
+        .sr-table-history td:nth-child(5) { white-space: normal; min-width: 220px; }
+        .sr-table-history th:nth-child(6),
+        .sr-table-history td:nth-child(6) { min-width: 130px; }
+        .sr-panel-summary { overflow-x: visible !important; }
+
+        .sr-panel-summary .sr-table-summary {
+            display: table !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            table-layout: fixed !important;
+        }
+        .sr-panel-summary .sr-table-summary th:nth-child(1),
+        .sr-panel-summary .sr-table-summary td:nth-child(1) {
+            width: 40%;
+            white-space: normal;
+            word-break: break-word;
+        }
+        .sr-panel-summary .sr-table-summary th:nth-child(2),
+        .sr-panel-summary .sr-table-summary td:nth-child(2),
+        .sr-panel-summary .sr-table-summary th:nth-child(3),
+        .sr-panel-summary .sr-table-summary td:nth-child(3) { width: 17%; }
+        .sr-panel-summary .sr-table-summary th:nth-child(4),
+        .sr-panel-summary .sr-table-summary td:nth-child(4) { width: 26%; }
+
+        @media (max-width: 768px) {
+            .sr-panel-summary .sr-table-summary th,
+            .sr-panel-summary .sr-table-summary td { font-size: 12px; padding: 8px 4px; }
+        }
+        @media (max-width: 768px) {
+            .sr-panel-summary .sr-table-summary th,
+            .sr-panel-summary .sr-table-summary td {
+                padding: 10px 6px;
+            }
+            .sr-panel-summary .sr-table-summary th:nth-child(1),
+            .sr-panel-summary .sr-table-summary td:nth-child(1) { width: 34%; }
+            .sr-panel-summary .sr-table-summary th:nth-child(2),
+            .sr-panel-summary .sr-table-summary td:nth-child(2),
+            .sr-panel-summary .sr-table-summary th:nth-child(3),
+            .sr-panel-summary .sr-table-summary td:nth-child(3) { width: 18%; }
+            .sr-panel-summary .sr-table-summary th:nth-child(4),
+            .sr-panel-summary .sr-table-summary td:nth-child(4) { width: 30%; }
+            .sr-panel-summary .sr-table-summary th:nth-child(4) { white-space: nowrap; font-size: 11px; }
+        }
         </style>
-    @endpush
+         @endpush
 
     <form method="GET" action="{{ route('admin.stock-report') }}" class="sr-filters">
         <input type="date" name="start_date" value="{{ $start->toDateString() }}" title="Dari tanggal">
@@ -53,9 +128,9 @@
         <div class="sr-card"><small>Jumlah Pergerakan</small><strong>{{ number_format((int) $totals->movements, 0, ',', '.') }}</strong></div>
     </div>
 
-    <div class="sr-panel">
+    <div class="sr-panel sr-panel-summary">
         <h3>Ringkasan per Produk</h3>
-        <table class="sr-table">
+        <table class="sr-table sr-table-summary">
             <thead>
                 <tr>
                     <th>Produk</th>
@@ -81,7 +156,7 @@
 
     <div class="sr-panel">
         <h3>Riwayat Pergerakan Stok</h3>
-        <table class="sr-table">
+        <table class="sr-table sr-table-history">
             <thead>
                 <tr>
                     <th>Waktu</th>
@@ -92,34 +167,34 @@
                     <th>Referensi</th>
                 </tr>
             </thead>
-            <tbody>
-                @forelse($movements as $m)
-                <tr>
-                    <td>{{ $m->created_at->format('d/m/Y H:i') }}</td>
-                    <td>
-                        {{ $m->product_name ?? '-' }}
-                        @if($m->variant_label)<div class="sr-muted">{{ $m->variant_label }}</div>@endif
-                    </td>
-                    <td class="sr-right {{ $m->quantity_change >= 0 ? 'sr-in' : 'sr-out' }}">
-                        {{ $m->quantity_change > 0 ? '+' : '' }}{{ $m->quantity_change }}
-                    </td>
-                    <td class="sr-right">{{ $m->stock_before }} &rarr; {{ $m->stock_after }}</td>
-                    <td>
-                        {{ $m->reason_label }}
-                        @if($m->note)<div class="sr-muted">{{ $m->note }}</div>@endif
-                    </td>
-                    <td>
-                        @if($m->reference_type)
-                            {{ $m->reference_type === 'custom_order' ? 'Pesanan Custom' : 'Pesanan' }} #{{ $m->reference_id }}
-                        @else
-                            -
-                        @endif
-                    </td>
-                </tr>
-                @empty
-                <tr><td colspan="6" style="text-align:center; padding: 24px; color:#6b7280;">Belum ada pergerakan stok pada periode ini.</td></tr>
-                @endforelse
-            </tbody>
+                    <tbody>
+            @forelse($movements as $m)
+            <tr>
+                <td data-label="Waktu">{{ $m->created_at->format('d/m/Y H:i') }}</td>
+                <td data-label="Produk">
+                    {{ $m->product_name ?? '-' }}
+                    @if($m->variant_label)<div class="sr-muted">{{ $m->variant_label }}</div>@endif
+                </td>
+                <td data-label="Perubahan" class="sr-right {{ $m->quantity_change >= 0 ? 'sr-in' : 'sr-out' }}">
+                    {{ $m->quantity_change > 0 ? '+' : '' }}{{ $m->quantity_change }}
+                </td>
+                <td data-label="Stok" class="sr-right">{{ $m->stock_before }} &rarr; {{ $m->stock_after }}</td>
+                <td data-label="Alasan">
+                    {{ $m->reason_label }}
+                    @if($m->note)<div class="sr-muted">{{ $m->note }}</div>@endif
+                </td>
+                <td data-label="Referensi">
+                    @if($m->reference_type)
+                        {{ $m->reference_type === 'custom_order' ? 'Pesanan Custom' : 'Pesanan' }} #{{ $m->reference_id }}
+                    @else
+                        -
+                    @endif
+                </td>
+            </tr>
+            @empty
+            <tr><td colspan="6" style="text-align:center; padding: 24px; color:#6b7280;">Belum ada pergerakan stok pada periode ini.</td></tr>
+            @endforelse
+        </tbody>
         </table>
 
         @if($movements->hasPages())

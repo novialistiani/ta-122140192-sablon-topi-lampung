@@ -21,7 +21,8 @@ function selectConversation(conversationId) {
     document.querySelectorAll('.conversation-item').forEach(item => {
         item.classList.remove('active');
     });
-    event.currentTarget.classList.add('active');
+    const clicked = (typeof event !== 'undefined' && event && event.currentTarget) ? event.currentTarget : null;
+    if (clicked) clicked.classList.add('active');
 
     // Clear old polling
     if (pollInterval) clearInterval(pollInterval);
@@ -183,6 +184,24 @@ function formatBotMessage(message, metadata = null) {
         productsFromMetadata = metadata.products;
     }
     
+    // Jika chatbot mengirim data produk, tampilkan sebagai kartu
+    if (productsFromMetadata.length > 0) {
+        const esc = s => s.replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+        const lines = message.split('\n').map(l => l.trim()).filter(Boolean);
+        const isListLine = l => /^\d+\./.test(l) || /Rp|Stok|Stock|💰|📦|•/.test(l);
+        const intro = lines.length && !isListLine(lines[0]) ? lines[0] : '';
+        const last = lines.length > 1 ? lines[lines.length - 1] : '';
+        const footer = last && !isListLine(last) ? last : '';
+
+        let html = '';
+        if (intro) html += `<div class="bot-msg-header">${esc(intro)}</div>`;
+        html += renderProductCards(productsFromMetadata);
+        if (footer && footer !== intro) html += `<div class="bot-msg-footer">${esc(footer)}</div>`;
+        return html;
+    }
+
     // Check if message contains product recommendations pattern
     // Pattern: numbered list with price and stock
     const productPattern = /(\d+)\.\s*([^💰]+)\s*💰\s*Rp\s*([\d.,]+)\s*📦\s*Stok:\s*(\d+)/g;
@@ -402,6 +421,10 @@ function displayConversation(conversation, isInitialLoad = false) {
         // Setup Enter key listener for message input
         setupMessageInputListener(conversation.id);
 
+        // Langsung ke pesan terbawah tanpa menunggu timeout
+        const firstMsgBox = document.getElementById('chatMessages');
+        if (firstMsgBox) firstMsgBox.scrollTop = firstMsgBox.scrollHeight;
+
         // Scroll to bottom
         setTimeout(() => {
             const chatMessages = document.getElementById('chatMessages');
@@ -448,7 +471,8 @@ function setupMessageInputListener(conversationId) {
         }
     });
 
-    // Focus input automatically
+    // Focus otomatis hanya di desktop (di HP memicu keyboard dan layout melompat)
+    if (window.innerWidth <= 768) return;
     messageInput.focus();
 }
 
@@ -622,4 +646,30 @@ window.takeOverConversation = takeOverConversation;
 window.releaseConversation = releaseConversation;
 window.closeConversation = closeConversation;
 window.clearChatHistory = clearChatHistory;
-window.openProductDetail = openProductDetail;
+
+function renderProductCards(products) {
+    if (!Array.isArray(products) || !products.length) return '';
+
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+
+    const cards = products.map(p => {
+        const price = 'Rp ' + Number(p.price || 0).toLocaleString('id-ID');
+        const stock = Number(p.stock || 0);
+        const stockText = stock > 0 ? 'Ready Stock · ' + stock : 'Habis';
+        const url = p.id ? `/product-detail?id=${p.id}` : '#';
+
+        return `
+            <a href="${url}" target="_blank" class="bpc-card" title="Lihat detail ${esc(p.name)}">
+                <div class="bpc-info">
+                    <div class="bpc-name">${esc(p.name)}</div>
+                    <div class="bpc-price">${price}</div>
+                    <div class="bpc-stock ${stock > 0 ? '' : 'out'}">${stockText}</div>
+                </div>
+                <i class="fas fa-external-link-alt bpc-icon"></i>
+            </a>`;
+    }).join('');
+
+    return `<div class="bpc-list">${cards}</div>`;
+}
