@@ -42,7 +42,7 @@
         </div>
 
         <!-- Kolom Kanan: Keranjang -->
-        <div class="pos-panel pos-cart-panel">
+        <div class="pos-panel pos-cart-panel" id="pos-cart-panel">
             <div class="pos-cart-header">
                 <h3><i class="fas fa-shopping-cart"></i> Keranjang (<span id="pos-cart-count">0</span>)</h3>
                 <button type="button" id="pos-clear-cart" class="pos-btn-outline-danger">
@@ -110,6 +110,13 @@
         </div>
     </div>
 
+    <!-- Tombol melayang menuju keranjang (hanya HP dan iPad) -->
+    <button type="button" class="pos-cart-fab" id="pos-cart-fab"
+            onclick="document.getElementById('pos-cart-panel').scrollIntoView({behavior: 'smooth', block: 'start'})">
+        <i class="fas fa-shopping-cart"></i>
+        Keranjang <span class="pos-fab-count" id="pos-fab-count">0</span>
+    </button>
+
     <!-- Modal Struk -->
     <div id="pos-receipt-modal" class="pos-modal-overlay">
         <div class="pos-modal">
@@ -129,5 +136,35 @@
         };
     </script>
     @vite(['resources/js/admin/pos.js'])
+    <script>
+        (function () {
+            const src = document.getElementById('pos-cart-count');
+            const dst = document.getElementById('pos-fab-count');
+            if (!src || !dst) return;
+            const sync = () => { dst.textContent = src.textContent; };
+            new MutationObserver(sync).observe(src, { childList: true, characterData: true, subtree: true });
+            sync();
+        })();
+    </script>
+    <script>
+        (function () {
+            const fab = document.getElementById('pos-cart-fab');
+            const panel = document.getElementById('pos-cart-panel');
+            if (!fab || !panel || !('IntersectionObserver' in window)) return;
+            new IntersectionObserver(([e]) => {
+                fab.style.display = e.isIntersecting ? 'none' : '';
+            }, { threshold: 0.15 }).observe(panel);
+        })();
+    </script>
+        <script>
+        (function () {
+            const fab = document.getElementById('pos-cart-fab');
+            const panel = document.getElementById('pos-cart-panel');
+            if (!fab || !panel || !('IntersectionObserver' in window)) return;
+            new IntersectionObserver(([e]) => {
+                fab.style.display = e.isIntersecting ? 'none' : '';
+            }, { threshold: 0.15 }).observe(panel);
+        })();
+    </script>
     @endpush
 </x-admin-layout>

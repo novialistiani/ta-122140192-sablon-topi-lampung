@@ -586,3 +586,296 @@
         flex-direction: column;
     }
 }
+
+/* ===== POS: RESPONSIF HP, IPAD, DESKTOP ===== */
+
+/* tombol melayang: tersembunyi di desktop */
+.pos-cart-fab { display: none; }
+
+/* desktop: keranjang tidak lebih tinggi dari layar */
+@media (min-width: 1025px) {
+    .pos-cart-panel {
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+    }
+}
+
+/* iPad dan layar menengah */
+@media (max-width: 1024px) {
+    .pos-cart-fab {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        position: fixed;
+        right: 16px;
+        bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+        z-index: 50;
+        padding: 12px 18px;
+        border: none;
+        border-radius: 999px;
+        background: #0f172a;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 700;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.35);
+        cursor: pointer;
+    }
+    .pos-fab-count {
+        min-width: 22px;
+        height: 22px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: #fbbf24;
+        color: #0f172a;
+        font-size: 12px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* ruang di bawah supaya tombol Bayar tidak tertutup tombol melayang */
+    .pos-cart-panel { margin-bottom: 72px; }
+}
+
+/* iPad: 3 kolom produk */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .pos-product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* HP */
+@media (max-width: 640px) {
+    .pos-page-header h1 { font-size: 20px; }
+    .pos-page-header p { font-size: 13px; }
+    .pos-layout { gap: 14px; }
+
+    /* 16px mencegah auto-zoom di iPhone */
+    .pos-search-box input,
+    .pos-select,
+    .pos-input { font-size: 16px; }
+    .pos-search-box { min-width: 0; }
+
+    /* tab kategori: satu baris yang bisa digeser */
+    .pos-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
+    }
+    .pos-tab { flex: 0 0 auto; }
+
+    .pos-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .pos-product-card { padding: 10px; border-radius: 12px; }
+    .pos-product-name { font-size: 13px; }
+    .pos-product-price { font-size: 13px; margin-bottom: 8px; }
+    .pos-add-btn { min-height: 40px; }
+
+    .pos-pagination { flex-wrap: wrap; }
+
+    /* keranjang: tiap item jadi kartu kecil */
+    .pos-cart-table-wrapper { max-height: 300px; }
+    .pos-cart-table,
+    .pos-cart-table tbody { display: block; width: 100%; }
+    .pos-cart-table thead { display: none; }
+
+    .pos-cart-table tbody tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        grid-template-areas:
+            "nama nama hapus"
+            "harga qty sub";
+        gap: 8px 10px;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .pos-cart-table tbody td { display: block; border: none; padding: 0; min-width: 0; }
+    .pos-cart-table tbody td:nth-child(1) { grid-area: nama; }
+    .pos-cart-table tbody td:nth-child(2) { grid-area: harga; font-size: 12px; color: #64748b; }
+    .pos-cart-table tbody td:nth-child(3) { grid-area: qty; }
+    .pos-cart-table tbody td:nth-child(4) { grid-area: sub; font-weight: 700; color: #0f172a; text-align: right; }
+    .pos-cart-table tbody td:nth-child(5) { grid-area: hapus; justify-self: end; }
+
+    /* baris "Belum ada item" tetap satu baris penuh */
+    .pos-cart-table tbody tr:has(td.pos-empty-text) { display: block; }
+    .pos-cart-table td.pos-empty-text { text-align: center; padding: 24px 0; }
+
+    .pos-qty-btn { width: 30px; height: 30px; }
+    .pos-remove-btn { width: 32px; height: 32px; }
+
+    .pos-action-buttons { flex-direction: column; }
+    .pos-btn-secondary,
+    .pos-btn-primary { min-height: 46px; }
+
+    .pos-modal { width: calc(100% - 24px); max-height: 90vh; overflow-y: auto; }
+    .pos-modal-actions { flex-direction: column; }
+}
+
+/* cetak: hanya struk yang tercetak */
+@media print {
+    body * { visibility: hidden; }
+    #pos-receipt-modal,
+    #pos-receipt-modal * { visibility: visible; }
+    #pos-receipt-modal {
+        position: absolute;
+        inset: 0;
+        background: #ffffff;
+        display: block;
+    }
+    .pos-modal { box-shadow: none; max-width: 100%; }
+    .pos-modal-actions { display: none; }
+    .pos-cart-fab { display: none; }
+}
+/* ===== PERBAIKAN: kolom tidak boleh melebihi lebar layar ===== */
+@media (max-width: 1024px) {
+    .pos-layout { grid-template-columns: minmax(0, 1fr); }
+    .pos-layout > * { min-width: 0; }
+    .pos-panel { min-width: 0; max-width: 100%; box-sizing: border-box; }
+    .pos-toolbar > * { min-width: 0; max-width: 100%; }
+    .pos-tabs { max-width: 100%; }
+    .pos-search-box input,
+    .pos-select,
+    .pos-input { max-width: 100%; box-sizing: border-box; }
+}
+
+/* ===== POP-UP PILIH VARIAN ===== */
+.pos-variant-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.pos-variant-box {
+    background: #ffffff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 380px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 20px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+}
+
+.pos-variant-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.pos-variant-head h3 { font-size: 16px; font-weight: 700; color: #0f172a; margin: 0 0 2px; overflow-wrap: anywhere; }
+.pos-variant-head p { font-size: 12px; color: #64748b; margin: 0; }
+
+.pos-variant-close {
+    width: 34px; height: 34px; flex-shrink: 0;
+    border: none; border-radius: 50%;
+    background: #f1f5f9; color: #475569;
+    font-size: 20px; line-height: 1; cursor: pointer;
+}
+
+.pos-variant-group { margin-bottom: 16px; }
+.pos-variant-label { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 8px; }
+.pos-variant-label span { margin-left: 6px; font-weight: 500; color: #0f172a; }
+
+.pos-variant-swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.pos-swatch {
+    position: relative;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 2px solid #e2e8f0;
+    background: #cbd5e1;
+    color: #64748b; font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 2px #ffffff;
+    transition: transform 0.15s;
+}
+.pos-swatch:hover:not(:disabled) { transform: scale(1.06); }
+.pos-swatch.active { border-color: #0f172a; box-shadow: inset 0 0 0 2px #ffffff, 0 0 0 2px #fbbf24; }
+.pos-swatch:disabled { opacity: 0.35; cursor: not-allowed; }
+.pos-swatch:disabled::after {
+    content: ''; position: absolute; left: 50%; top: 4px; bottom: 4px;
+    width: 2px; background: #64748b; transform: rotate(45deg);
+}
+
+.pos-variant-sizes { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.pos-size-chip {
+    min-width: 48px; height: 42px; padding: 0 14px;
+    border: 1.5px solid #e2e8f0; border-radius: 10px;
+    background: #ffffff; color: #0f172a;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.pos-size-chip.active { background: #0f172a; border-color: #0f172a; color: #ffffff; }
+.pos-size-chip:disabled { opacity: 0.35; cursor: not-allowed; text-decoration: line-through; }
+
+.pos-variant-info {
+    min-height: 40px;
+    display: flex; align-items: center;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    background: #f8fafc; border-radius: 10px;
+    font-size: 13px; font-weight: 600; color: #334155;
+}
+
+.pos-variant-actions { display: flex; gap: 10px; }
+.pos-variant-actions .pos-btn-secondary,
+.pos-variant-actions .pos-btn-primary { min-height: 46px; }
+.pos-variant-actions .pos-btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* lingkaran warna di baris keranjang */
+.pos-cart-swatch {
+    display: inline-block;
+    width: 12px; height: 12px;
+    margin-right: 6px;
+    border-radius: 50%;
+    border: 1px solid #cbd5e1;
+    vertical-align: -1px;
+}
+
+/* HP: jendela muncul dari bawah layar */
+@media (max-width: 640px) {
+    .pos-variant-overlay { align-items: flex-end; padding: 0; }
+    .pos-variant-box {
+        max-width: 100%;
+        border-radius: 18px 18px 0 0;
+        padding: 18px 16px;
+        padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    }
+    .pos-variant-actions { flex-direction: row; }
+}
+
+@media print {
+    /* buang ruang halaman lain, bukan hanya disembunyikan */
+    .pos-page-header,
+    .pos-layout,
+    .page-header,
+    .top-navbar,
+    .sidebar-toggle,
+    .admin-backdrop,
+    .pos-cart-fab { display: none !important; }
+
+    html, body,
+    .dashboard-container,
+    .page-content {
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+    }
+
+    /* struk selebar kertas struk, di bagian atas halaman */
+    #pos-receipt-modal { position: static !important; background: #ffffff !important; }
+    .pos-modal {
+        width: 80mm !important;
+        max-width: 80mm !important;
+        margin: 0 auto !important;
+        padding: 4mm !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+}

@@ -84,13 +84,140 @@ function posOpenVariantPicker(productId) {
         return;
     }
 
-    const options = product.variants.map((v, i) => `${i + 1}. ${v.color || '-'} / ${v.size || '-'} (stok: ${v.stock})`).join('\n');
-    const choice = prompt(`Pilih varian untuk ${product.name}:\n${options}\n\nMasukkan nomor:`);
-    const index = parseInt(choice) - 1;
+    posShowVariantModal(product);
+}
 
-    if (index >= 0 && index < product.variants.length) {
-        posAddToCart(product, product.variants[index]);
+// ===== Pop-up pilih varian (pengganti prompt) =====
+function posEscape(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+}
+
+function posIsCssColor(value) {
+    return !!value && window.CSS && CSS.supports('color', value);
+}
+
+function posVariantEscHandler(e) {
+    if (e.key === 'Escape') posCloseVariantModal();
+}
+
+function posCloseVariantModal() {
+    const el = document.getElementById('pos-variant-modal');
+    if (el) el.remove();
+    document.removeEventListener('keydown', posVariantEscHandler);
+}
+
+function posShowVariantModal(product) {
+    posCloseVariantModal();
+
+    const variants = product.variants;
+    const colors = [...new Set(variants.map(v => v.color).filter(Boolean))];
+    const sizes = [...new Set(variants.map(v => v.size).filter(Boolean))];
+    let selColor = colors.length === 1 ? colors[0] : null;
+    let selSize = sizes.length === 1 ? sizes[0] : null;
+
+    const hasStock = (c, s) => variants.some(v =>
+        Number(v.stock) > 0 && (!c || v.color === c) && (!s || v.size === s));
+
+    const findVariant = () => {
+        if (colors.length && !selColor) return null;
+        if (sizes.length && !selSize) return null;
+        return variants.find(v =>
+            (!colors.length || v.color === selColor) &&
+            (!sizes.length || v.size === selSize)) || null;
+    };
+
+    const overlay = document.createElement('div');
+    overlay.id = 'pos-variant-modal';
+    overlay.className = 'pos-variant-overlay';
+    document.body.appendChild(overlay);
+    document.addEventListener('keydown', posVariantEscHandler);
+
+    function render() {
+        const variant = findVariant();
+        const canAdd = !!variant && Number(variant.stock) > 0;
+
+        let info = 'Pilih warna dan ukuran';
+        if (colors.length && !selColor) info = 'Pilih warna terlebih dahulu';
+        else if (sizes.length && !selSize) info = 'Pilih ukuran';
+        else if (variant && Number(variant.stock) <= 0) info = 'Stok habis';
+        else if (variant) info = `Stok: ${variant.stock} &middot; ${formatRupiah(variant.price ?? product.price)}`;
+
+        const colorHtml = colors.length ? `
+            <div class="pos-variant-group">
+                <div class="pos-variant-label">Warna ${selColor ? `<span>${posEscape(selColor)}</span>` : ''}</div>
+                <div class="pos-variant-swatches">
+                    ${colors.map(c => {
+                        const ok = hasStock(c, selSize);
+                        const css = posIsCssColor(c);
+                        return `<button type="button" class="pos-swatch ${c === selColor ? 'active' : ''}"
+                                    data-color="${posEscape(c)}" ${ok ? '' : 'disabled'}
+                                    title="${posEscape(c)}" aria-label="Warna ${posEscape(c)}"
+                                    style="${css ? `background:${posEscape(c)}` : ''}">${css ? '' : '?'}</button>`;
+                    }).join('')}
+                </div>
+            </div>` : '';
+
+        const sizeHtml = sizes.length ? `
+            <div class="pos-variant-group">
+                <div class="pos-variant-label">Ukuran ${selSize ? `<span>${posEscape(selSize)}</span>` : ''}</div>
+                <div class="pos-variant-sizes">
+                    ${sizes.map(s => `
+                        <button type="button" class="pos-size-chip ${s === selSize ? 'active' : ''}"
+                                data-size="${posEscape(s)}" ${hasStock(selColor, s) ? '' : 'disabled'}>${posEscape(s)}</button>
+                    `).join('')}
+                </div>
+            </div>` : '';
+
+        overlay.innerHTML = `
+            <div class="pos-variant-box" role="dialog" aria-modal="true">
+                <div class="pos-variant-head">
+                    <div>
+                        <h3>${posEscape(product.name)}</h3>
+                        <p>Pilih varian produk</p>
+                    </div>
+                    <button type="button" class="pos-variant-close" data-act="close" aria-label="Tutup">&times;</button>
+                </div>
+                ${colorHtml}
+                ${sizeHtml}
+                <div class="pos-variant-info">${info}</div>
+                <div class="pos-variant-actions">
+                    <button type="button" class="pos-btn-secondary" data-act="close">Batal</button>
+                    <button type="button" class="pos-btn-primary" data-act="add" ${canAdd ? '' : 'disabled'}>
+                        Tambah ke Keranjang
+                    </button>
+                </div>
+            </div>`;
     }
+
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) { posCloseVariantModal(); return; }
+
+        const btn = e.target.closest('[data-act], [data-color], [data-size]');
+        if (!btn || btn.disabled) return;
+
+        if (btn.dataset.act === 'close') { posCloseVariantModal(); return; }
+
+        if (btn.dataset.act === 'add') {
+            const variant = findVariant();
+            if (!variant) return;
+            posCloseVariantModal();
+            posAddToCart(product, variant);
+            return;
+        }
+
+        if (btn.dataset.color !== undefined) {
+            selColor = btn.dataset.color;
+            if (selSize && !hasStock(selColor, selSize)) selSize = null;
+        } else if (btn.dataset.size !== undefined) {
+            selSize = btn.dataset.size;
+            if (selColor && !hasStock(selColor, selSize)) selColor = null;
+        }
+        render();
+    });
+
+    render();
 }
 
 function posAddToCart(product, variant) {
@@ -166,7 +293,7 @@ function renderCart() {
             <tr>
                 <td>
                     <div class="pos-cart-product-name">${item.name}</div>
-                    <div class="pos-cart-product-variant">${item.color || ''} ${item.size || ''}</div>
+                    <div class="pos-cart-product-variant">${item.color ? (posIsCssColor(item.color) ? `<span class="pos-cart-swatch" style="background:${item.color}"></span>` : item.color + ' ') : ''}${item.size || ''}</div>
                 </td>
                 <td>${formatRupiah(item.price)}</td>
                 <td>
